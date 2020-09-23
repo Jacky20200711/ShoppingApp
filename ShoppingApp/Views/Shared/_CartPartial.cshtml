@@ -1,0 +1,40 @@
+﻿@{
+    var currentCart = ShoppingApp.Models.CartOperator.GetCurrentCart();
+}
+
+<style>
+    span.my-class {
+        text-decoration: none;
+    }
+    span.my-class:hover {
+        color: #FF00FF;
+        text-decoration: none;
+    }
+</style>
+
+<div class="dropdown">
+    <span id="CartDropDown" class="dropdown-toggle my-class" data-toggle="dropdown">
+        @String.Format("購物車({0}$)", currentCart.TotalAmount)
+        <img style="width:20px; height:20px;" src="https://i.imgur.com/Ua3yIRv.jpg" alt="購物車圖片">
+    </span>
+    <ul class="dropdown-menu" role="menu" aria-labelledby="CartDropDown">
+        @if (currentCart.Count > 0)
+        {
+            foreach (var cartitem in currentCart)
+            {
+                <li style="white-space:nowrap; width:260px; border-bottom:3px solid #ff6a00;">
+                    <span style="width: 160px; margin-left:8px;"> @cartitem.Name @cartitem.Price x @cartitem.Quantity </span>
+                    <span style="width: 60px; margin-left:14px; margin-bottom:2px; margin-top:2px;" class="btn btn-danger" onclick="RemoveFromCart('@cartitem.Id')">移除</span>
+                </li>
+            }
+            <li style="white-space:nowrap; width:220px; margin-top:7px; margin-left:7px;">
+                <a style="width: 100px; text-align:center;" class="btn btn-primary" href="@Url.Action("Create","OrderForm")">結帳</a>
+                <span style="width: 100px; text-align:center; margin-left:38px;" class="btn btn-success" onclick="ClearCart()">清空</span>
+            </li>
+        }
+        else
+        {
+            <li style="text-align: center;">購物車內無任何商品</li>
+        }
+    </ul>
+</div>

@@ -1,0 +1,21 @@
+﻿@model Microsoft.AspNetCore.Identity.IdentityUser
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="@Model.Email" class="control-label"></label>
+                <input asp-for="@Model.Email" class="form-control" />
+                <span asp-validation-for="@Model.Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.PasswordHash" class="control-label"></label>
+                <input asp-for="@Model.PasswordHash" class="form-control" />
+                <span asp-validation-for="@Model.PasswordHash" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="確認修改" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

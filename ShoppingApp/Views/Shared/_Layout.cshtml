@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<style>
+    a.my-class {
+        color: black;
+    }
+
+    a.my-class:hover {
+        color: #FF00FF;
+        text-decoration: none;
+    }
+
+    li{
+        margin-right: 10px;
+        cursor: pointer;
+    }
+</style>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - 阿貓購物網站</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    @* 購物車 *@
+    <script type="text/javascript">
+    //網頁載入完成時執行之function
+    $(document).ready(function () {
+        console.log("ready!");
+    });
+
+    //放入該ID的產品到購物車
+    function AddToCart(productId) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("AddToCart", "Cart")',
+            data: { id: productId }
+        })
+        .done(function (msg) {
+            //指令執行成功則重載購物車頁面
+            $('li#Cart').html(msg);
+        });
+    }
+
+    //搬移該ID的產品出購物車
+    function RemoveFromCart(productId) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("RemoveFromCart", "Cart")',
+            data: { id: productId }
+        })
+        .done(function (msg) {
+            //指令執行成功則重載購物車頁面
+            $('li#Cart').html(msg);
+        });
+    }
+
+    //清空購物車內所有商品
+    function ClearCart() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("ClearCart", "Cart")',
+            data: {}
+        })
+        .done(function (msg) {
+            //指令執行成功則重載購物車頁面
+            $('li#Cart').html(msg);
+        });
+    }
+    </script>
+</head>
+<body>
+    <br><br><br>
+    <header>
+        <nav class="navbar navbar-expand-md navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
+            <!-- .navbar-toggler 漢堡式選單按鈕，讓手機瀏覽時可以折疊工具列 -->
+            <button style="float:right;" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <!-- .navbar-toggler-icon 漢堡式選單Icon -->
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="container" style="font-size:large;">
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse" id="navbarSupportedContent">
+                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav flex-grow-1">
+                        @if (User.Identity.Name != Admin.name)
+                        {
+                            <li>@Html.ActionLink("購物首頁", "Index", "Home", null, new { @class = "my-class" })</li>
+                            <li>@Html.ActionLink("聯絡方式", "Contact", "Home", null, new { @class = "my-class" })</li>
+                            <li>@Html.ActionLink("我的訂單", "Index", "OrderForm", null, new { @class = "my-class" })</li>
+                            <li id="Cart">@await Html.PartialAsync("_CartPartial")</li>
+                        }
+                        else
+                        {
+                            <li>@Html.ActionLink("購物首頁", "Index", "Home", null, new { @class = "my-class" })</li>
+                            <li>@Html.ActionLink("產品管理", "Index", "Product", null, new { @class = "my-class" })</li>
+                            <li>@Html.ActionLink("會員管理", "Index", "User", null, new { @class = "my-class" })</li>
+                            <li>@Html.ActionLink("訂單管理", "Index", "OrderForm", null, new { @class = "my-class" })</li>
+                            <li>@Html.ActionLink("留言管理", "Index", "Comment", null, new { @class = "my-class" })</li>
+                            <li id="Cart">@await Html.PartialAsync("_CartPartial")</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            <p>&copy; @DateTime.Now.Year - 阿貓購物網站 </p>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

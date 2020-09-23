@@ -1,0 +1,82 @@
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<ShoppingApp.Models.OrderForm>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>訂單列表</h1>
+
+@if (User.Identity.Name == Admin.name)
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().ReceiverName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().ReceiverPhone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().ReceiverAddress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().SenderEmail)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().CreateTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().TotalAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().CheckOut)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReceiverName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReceiverPhone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReceiverAddress)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SenderEmail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreateTime)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CheckOut)
+                </td>
+                <td>
+                    @if (User.Identity.Name == Admin.name)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit |</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete |</a>
+                    }
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page }))

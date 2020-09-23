@@ -1,0 +1,101 @@
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<ShoppingApp.Models.ProductAndComment>
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>產品資訊</h1>
+
+<div>
+    <div><img style="max-width:100%; height:auto;" src="@Html.DisplayFor(model => model.FirstOrDefault().TheProduct.DefaultImageURL)" /></div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FirstOrDefault().TheProduct.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FirstOrDefault().TheProduct.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FirstOrDefault().TheProduct.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FirstOrDefault().TheProduct.Description)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FirstOrDefault().TheProduct.Price)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FirstOrDefault().TheProduct.Price)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FirstOrDefault().TheProduct.PublishDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FirstOrDefault().TheProduct.PublishDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.FirstOrDefault().TheProduct.Quantity)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FirstOrDefault().TheProduct.Quantity)
+        </dd>
+    </dl>
+</div>
+
+<br>
+<h1>訪客留言</h1>
+<div>
+    <hr />
+    <dl class="row">
+        @*顯示留言*@
+        @if (Model.FirstOrDefault().TheComment != null)
+        {
+            foreach (var pc in Model)
+            {
+                <dt class="col-sm-2">
+                    @pc.TheComment.UserName<span style="margin-left:4px;">:</span>
+                </dt>
+                <dd class="col-sm-10">
+                    @pc.TheComment.Content  ( @pc.TheComment.CreateTime )
+                </dd>
+            }
+        }
+    </dl>
+</div>
+<div>
+    @*輸入留言*@
+    @using (Html.BeginForm("AddComment", "Product", FormMethod.Post, new { onsubmit = "return checkLen();" }))
+    {
+        <span style="display:none;">@Html.TextBox("id", Model.FirstOrDefault().TheProduct.Id)</span>
+        @Html.TextBox("comment", null, new { id = "PostComment", @class = "text-field" })
+        <input type="submit" value="留言" class="btn btn-primary" />
+    }
+    @*返回並刷新頁面，可以避免表單資料消失*@
+    <a href="javascript:" onclick="self.location=document.referrer;">回上一頁</a>
+</div>
+<br>
+
+@*在Url.Action新增一個參數，用來返回產品的ID*@
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Details", new { id = Model.FirstOrDefault().TheProduct.Id, page }))
+
+<script>
+    //將捲軸自動滾到底以方便查看留言
+    window.scrollTo(0, document.body.scrollHeight);
+
+    //檢查留言框的內容長度
+    function checkLen() {
+
+        var commentLen = document.getElementById("PostComment").value.length;
+
+        if (commentLen < 2 || commentLen > 100) {
+            alert("留言長度必須為2~100字!");
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+</script>

@@ -1,0 +1,33 @@
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<ShoppingApp.Models.Product>
+
+@{
+    ViewBag.Title = "首頁";
+}
+
+<div class="row">
+    @foreach (var product in Model)
+    {
+        <div class="col-sm-6 col-md-4" style="margin-bottom:20px;">
+            <div class="thumbnail">
+                <img class="ProductImg" style="max-width:100%; height:auto;" src="@product.DefaultImageURL" alt="商品圖片">
+                <div class="caption">
+                    <h3>@product.Name</h3>
+                    <p>
+                        <span>售價 : @product.Price</span>
+                    </p>
+                    <p>
+                        <a onclick="AddToCart('@product.Id')" href="javascript:void(0);"
+                           class="btn btn-primary" role="button">
+                            加入購物車
+                        </a>
+                        <a href="@Url.Action("Details", new { id = product.Id })" class="btn btn-primary" role="button">查看留言</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("ShowProducts", new { page }))

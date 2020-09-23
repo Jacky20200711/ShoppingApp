@@ -1,0 +1,97 @@
+﻿@model ShoppingApp.Models.OrderForm
+
+@{
+    ViewData["Title"] = "Create";
+
+    var currentCart = ShoppingApp.Models.CartOperator.GetCurrentCart();
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
+}
+
+<h4>訂單明細</h4>
+<hr />
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                產品名稱
+            </th>
+            <th>
+                產品單價
+            </th>
+            <th>
+                購買數量
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cartItem in currentCart)
+        {
+            <tr>
+                <td>
+                    @cartItem.Name
+                </td>
+                <td>
+                    @cartItem.Price
+                </td>
+                <td>
+                    @cartItem.Quantity
+                </td>
+            </tr>
+        }
+        @{
+            <tr>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                    總計 : &nbsp; @currentCart.TotalAmount
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>填寫訂單</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="ReceiverName" class="control-label"></label>
+                <input asp-for="ReceiverName" class="form-control" />
+                <span asp-validation-for="ReceiverName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReceiverPhone" class="control-label"></label>
+                <input asp-for="ReceiverPhone" class="form-control" />
+                <span asp-validation-for="ReceiverPhone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ReceiverAddress" class="control-label"></label>
+                <input asp-for="ReceiverAddress" class="form-control" />
+                <span asp-validation-for="ReceiverAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="送出訂單" class="btn btn-primary" onclick = "return isMember();"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function isMember() {
+        if (isNaN(@User.Identity.Name)) {
+            alert("請先登入會員!");
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+</script>

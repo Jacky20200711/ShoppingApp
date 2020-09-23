@@ -1,0 +1,27 @@
+﻿@using X.PagedList.Mvc.Core
+@model X.PagedList.IPagedList<Microsoft.AspNetCore.Identity.IdentityUser>
+@{
+    ViewBag.Title = "UserList";
+}
+<h2>UserList</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayName("Email")</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(model => item.Email)</td>
+                <td>@Html.ActionLink("Edit", "Edit", new { id = item.Id })</td>
+                <td>@Html.ActionLink("Delete", "Delete", new { id = item.Id })</td>
+            </tr>
+        }
+    </tbody>
+</table>
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page }))

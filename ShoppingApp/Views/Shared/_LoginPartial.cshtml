@@ -1,0 +1,29 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@User.Identity.Name!</a>
+        </li>
+        <li class="nav-item">
+            <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                @*套用和  my-class 一樣的字體大小*@
+                <button style="font-size:large;" type="submit" class="nav-link btn btn-link text-dark">登出</button>
+            </form>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            @*套用在 _Layout.cshtml 建立的 my-class 樣式*@
+            <a class="my-class" asp-area="Identity" asp-page="/Account/Register">註冊</a>
+        </li>
+        <li class="nav-item">
+            @*套用在 _Layout.cshtml 建立的 my-class 樣式*@
+            <a class="my-class" asp-area="Identity" asp-page="/Account/Login">登入</a>
+        </li>
+    }
+</ul>

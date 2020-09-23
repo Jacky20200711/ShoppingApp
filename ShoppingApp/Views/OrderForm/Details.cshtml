@@ -1,0 +1,43 @@
+﻿@model List<ShoppingApp.Models.OrderDetail>
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h4>訂單明細</h4>
+<hr />
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                產品名稱
+            </th>
+            <th>
+                產品單價
+            </th>
+            <th>
+                購買數量
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var OrderItem in Model)
+        {
+            <tr>
+                <td>
+                    @OrderItem.Name
+                </td>
+                <td>
+                    @OrderItem.Price
+                </td>
+                <td>
+                    @OrderItem.Quantity
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div>
+    <a href="javascript:history.back(-1)">回上一頁</a>
+</div>
