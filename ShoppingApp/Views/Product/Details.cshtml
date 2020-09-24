@@ -65,12 +65,19 @@
     </dl>
 </div>
 <div>
-    @*輸入留言*@
-    @using (Html.BeginForm("AddComment", "Product", FormMethod.Post, new { onsubmit = "return checkLen();" }))
+    @if (string.IsNullOrEmpty(User.Identity.Name))
     {
-        <span style="display:none;">@Html.TextBox("id", Model.FirstOrDefault().TheProduct.Id)</span>
-        @Html.TextBox("comment", null, new { id = "PostComment", @class = "text-field" })
-        <input type="submit" value="留言" class="btn btn-primary" />
+        <span>登入會員後才能留言!</span>
+    }
+    else
+    {
+        @*輸入留言*@
+        @using (Html.BeginForm("AddComment", "Product", FormMethod.Post, new { onsubmit = "return checkLen();" }))
+        {
+            <span style="display:none;">@Html.TextBox("id", Model.FirstOrDefault().TheProduct.Id)</span>
+            @Html.TextBox("comment", null, new { id = "PostComment", @class = "text-field" })
+            <input type="submit" value="留言" class="btn btn-primary" />
+        }
     }
     @*返回並刷新頁面，可以避免表單資料消失*@
     <a href="javascript:" onclick="self.location=document.referrer;">回上一頁</a>
