@@ -2,7 +2,7 @@
 @model X.PagedList.IPagedList<ShoppingApp.Models.OrderForm>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "查看訂單";
 }
 
 <h1>訂單列表</h1>
@@ -72,7 +72,7 @@
                         <a asp-action="Edit" asp-route-id="@item.Id">Edit |</a>
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete |</a>
                     }
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                    <a asp-action="Details" asp-route-id="@item.Id">訂單明細</a>
                 </td>
             </tr>
         }
