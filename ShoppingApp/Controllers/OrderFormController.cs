@@ -58,6 +58,7 @@ namespace ShoppingApp.Controllers
         }
 
         // GET: OrderForm/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
