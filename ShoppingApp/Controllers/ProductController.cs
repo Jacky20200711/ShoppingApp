@@ -271,14 +271,14 @@ namespace ShoppingApp.Controllers
         // 負責展示產品的Action
         public async Task<IActionResult> ShowProducts(int page = 1)
         {
-            // 將圖片資訊儲存在記憶體(Cache)
+            // 將圖片資訊儲存在記憶體(Cache)，每個分頁對應不同的Key
             _memoryCache.Set(
-                "ProductCache",
+                $"ProductPage{page}",
                 await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, pageSize)
             );
 
             // 按照產品的日期排序(新->舊)
-            return View(_memoryCache.Get("ProductCache"));
+            return View(_memoryCache.Get($"ProductPage{page}"));
         }
     }
 }
