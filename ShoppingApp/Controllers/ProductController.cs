@@ -245,14 +245,14 @@ namespace ShoppingApp.Controllers
             // 重新創建所有的產品
             List<Product> productList = new List<Product>();
 
-            for (int i = 1; i < ImageUrlList.Count+1; i++)
+            for (int i = 0; i < ImageUrlList.Count; i++)
             {
                 Random random = new Random();
 
                 productList.Add(
                     new Product
                     {
-                        Name = "萌妹子壁紙" + i.ToString("D2"),
+                        Name = "萌妹子壁紙" + (i+1).ToString("D2"),
                         Description = "可愛的萌妹子壁紙",
                         Price = random.Next(100, 200),
                         PublishDate = DateTime.Now,
