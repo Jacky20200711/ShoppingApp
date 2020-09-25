@@ -224,5 +224,12 @@ namespace ShoppingApp.Controllers
         {
             return _context.OrderForm.Any(e => e.Id == id);
         }
+
+        [Authorize]
+
+        public IActionResult CheckPayResult(bool PaySuccess)
+        {
+            return PaySuccess ? View("PaySuccess") : View("PayFail");
+        }
     }
 }
