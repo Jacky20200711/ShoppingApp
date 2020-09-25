@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Brsl03kHsMHtFpUOGmKP3foVZ7DoVLHkyB/T7LcpwsOHNbt42Au8I4XhP9+RFoPNkCdJQRzyBvvXyo8Ku5HSaQ==",
+  "dgSpecHash": "yf7jTV6QjmlG6i+6OKz92pQFJNiuY+ENQDrxpd0ZCuqfRek6189gf15FcAUxj5p4mcaBfaayYP5DxmYfcenulA==",
   "success": true,
-  "projectFilePath": "D:\\Desktop\\Project\\ShoppingApp_CoreMVC\\ShoppingApp\\ShoppingApp.csproj",
+  "projectFilePath": "D:\\ShoppingApp_CoreMVC\\ShoppingApp\\ShoppingApp.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user\\.nuget\\packages\\microsoft.aspnetcore.antiforgery\\2.2.0\\microsoft.aspnetcore.antiforgery.2.2.0.nupkg.sha512",
     "C:\\Users\\user\\.nuget\\packages\\microsoft.aspnetcore.authentication.abstractions\\2.2.0\\microsoft.aspnetcore.authentication.abstractions.2.2.0.nupkg.sha512",

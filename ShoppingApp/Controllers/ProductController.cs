@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Configuration;
 using ShoppingApp.Data;
 using ShoppingApp.Models;
 using X.PagedList;
@@ -223,37 +225,24 @@ namespace ShoppingApp.Controllers
             _context.RemoveRange(_context.Product);
             _context.SaveChanges();
 
-            // 匯入所有產品
-            List<string> ImageUrlList = new List<string>
-            {
-                "https://i.imgur.com/IWPABwj.jpg",
-                "https://i.imgur.com/kcJOYYc.jpg",
-                "https://i.imgur.com/p0uaYGp.jpg",
-                "https://i.imgur.com/VcjQCle.jpg",
-                "https://i.imgur.com/9jPmqbY.jpg",
-                "https://i.imgur.com/nF0DWG9.jpg",
-                "https://i.imgur.com/yQWKPLf.jpg",
-                "https://i.imgur.com/KNDMkAl.jpg",
-                "https://i.imgur.com/PC062Dw.jpg",
-                // change line for each 9 Urls
-                "https://i.imgur.com/WFoheyH.jpg",
-                "https://i.imgur.com/SegOy3q.jpg",
-                "https://i.imgur.com/YHla8ss.jpg",
-                "https://i.imgur.com/T0e33ix.jpg",
-                "https://i.imgur.com/Qr0kBKg.jpg",
-                "https://i.imgur.com/CM6vVEC.jpg",
-                "https://i.imgur.com/0bRkLV4.jpg",
-                "https://i.imgur.com/FJxXm7t.jpg",
-                "https://i.imgur.com/HJ94b6p.jpg",
-                // change line for each 9 Urls
-                "https://i.imgur.com/UAaqt11.jpg",
-                "https://i.imgur.com/G2txwGe.jpg",
-                "https://i.imgur.com/btfWSC6.jpg",
-                "https://i.imgur.com/14GzB19.jpg",
-                "https://i.imgur.com/kKvtRWv.jpg",
-                "https://i.imgur.com/CsYca4V.jpg"
-            };
+            // 從設定檔取得壁紙的網址
+            List<string> ImageUrlList = new List<string>();
 
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            var config = builder.Build().AsEnumerable();
+
+            foreach (KeyValuePair<string, string> pair in config)
+            {
+                if(pair.Key.StartsWith("WallPaper") && pair.Value != null)
+                {
+                    ImageUrlList.Add(pair.Value);
+                }
+            }
+
+            // 重新創建所有的產品
             List<Product> productList = new List<Product>();
 
             for (int i = 0; i < ImageUrlList.Count; i++)

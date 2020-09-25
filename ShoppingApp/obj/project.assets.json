@@ -10225,11 +10225,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Desktop\\Project\\ShoppingApp_CoreMVC\\ShoppingApp\\ShoppingApp.csproj",
+      "projectUniqueName": "D:\\ShoppingApp_CoreMVC\\ShoppingApp\\ShoppingApp.csproj",
       "projectName": "ShoppingApp",
-      "projectPath": "D:\\Desktop\\Project\\ShoppingApp_CoreMVC\\ShoppingApp\\ShoppingApp.csproj",
+      "projectPath": "D:\\ShoppingApp_CoreMVC\\ShoppingApp\\ShoppingApp.csproj",
       "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-      "outputPath": "D:\\Desktop\\Project\\ShoppingApp_CoreMVC\\ShoppingApp\\obj\\",
+      "outputPath": "D:\\ShoppingApp_CoreMVC\\ShoppingApp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -10313,7 +10313,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.401\\RuntimeIdentifierGraph.json"
       }
     }
   }
