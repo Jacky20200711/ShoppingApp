@@ -245,7 +245,7 @@ namespace ShoppingApp.Controllers
             // 重新創建所有的產品
             List<Product> productList = new List<Product>();
 
-            for (int i = 0; i < ImageUrlList.Count; i++)
+            for (int i = 1; i < ImageUrlList.Count+1; i++)
             {
                 Random random = new Random();
 
