@@ -79,6 +79,8 @@ namespace ShoppingApp.Controllers
             {
                 var currentCart = CartOperator.GetCurrentCart();
 
+                int OrderId = 1;
+
                 using (var transaction = _context.Database.BeginTransaction())
                 {
                     // 儲存訂單
@@ -89,15 +91,17 @@ namespace ShoppingApp.Controllers
                     _context.Add(orderForm);
                     await _context.SaveChangesAsync();
 
+                    // 紀錄訂單ID
+                    OrderId = orderForm.Id;
+
                     // 儲存訂單明細
                     var orderDetails = new List<OrderDetail>();
-                    var orderId = orderForm.Id;
 
                     foreach (var cartItem in currentCart)
                     {
                         orderDetails.Add(new OrderDetail()
                         {
-                            OrderId = orderId,
+                            OrderId = orderForm.Id,
                             Name = cartItem.Name,
                             Price = cartItem.Price,
                             Quantity = cartItem.Quantity
@@ -120,7 +124,8 @@ namespace ShoppingApp.Controllers
 
                 string ApiDomain = config["AppSetting:ApiDomain"];
 
-                return Redirect($"{ApiDomain}/Home/SendToOpay/?JsonString={JsonConvert.SerializeObject(currentCart)}");
+                // 將購物車傳送給 WebApi
+                return Redirect($"{ApiDomain}/Home/SendToOpay/?OrderId={OrderId}&JsonString={JsonConvert.SerializeObject(currentCart)}");
             }
             else
             {

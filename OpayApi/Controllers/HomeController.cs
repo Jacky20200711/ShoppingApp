@@ -10,11 +10,11 @@ namespace OpayApi.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult SendToOpay(string JsonString)
+        public ActionResult SendToOpay(int OrderId, string JsonString)
         {
             Cart currentCart = JsonConvert.DeserializeObject<Cart>(JsonString);
 
-            string s = "";
+            string s = $"OrderId:{OrderId}<br>";
 
             foreach(var cartItem in currentCart)
             {
