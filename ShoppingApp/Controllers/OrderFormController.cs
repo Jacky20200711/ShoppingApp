@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using ShoppingApp.Data;
 using ShoppingApp.Models;
 using X.PagedList;
@@ -108,10 +111,16 @@ namespace ShoppingApp.Controllers
                     transaction.Commit();
                 }
 
-                // 清空購物車
-                CartOperator.ClearCart();
+                // 存取 WebApi 的網域
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json");
 
-                return RedirectToAction(nameof(Index));
+                var config = builder.Build();
+
+                string ApiDomain = config["AppSetting:ApiDomain"];
+
+                return Redirect($"{ApiDomain}/Home/SendToOpay/?JsonString={JsonConvert.SerializeObject(currentCart)}");
             }
             else
             {
