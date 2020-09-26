@@ -15,9 +15,6 @@ namespace OpayApi.Controllers
     {
         public ActionResult SendToOpay(int OrderId, string JsonString)
         {
-            // 用 Session 暫存 OrderId
-            Session["OrderId"] = OrderId;
-
             // 將 JsonString 轉回購物車
             Cart currentCart = JsonConvert.DeserializeObject<Cart>(JsonString);
 
@@ -27,7 +24,7 @@ namespace OpayApi.Controllers
             {
                 using (AllInOne oPayment = new AllInOne())
                 {
-                    string ApiDomain = ConfigurationManager.AppSettings["ApiDomain"];
+                    string MyApiDomain = ConfigurationManager.AppSettings["MyApiDomain"];
 
                     /* 服務參數 */
                     oPayment.ServiceMethod = HttpMethod.HttpPOST;
@@ -38,8 +35,8 @@ namespace OpayApi.Controllers
 
                     /* 基本參數 */
                     string hostname = Request.Url.Authority;
-                    oPayment.Send.ReturnURL = $"{ApiDomain}/Home/GetPayResult";
-                    oPayment.Send.OrderResultURL = $"{ApiDomain}/Home/GetPayResult";
+                    oPayment.Send.ReturnURL = $"{MyApiDomain}/Home/GetPayResult/?OrderId={OrderId}";
+                    oPayment.Send.OrderResultURL = $"{MyApiDomain}/Home/GetPayResult/?OrderId={OrderId}";
                     oPayment.Send.MerchantTradeNo = DateTime.Now.ToString("yyyyMMddHHmmss");
                     oPayment.Send.MerchantTradeDate = DateTime.Now;
                     oPayment.Send.TotalAmount = currentCart.TotalAmount;
@@ -79,34 +76,31 @@ namespace OpayApi.Controllers
             return Content(szHtml);
         }
 
-        [HttpPost]
-        public ActionResult GetPayResult(AllInOne oPayment)
+        public ActionResult GetPayResult(AllInOne oPayment, int OrderId)
         {
-            List<string> enErrors = new List<string>();
-            Hashtable htFeedback = null;
-            string AppDomain = ConfigurationManager.AppSettings["AppDomain"];
+            string MyAppDomain = ConfigurationManager.AppSettings["MyAppDomain"];
 
             try
             {
+                List<string> enErrors = new List<string>();
+                Hashtable htFeedback = null;
+
                 oPayment.HashKey = ConfigurationManager.AppSettings["HashKey"];
                 oPayment.HashIV = ConfigurationManager.AppSettings["HashIV"];
                 enErrors.AddRange(oPayment.CheckOutFeedback(ref htFeedback));
 
-
                 if (enErrors.Count() == 0)
                 {
-                    int OrderId = (int)Session["OrderId"];
-                    //return Redirect($"{AppDomain}/OrderForm/CheckPayResult/?OrderId={OrderId}&PayResult={true}");
-                    return Content("付款成功!");
+                    return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?OrderId={OrderId}&PaySuccess=true");
                 }
                 else
                 {
-                    return Redirect($"{AppDomain}/OrderForm/CheckPayResult/?PaySuccess=false");
+                    return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?OrderId={OrderId}&PaySuccess=false");
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return Redirect($"{AppDomain}/OrderForm/CheckPayResult/?PaySuccess=false");
+                return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?OrderId={OrderId}&Exception={e}");
             }
         }
     }

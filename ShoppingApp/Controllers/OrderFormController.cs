@@ -3,27 +3,32 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using CartsCore.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ShoppingApp.Data;
 using ShoppingApp.Models;
+using SQLitePCL;
 using X.PagedList;
 
 namespace ShoppingApp.Controllers
 {
     public class OrderFormController : Controller
     {
-        //每個分頁最多顯示10筆
+        // 每個分頁最多顯示10筆
         private readonly int pageSize = 10;
 
+        // 使用 DI 注入 ApplicationDbContext & LOG
         private readonly ApplicationDbContext _context;
-
-        public OrderFormController(ApplicationDbContext context)
+        private readonly ILogger _logger;
+        public OrderFormController(ApplicationDbContext context, ILogger<OrderFormController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // GET: OrderForm
@@ -122,10 +127,10 @@ namespace ShoppingApp.Controllers
 
                 var config = builder.Build();
 
-                string ApiDomain = config["AppSetting:ApiDomain"];
+                string MyApiDomain = config["AppSetting:MyApiDomain"];
 
                 // 將購物車傳送給 WebApi
-                return Redirect($"{ApiDomain}/Home/SendToOpay/?OrderId={OrderId}&JsonString={JsonConvert.SerializeObject(currentCart)}");
+                return Redirect($"{MyApiDomain}/Home/SendToOpay/?OrderId={OrderId}&JsonString={JsonConvert.SerializeObject(currentCart)}");
             }
             else
             {
@@ -227,9 +232,20 @@ namespace ShoppingApp.Controllers
 
         [Authorize]
 
-        public IActionResult CheckPayResult(bool PaySuccess)
+        public IActionResult CheckPayResult(bool PaySuccess=false, int OrderId=0, string Exception="")
         {
-            return PaySuccess ? View("PaySuccess") : View("PayFail");
+            if(PaySuccess)
+            {
+                _context.OrderForm.Where(o => o.Id == OrderId).FirstOrDefault().CheckOut = "Yes";
+                _context.SaveChanges();
+                _logger.LogInformation($"第{OrderId}號訂單付款成功!");
+                return View("PaySuccess");
+            }
+            else
+            {
+                _logger.LogError($"第{OrderId}號訂單付款失敗..." + Exception);
+                return View("PayFail");
+            }
         }
     }
 }
