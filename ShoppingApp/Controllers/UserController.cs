@@ -1,7 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using ShoppingApp.Data;
 using ShoppingApp.Models;
 using X.PagedList;
@@ -73,6 +80,7 @@ namespace ShoppingApp.Controllers
 
             var user = _usertext.Users.Where(u => u.Id == identityUser.Id).FirstOrDefault();
 
+            // 令管理員不能編輯自己
             if (user.Email == Admin.name)
             {
                 return Content("Access denied.");
@@ -81,11 +89,69 @@ namespace ShoppingApp.Controllers
             PasswordHasher<IdentityUser> PwHasher = new PasswordHasher<IdentityUser>();
 
             user.Email = identityUser.Email;
-            user.PasswordHash = PwHasher.HashPassword(user, user.PasswordHash);
+            user.PasswordHash = PwHasher.HashPassword(user, identityUser.PasswordHash);
 
             _usertext.SaveChanges();
 
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public ActionResult SendVerifyEmail(IFormCollection post)
+        {
+
+            // 取出 POST 的資料並轉成字串，避免直接取用使得 LINQ 噴出錯誤
+            string userEmail = post["email"];
+
+            var user = _usertext.Users.FirstOrDefault(u => u.Email == userEmail);
+
+            if(user != null)
+            {
+                // 從設定檔取得寄信的相關資訊
+                var builder = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile("appsettings.json");
+
+                var config = builder.Build();
+
+                string SmtpEmail = config["AppSetting:SmtpEmail"];
+                string SmtpPassword = config["AppSetting:SmtpPassword"];
+                string SmtpHost = config["AppSetting:SmtpHost"];
+
+                // 取得隨機字串
+                string newPassword = Path.GetRandomFileName();
+
+                // 修改該使用者的密碼
+                PasswordHasher<IdentityUser> PwHasher = new PasswordHasher<IdentityUser>();
+                user.PasswordHash = PwHasher.HashPassword(user, newPassword);
+                _usertext.SaveChanges();
+
+                // 寄信給該使用者
+                MailMessage message = new MailMessage
+                {
+                    From = new MailAddress($"{SmtpEmail}", "阿貓購物網站", Encoding.UTF8),
+                    SubjectEncoding = Encoding.UTF8,
+                    BodyEncoding = Encoding.UTF8,
+                    Subject = "阿貓購物網站-取得密碼的驗證信",
+                    Body = $"您的密碼已經被重設為{newPassword}，請盡速登入並修改密碼。",
+                    IsBodyHtml = true,
+                };
+
+                message.To.Add(post["email"]);
+
+                SmtpClient smtp = new SmtpClient
+                {
+                    Port = 587,
+                    Host = $"{SmtpHost}",
+                };
+
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = new NetworkCredential($"{SmtpEmail}", $"{SmtpPassword}");
+                smtp.EnableSsl = true;
+                smtp.Send(message);
+            }
+
+            return View("~/Areas/Identity/Pages/Account/ForgotPasswordConfirmation.cshtml");
         }
     }
 }

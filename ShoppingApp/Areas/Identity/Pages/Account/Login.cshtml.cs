@@ -42,15 +42,16 @@ namespace ShoppingApp.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "此欄位不能為空")]
+            [EmailAddress(ErrorMessage = "郵件格式錯誤")]
             public string Email { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "此欄位不能為空")]
+            [StringLength(100, ErrorMessage = "長度必須為6~100", MinimumLength = 6)]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
-            [Display(Name = "Remember me?")]
+            //[Display(Name = "記住我?")]
             public bool RememberMe { get; set; }
         }
 

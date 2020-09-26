@@ -43,9 +43,9 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
-            [Required]
-            [EmailAddress]
-            [Display(Name = "New email")]
+            [Required(ErrorMessage = "此欄位不能為空")]
+            [EmailAddress(ErrorMessage = "郵件格式錯誤")]
+            [Display(Name = "新郵件")]
             public string NewEmail { get; set; }
         }
 
@@ -100,14 +100,14 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
                     protocol: Request.Scheme);
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    "確認您的郵件",
+                    $"<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>點擊此處來驗證帳戶</a>.");
 
-                StatusMessage = "Confirmation link to change email sent. Please check your email.";
+                StatusMessage = "請到新的郵件信箱查看驗證信";
                 return RedirectToPage();
             }
 
-            StatusMessage = "Your email is unchanged.";
+            StatusMessage = "您的郵件和之前的一樣!";
             return RedirectToPage();
         }
 
@@ -136,10 +136,10 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
                 protocol: Request.Scheme);
             await _emailSender.SendEmailAsync(
                 email,
-                "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                "確認您的郵件",
+                $"<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>點擊此處來驗證帳戶</a>.");
 
-            StatusMessage = "Verification email sent. Please check your email.";
+            StatusMessage = "請到新的郵件信箱查看驗證信";
             return RedirectToPage();
         }
     }
