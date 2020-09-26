@@ -6,6 +6,7 @@
 2.使用 AJAX 和 Session 來搭建購物車   
 3.使用 Entity Framework Code First 來存取資料  
 4.使用 Google API 讓 User 可以用 Google 帳戶登入  
+5.使用 WebApi 來串接歐付寶進行付款 
   
 # 開發環境  
 win10(64bit) + Visual Studio 2019 + .NET Core MVC  
