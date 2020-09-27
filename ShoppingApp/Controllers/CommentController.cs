@@ -25,7 +25,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             // 按照留言的建立日期排序(新->舊)
@@ -37,7 +37,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             if (id == null)
@@ -60,7 +60,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             return View();
@@ -75,7 +75,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             if (ModelState.IsValid)
@@ -92,7 +92,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             if (id == null)
@@ -117,7 +117,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             if (id != comment.Id)
@@ -153,7 +153,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             var comment = await _context.Comment.FindAsync(id);

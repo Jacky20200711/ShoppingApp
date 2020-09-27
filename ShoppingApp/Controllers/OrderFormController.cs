@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using CartsCore.Controllers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -84,10 +86,10 @@ namespace ShoppingApp.Controllers
             {
                 var currentCart = CartOperator.GetCurrentCart();
 
-                int OrderId = 1;
-
-                using (var transaction = _context.Database.BeginTransaction())
+                try
                 {
+                    using var transaction = _context.Database.BeginTransaction();
+
                     // 儲存訂單
                     orderForm.CheckOut = "NO";
                     orderForm.CreateTime = DateTime.Now;
@@ -95,9 +97,6 @@ namespace ShoppingApp.Controllers
                     orderForm.TotalAmount = currentCart.TotalAmount;
                     _context.Add(orderForm);
                     await _context.SaveChangesAsync();
-
-                    // 紀錄訂單ID
-                    OrderId = orderForm.Id;
 
                     // 儲存訂單明細
                     var orderDetails = new List<OrderDetail>();
@@ -119,6 +118,11 @@ namespace ShoppingApp.Controllers
                     // 提交Transaction
                     transaction.Commit();
                 }
+                catch (Exception e)
+                {
+                    _logger.LogError($"將第{orderForm.Id}筆訂單存入資料庫時發生錯誤...{e}");
+                    return View("~/Views/Shared/DataBaseBusy.cshtml");
+                }
 
                 // 存取 WebApi 的網域
                 var builder = new ConfigurationBuilder()
@@ -129,8 +133,18 @@ namespace ShoppingApp.Controllers
 
                 string MyApiDomain = config["AppSetting:MyApiDomain"];
 
-                // 將購物車傳送給 WebApi
-                return Redirect($"{MyApiDomain}/Home/SendToOpay/?OrderId={OrderId}&JsonString={JsonConvert.SerializeObject(currentCart)}");
+                // 產生此筆交易的KEY
+                string OrderKey = Path.GetRandomFileName() + Path.GetRandomFileName();
+
+                byte[] keyBytes = Encoding.UTF8.GetBytes(OrderKey);
+
+                OrderKey = Convert.ToBase64String(keyBytes);
+
+                // 暫存此筆交易的KEY
+                HttpContext.Session.SetString(OrderKey, "1");
+
+                // 傳送訂單ID、此筆交易的KEY、購物車給 WebApi
+                return Redirect($"{MyApiDomain}/Home/SendToOpay/?OrderId={orderForm.Id}&OrderKey={OrderKey}&JsonString={JsonConvert.SerializeObject(currentCart)}");
             }
             else
             {
@@ -143,7 +157,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             if (id == null)
@@ -168,7 +182,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             if (id != orderForm.Id)
@@ -204,7 +218,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             using (var transaction = _context.Database.BeginTransaction())
@@ -232,13 +246,25 @@ namespace ShoppingApp.Controllers
 
         [Authorize]
 
-        public IActionResult CheckPayResult(bool PaySuccess=false, int OrderId=0, string Exception="")
+        public IActionResult CheckPayResult(bool PaySuccess=false, int OrderId=0, string Exception="", string OrderKey="")
         {
-            if(PaySuccess)
+            // 查看此筆交易的 Key 是否有效
+            if (string.IsNullOrEmpty(HttpContext.Session.GetString(OrderKey)))
             {
-                _context.OrderForm.Where(o => o.Id == OrderId).FirstOrDefault().CheckOut = "Yes";
+                return View("PayFail");
+            }
+            else
+            {
+                // 若有效，則清除此筆交易的 KEY，確保每個交易的 KEY 都只會被檢查一次
+                HttpContext.Session.Remove(OrderKey);
+            }
+
+            if (PaySuccess)
+            {
+                _context.OrderForm.Where(o => o.Id == OrderId).FirstOrDefault().CheckOut = "YES";
                 _context.SaveChanges();
                 _logger.LogInformation($"第{OrderId}號訂單付款成功!");
+                CartOperator.ClearCart();
                 return View("PaySuccess");
             }
             else

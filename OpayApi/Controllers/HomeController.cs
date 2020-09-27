@@ -13,7 +13,12 @@ namespace OpayApi.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult SendToOpay(int OrderId, string JsonString)
+        public ActionResult Index()
+        {
+            return Content("<h2>404 not found</h2>");
+        }
+
+        public ActionResult SendToOpay(int OrderId=0, string OrderKey="", string JsonString="")
         {
             // 將 JsonString 轉回購物車
             Cart currentCart = JsonConvert.DeserializeObject<Cart>(JsonString);
@@ -35,8 +40,8 @@ namespace OpayApi.Controllers
 
                     /* 基本參數 */
                     string hostname = Request.Url.Authority;
-                    oPayment.Send.ReturnURL = $"{MyApiDomain}/Home/GetPayResult/?OrderId={OrderId}";
-                    oPayment.Send.OrderResultURL = $"{MyApiDomain}/Home/GetPayResult/?OrderId={OrderId}";
+                    oPayment.Send.ReturnURL = $"{MyApiDomain}/Home/GetPayResult/?OrderId={OrderId}&OrderKey={OrderKey}";
+                    oPayment.Send.OrderResultURL = $"{MyApiDomain}/Home/GetPayResult/?OrderId={OrderId}&OrderKey={OrderKey}";
                     oPayment.Send.MerchantTradeNo = DateTime.Now.ToString("yyyyMMddHHmmss");
                     oPayment.Send.MerchantTradeDate = DateTime.Now;
                     oPayment.Send.TotalAmount = currentCart.TotalAmount;
@@ -76,7 +81,7 @@ namespace OpayApi.Controllers
             return Content(szHtml);
         }
 
-        public ActionResult GetPayResult(AllInOne oPayment, int OrderId)
+        public ActionResult GetPayResult(AllInOne oPayment, int OrderId=0, string OrderKey="")
         {
             string MyAppDomain = ConfigurationManager.AppSettings["MyAppDomain"];
 
@@ -91,7 +96,7 @@ namespace OpayApi.Controllers
 
                 if (enErrors.Count() == 0)
                 {
-                    return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?OrderId={OrderId}&PaySuccess=true");
+                    return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?OrderId={OrderId}&OrderKey={OrderKey}&PaySuccess=true");
                 }
                 else
                 {
@@ -100,7 +105,7 @@ namespace OpayApi.Controllers
             }
             catch (Exception e)
             {
-                return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?OrderId={OrderId}&Exception={e}");
+                return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?OrderId={OrderId}&PaySuccess=false&Exception={e}");
             }
         }
     }

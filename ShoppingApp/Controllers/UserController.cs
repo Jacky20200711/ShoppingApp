@@ -31,7 +31,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             return View(await _usertext.Users.ToPagedListAsync(page, pageSize));
@@ -41,7 +41,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             var user = _usertext.Users.Where(u => u.Id == id).FirstOrDefault();
@@ -49,7 +49,7 @@ namespace ShoppingApp.Controllers
             // 令管理員不能刪除自己
             if (user.Email == Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             _usertext.Users.Remove(user);
@@ -62,7 +62,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             var user = _usertext.Users.Where(u => u.Id == id).FirstOrDefault();
@@ -75,7 +75,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             var user = _usertext.Users.Where(u => u.Id == identityUser.Id).FirstOrDefault();
@@ -83,7 +83,7 @@ namespace ShoppingApp.Controllers
             // 令管理員不能編輯自己
             if (user.Email == Admin.name)
             {
-                return Content("Access denied.");
+                return Content("<h2>404 not found</h2>");
             }
 
             PasswordHasher<IdentityUser> PwHasher = new PasswordHasher<IdentityUser>();
