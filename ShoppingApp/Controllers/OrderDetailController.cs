@@ -22,7 +22,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             // 將同樣訂單的資料放一起
@@ -34,7 +34,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             if (id == null)
@@ -57,7 +57,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             return View();
@@ -72,7 +72,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             if (ModelState.IsValid)
@@ -89,7 +89,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             if (id == null)
@@ -114,7 +114,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             if (id != orderDetail.Id)
@@ -150,7 +150,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             if (id == null)
@@ -175,7 +175,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             var orderDetail = await _context.OrderDetail.FindAsync(id);

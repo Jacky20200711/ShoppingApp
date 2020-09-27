@@ -15,7 +15,7 @@ namespace OpayApi.Controllers
     {
         public ActionResult Index()
         {
-            return Content("<h2>404 not found</h2>");
+            return Content("404 not found");
         }
 
         public ActionResult SendToOpay(int OrderId=0, string OrderKey="", string JsonString="")

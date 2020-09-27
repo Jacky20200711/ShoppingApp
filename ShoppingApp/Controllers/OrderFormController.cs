@@ -157,7 +157,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             if (id == null)
@@ -182,7 +182,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             if (id != orderForm.Id)
@@ -218,7 +218,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             using (var transaction = _context.Database.BeginTransaction())
@@ -261,7 +261,7 @@ namespace ShoppingApp.Controllers
 
             if (PaySuccess)
             {
-                _context.OrderForm.Where(o => o.Id == OrderId).FirstOrDefault().CheckOut = "YES";
+                _context.OrderForm.FirstOrDefault(o => o.Id == OrderId).CheckOut = "YES";
                 _context.SaveChanges();
                 _logger.LogInformation($"第{OrderId}號訂單付款成功!");
                 CartOperator.ClearCart();

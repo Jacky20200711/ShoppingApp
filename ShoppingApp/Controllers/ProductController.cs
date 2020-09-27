@@ -34,7 +34,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             // 按照產品的日期排序(新->舊)
@@ -116,7 +116,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             if (id == null)
@@ -141,7 +141,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             if (id != product.Id)
@@ -177,7 +177,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             var product = await _context.Product.FindAsync(id);
@@ -218,7 +218,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
             // 刪除所有產品

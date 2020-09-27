@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using ShoppingApp.Data;
 
 namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
 {
@@ -18,15 +19,19 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _context;
 
+        // 使用 DI 注入資料庫
         public EmailModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _context = context;
         }
 
         public string Username { get; set; }
@@ -91,55 +96,23 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
             var email = await _userManager.GetEmailAsync(user);
             if (Input.NewEmail != email)
             {
-                var userId = await _userManager.GetUserIdAsync(user);
-                var code = await _userManager.GenerateChangeEmailTokenAsync(user, Input.NewEmail);
-                var callbackUrl = Url.Page(
-                    "/Account/ConfirmEmailChange",
-                    pageHandler: null,
-                    values: new { userId = userId, email = Input.NewEmail, code = code },
-                    protocol: Request.Scheme);
-                await _emailSender.SendEmailAsync(
-                    Input.NewEmail,
-                    "確認您的郵件",
-                    $"<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>點擊此處來驗證帳戶</a>.");
+                var GetUserByEmail = _context.Users.FirstOrDefault(u => u.Email == Input.NewEmail);
 
-                StatusMessage = "請到新的郵件信箱查看驗證信";
+                // 若此信箱沒有被註冊過，則允許修改信箱
+                if(GetUserByEmail == null)
+                {
+                    string oldEmail = email.ToString();
+                    return RedirectToRoute(new { controller = "User", action = "ModifyEmail", oldEmail, Input.NewEmail });
+                }
+                else
+                {
+                    StatusMessage = "郵件變更失敗，此郵件已被註冊!";
+                }
+
                 return RedirectToPage();
             }
 
             StatusMessage = "您的郵件和之前的一樣!";
-            return RedirectToPage();
-        }
-
-        public async Task<IActionResult> OnPostSendVerificationEmailAsync()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                await LoadAsync(user);
-                return Page();
-            }
-
-            var userId = await _userManager.GetUserIdAsync(user);
-            var email = await _userManager.GetEmailAsync(user);
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-            var callbackUrl = Url.Page(
-                "/Account/ConfirmEmail",
-                pageHandler: null,
-                values: new { area = "Identity", userId = userId, code = code },
-                protocol: Request.Scheme);
-            await _emailSender.SendEmailAsync(
-                email,
-                "確認您的郵件",
-                $"<a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>點擊此處來驗證帳戶</a>.");
-
-            StatusMessage = "請到新的郵件信箱查看驗證信";
             return RedirectToPage();
         }
     }

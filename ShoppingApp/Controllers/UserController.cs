@@ -3,12 +3,17 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using ShoppingApp.Data;
 using ShoppingApp.Models;
 using X.PagedList;
@@ -20,40 +25,48 @@ namespace ShoppingApp.Controllers
         //每個分頁最多顯示10筆
         private readonly int pageSize = 10;
 
-        private readonly ApplicationDbContext _usertext;
+        private readonly ApplicationDbContext _context;
+        private readonly ILogger _logger;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public UserController(ApplicationDbContext usertext)
+        // 注入修改會員的工具
+        public UserController(
+                ApplicationDbContext usertext, 
+                ILogger<OrderFormController> logger, 
+                UserManager<IdentityUser> userManager)
         {
-            _usertext = usertext;
+            _context = usertext;
+            _logger = logger;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index(int page = 1)
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
-            return View(await _usertext.Users.ToPagedListAsync(page, pageSize));
+            return View(await _context.Users.ToPagedListAsync(page, pageSize));
         }
 
         public ActionResult Delete(string id)
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
-            var user = _usertext.Users.Where(u => u.Id == id).FirstOrDefault();
+            var user = _context.Users.FirstOrDefault(u => u.Id == id);
 
             // 令管理員不能刪除自己
             if (user.Email == Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
-            _usertext.Users.Remove(user);
-            _usertext.SaveChanges();
+            _context.Users.Remove(user);
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
@@ -62,36 +75,33 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content("404 not found");
             }
 
-            var user = _usertext.Users.Where(u => u.Id == id).FirstOrDefault();
+            var user = _context.Users.FirstOrDefault(u => u.Id == id);
 
             return View(user);
         }
 
         [HttpPost]
-        public ActionResult Edit(IdentityUser identityUser)
+        public async Task<IActionResult> Edit(IdentityUser identityUser)
         {
             if (User.Identity.Name != Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                _logger.LogWarning($"[{User.Identity.Name}]企圖修改其他會員的密碼!");
+                return Content("404 not found");
             }
 
-            var user = _usertext.Users.Where(u => u.Id == identityUser.Id).FirstOrDefault();
+            var user = _context.Users.FirstOrDefault(u => u.Email == identityUser.Email);
 
-            // 令管理員不能編輯自己
             if (user.Email == Admin.name)
             {
-                return Content("<h2>404 not found</h2>");
+                return Content($"管理員[{User.Identity.Name}]不能編輯自己的密碼!");
             }
 
-            PasswordHasher<IdentityUser> PwHasher = new PasswordHasher<IdentityUser>();
-
-            user.Email = identityUser.Email;
-            user.PasswordHash = PwHasher.HashPassword(user, identityUser.PasswordHash);
-
-            _usertext.SaveChanges();
+            // 若沒先 RemovePassword 則 LOG 會出現內建的 Warning
+            await _userManager.RemovePasswordAsync(user);
+            await _userManager.AddPasswordAsync(user, identityUser.PasswordHash);
 
             return RedirectToAction("Index");
         }
@@ -103,7 +113,7 @@ namespace ShoppingApp.Controllers
             // 取出 POST 的資料並轉成字串，避免直接取用使得 LINQ 噴出錯誤
             string userEmail = post["email"];
 
-            var user = _usertext.Users.FirstOrDefault(u => u.Email == userEmail);
+            var user = _context.Users.FirstOrDefault(u => u.Email == userEmail);
 
             if(user != null)
             {
@@ -120,11 +130,11 @@ namespace ShoppingApp.Controllers
 
                 // 取得隨機字串
                 string newPassword = Path.GetRandomFileName();
-
+                
                 // 修改該使用者的密碼
                 PasswordHasher<IdentityUser> PwHasher = new PasswordHasher<IdentityUser>();
                 user.PasswordHash = PwHasher.HashPassword(user, newPassword);
-                _usertext.SaveChanges();
+                _context.SaveChanges();
 
                 // 寄信給該使用者
                 MailMessage message = new MailMessage
@@ -152,6 +162,34 @@ namespace ShoppingApp.Controllers
             }
 
             return View("~/Areas/Identity/Pages/Account/ForgotPasswordConfirmation.cshtml");
+        }
+
+        [Authorize]
+        public async Task<IActionResult> ModifyEmail(string oldEmail, string newEmail)
+        {
+            try
+            {
+                // 用新的使用者來取代舊的使用者(避免未知的Cookie問題)
+                var oldUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == oldEmail);
+                var newUser = new IdentityUser()
+                {
+                    Email = newEmail,
+                    PasswordHash = oldUser.PasswordHash
+                };
+
+                await _context.Users.AddAsync(newUser);
+                _context.Users.Remove(oldUser);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation($"使用者{oldEmail}的郵件變更為{newEmail}!");
+                ViewData["UpdateEmailSuccess"] = $"您的郵件已經變更成{newEmail}，請重新登入。";
+                return View("UpdateEmailSuccess");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"使用者{oldEmail}的郵件變更失敗...{e}");
+                return View("~/Views/Shared/DataBaseBusy.cshtml");
+            }
         }
     }
 }
