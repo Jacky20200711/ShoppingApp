@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using ShoppingApp.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
 {
@@ -20,6 +21,7 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IEmailSender _emailSender;
+        private readonly ILogger _logger;
         private readonly ApplicationDbContext _context;
 
         // 使用 DI 注入資料庫
@@ -27,11 +29,13 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             IEmailSender emailSender,
+            ILogger<EmailModel> logger,
             ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _logger = logger;
             _context = context;
         }
 
@@ -102,15 +106,11 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
                 // 若此信箱沒有被註冊過，則允許修改信箱
                 if(GetUserByEmail == null)
                 {
-                    string oldEmail = email.ToString();
-
-                    var oldUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == oldEmail);
-
-                    oldUser.Email = Input.NewEmail;
-                    oldUser.UserName = Input.NewEmail;
-
-                    await _context.SaveChangesAsync();
-                    StatusMessage = $"您的郵件已經變更成[{Input.NewEmail}]，請重新登入以利操作。";
+                    user.UserName = Input.NewEmail;
+                    user.Email = Input.NewEmail;
+                    await _userManager.UpdateAsync(user);
+                    _logger.LogInformation($"[{email}]的郵件已經變更為<{Input.NewEmail}>");
+                    StatusMessage = $"您的郵件已經變更成<{Input.NewEmail}>，下次登入時請改用新的郵件。";
                 }
                 else
                 {
