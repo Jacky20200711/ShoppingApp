@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using ShoppingApp.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
 {
@@ -102,7 +103,14 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
                 if(GetUserByEmail == null)
                 {
                     string oldEmail = email.ToString();
-                    return RedirectToRoute(new { controller = "User", action = "ModifyEmail", oldEmail, Input.NewEmail });
+
+                    var oldUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == oldEmail);
+
+                    oldUser.Email = Input.NewEmail;
+                    oldUser.UserName = Input.NewEmail;
+
+                    await _context.SaveChangesAsync();
+                    StatusMessage = $"您的郵件已經變更成[{Input.NewEmail}]，請重新登入以利操作。";
                 }
                 else
                 {

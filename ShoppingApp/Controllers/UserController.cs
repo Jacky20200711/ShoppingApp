@@ -107,7 +107,7 @@ namespace ShoppingApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult SendVerifyEmail(IFormCollection post)
+        public async Task<IActionResult> SendVerifyEmail(IFormCollection post)
         {
 
             // 取出 POST 的資料並轉成字串，避免直接取用使得 LINQ 噴出錯誤
@@ -131,10 +131,9 @@ namespace ShoppingApp.Controllers
                 // 取得隨機字串
                 string newPassword = Path.GetRandomFileName();
                 
-                // 修改該使用者的密碼
-                PasswordHasher<IdentityUser> PwHasher = new PasswordHasher<IdentityUser>();
-                user.PasswordHash = PwHasher.HashPassword(user, newPassword);
-                _context.SaveChanges();
+                // 修改使用者的密碼
+                await _userManager.RemovePasswordAsync(user);
+                await _userManager.AddPasswordAsync(user, newPassword);
 
                 // 寄信給該使用者
                 MailMessage message = new MailMessage
@@ -162,34 +161,6 @@ namespace ShoppingApp.Controllers
             }
 
             return View("~/Areas/Identity/Pages/Account/ForgotPasswordConfirmation.cshtml");
-        }
-
-        [Authorize]
-        public async Task<IActionResult> ModifyEmail(string oldEmail, string newEmail)
-        {
-            try
-            {
-                // 用新的使用者來取代舊的使用者(避免未知的Cookie問題)
-                var oldUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == oldEmail);
-                var newUser = new IdentityUser()
-                {
-                    Email = newEmail,
-                    PasswordHash = oldUser.PasswordHash
-                };
-
-                await _context.Users.AddAsync(newUser);
-                _context.Users.Remove(oldUser);
-                await _context.SaveChangesAsync();
-
-                _logger.LogInformation($"使用者{oldEmail}的郵件變更為{newEmail}!");
-                ViewData["UpdateEmailSuccess"] = $"您的郵件已經變更成{newEmail}，請重新登入。";
-                return View("UpdateEmailSuccess");
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"使用者{oldEmail}的郵件變更失敗...{e}");
-                return View("~/Views/Shared/DataBaseBusy.cshtml");
-            }
         }
     }
 }
