@@ -65,11 +65,14 @@ namespace ShoppingApp
                 options.CheckConsentNeeded = context => false;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
+
+            services.AddDetection();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseDetection();
             app.UseDeveloperExceptionPage();
             app.UseDatabaseErrorPage();
             app.UseHttpsRedirection();
