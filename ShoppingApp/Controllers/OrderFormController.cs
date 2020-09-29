@@ -16,6 +16,8 @@ using ShoppingApp.Data;
 using ShoppingApp.Models;
 using SQLitePCL;
 using X.PagedList;
+using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace ShoppingApp.Controllers
 {
@@ -27,10 +29,16 @@ namespace ShoppingApp.Controllers
         // 使用 DI 注入 ApplicationDbContext & LOG
         private readonly ApplicationDbContext _context;
         private readonly ILogger _logger;
-        public OrderFormController(ApplicationDbContext context, ILogger<OrderFormController> logger)
+        private readonly UserManager<IdentityUser> _userManager;
+
+        public OrderFormController(
+                ApplicationDbContext context, 
+                ILogger<OrderFormController> logger,
+                UserManager<IdentityUser> userManager)
         {
             _context = context;
             _logger = logger;
+            _userManager = userManager;
         }
 
         // GET: OrderForm
@@ -39,8 +47,9 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-                // 返回該USER的訂單，並按照日期排序(新->舊)
-                return View(await _context.OrderForm.Where(o => o.SenderEmail == User.Identity.Name).OrderByDescending(o => o.CreateTime).ToPagedListAsync(page, pageSize));
+
+                // 返回該 UserId 所下的訂單，並按照日期排序(新->舊)
+                return View(await _context.OrderForm.Where(o => o.SenderId == User.FindFirstValue(ClaimTypes.NameIdentifier)).OrderByDescending(o => o.CreateTime).ToPagedListAsync(page, pageSize));
             }
             else
             {
@@ -80,7 +89,7 @@ namespace ShoppingApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
+        public async Task<IActionResult> Create([Bind("Id,SenderId,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
         {
             if (ModelState.IsValid)
             {
@@ -91,6 +100,7 @@ namespace ShoppingApp.Controllers
                     using var transaction = _context.Database.BeginTransaction();
 
                     // 儲存訂單
+                    orderForm.SenderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                     orderForm.CheckOut = "NO";
                     orderForm.CreateTime = DateTime.Now;
                     orderForm.SenderEmail = User.Identity.Name;
@@ -178,7 +188,7 @@ namespace ShoppingApp.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,SenderId,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
         {
             if (User.Identity.Name != Admin.name)
             {
