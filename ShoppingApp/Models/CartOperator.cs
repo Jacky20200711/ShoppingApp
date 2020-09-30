@@ -51,7 +51,8 @@ namespace ShoppingApp.Models
                     Id = product.Id,
                     Name = product.Name,
                     Price = product.Price,
-                    Quantity = 1
+                    Quantity = 1,
+                    DefaultImageURL = product.DefaultImageURL
                 });
             }
 

@@ -98,11 +98,13 @@ namespace ShoppingApp.Areas.Identity.Pages.Account
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ViewData["LoginFail"] = "登入失敗，請檢查輸入的內容!";
                     return Page();
                 }
             }
 
             // If we got this far, something failed, redisplay form
+            ViewData["LoginFail"] = "登入失敗，請檢查輸入的內容!";
             return Page();
         }
     }

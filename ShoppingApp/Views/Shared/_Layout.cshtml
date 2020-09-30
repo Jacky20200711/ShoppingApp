@@ -28,49 +28,45 @@
 
     @* 購物車 *@
     <script type="text/javascript">
-    //網頁載入完成時執行之function
-    $(document).ready(function () {
-        console.log("ready!");
-    });
 
-    //放入該ID的產品到購物車
-    function AddToCart(productId) {
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Action("AddToCart", "Cart")',
-            data: { id: productId }
-        })
-        .done(function (msg) {
-            //指令執行成功則重載購物車頁面
-            $('#Cart').html(msg);
-        });
-    }
+        //放入該ID的產品到購物車
+        function AddToCart(productId) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddToCart", "Cart")',
+                data: { id: productId }
+            })
+            .done(function (msg) {
+                //指令執行成功則重載購物車頁面
+                $('#Cart').html(msg);
+            });
+        }
 
-    //搬移該ID的產品出購物車
-    function RemoveFromCart(productId) {
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Action("RemoveFromCart", "Cart")',
-            data: { id: productId }
-        })
-        .done(function (msg) {
-            //指令執行成功則重載購物車頁面
-            $('#Cart').html(msg);
-        });
-    }
+        //搬移該ID的產品出購物車
+        function RemoveFromCart(productId) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("RemoveFromCart", "Cart")',
+                data: { id: productId }
+            })
+            .done(function (msg) {
+                //指令執行成功則重載購物車頁面
+                $('#Cart').html(msg);
+            });
+        }
 
-    //清空購物車內所有商品
-    function ClearCart() {
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Action("ClearCart", "Cart")',
-            data: {}
-        })
-        .done(function (msg) {
-            //指令執行成功則重載購物車頁面
-            $('#Cart').html(msg);
-        });
-    }
+        //清空購物車內所有商品
+        function ClearCart() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("ClearCart", "Cart")',
+                data: {}
+            })
+            .done(function (msg) {
+                //指令執行成功則重載購物車頁面
+                $('#Cart').html(msg);
+            });
+        }
     </script>
 </head>
 <body>

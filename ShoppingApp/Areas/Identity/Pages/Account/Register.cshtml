@@ -11,6 +11,7 @@
         <h4>歡迎註冊(^___^)</h4>
         <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <hr />
+            <div class="text-danger">@ViewData["RegistFail"]</div>
             <div class="form-group">
                 <label asp-for="Input.Email">請輸入您的郵件</label>
                 <input asp-for="Input.Email" class="form-control" />
@@ -40,7 +41,7 @@
                 {
                     <div>
                         <p>
-                            資料錯誤，請重新再試!
+                            資料錯誤，外部登入暫時無法使用!
                         </p>
                     </div>
                 }

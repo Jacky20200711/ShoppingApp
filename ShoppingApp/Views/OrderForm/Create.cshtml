@@ -10,19 +10,28 @@
     }
 }
 
+<style>
+    .ProductImage:hover {
+        transform: scale(3);
+    }
+</style>
+
 <h4>訂單明細</h4>
 <hr />
 <table class="table">
     <thead>
         <tr>
             <th>
-                產品名稱
+                產品
             </th>
             <th>
-                產品單價
+                單價
             </th>
             <th>
-                購買數量
+                數量
+            </th>
+            <th>
+                圖片
             </th>
             <th></th>
         </tr>
@@ -39,6 +48,12 @@
                 </td>
                 <td>
                     @cartItem.Quantity
+                </td>
+                <td>
+                    <img src="@cartItem.DefaultImageURL" class="ProductImage" style="width:30px; height:30px; cursor:pointer;" />
+                </td>
+                <td>
+                    <input type="button" value="移除" onclick="RemoveFromCart('@cartItem.Id');"/>
                 </td>
             </tr>
         }
@@ -78,7 +93,7 @@
                 <span asp-validation-for="ReceiverAddress" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="送出訂單" class="btn btn-primary" onclick = "return isMember();"/>
+                <input type="submit" value="送出訂單" class="btn btn-primary" onclick="return isMember();" />
             </div>
         </form>
     </div>

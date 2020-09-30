@@ -13,6 +13,8 @@ namespace ShoppingApp.Models
 
         public int Quantity { get; set; }
 
+        public string DefaultImageURL { get; set; }
+
         public int Amount
         {
             get
