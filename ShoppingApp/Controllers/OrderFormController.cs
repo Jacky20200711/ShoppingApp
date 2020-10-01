@@ -47,7 +47,6 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != Admin.name)
             {
-
                 // 返回該 UserId 所下的訂單，並按照日期排序(新->舊)
                 return View(await _context.OrderForm.Where(o => o.SenderId == User.FindFirstValue(ClaimTypes.NameIdentifier)).OrderByDescending(o => o.CreateTime).ToPagedListAsync(page, pageSize));
             }

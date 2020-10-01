@@ -68,6 +68,13 @@ namespace ShoppingApp
 
             services.AddDetection();
             services.AddMvc().AddRazorRuntimeCompilation();
+
+            services.AddDistributedMemoryCache().AddSession(options =>
+            {
+                // Session 只保持 10 分鐘(之後購物車或其他資訊會被清空)
+                options.IdleTimeout = TimeSpan.FromMinutes(10); 
+                options.Cookie.HttpOnly = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
