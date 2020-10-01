@@ -12,12 +12,12 @@
     }
 </style>
 
-<div class="dropdown">
+<div class="dropdown" id="CartDiv" >
     <span id="CartDropDown" class="dropdown-toggle my-class" data-toggle="dropdown">
         @String.Format("購物車({0}$)", currentCart.TotalAmount)
         <img style="width:20px; height:20px;" src="https://i.imgur.com/Ua3yIRv.jpg" alt="購物車圖片">
     </span>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="CartDropDown">
+    <ul class="dropdown-menu" role="menu" aria-labelledby="CartDropDown" style="height:300px; overflow: scroll; overflow-y: auto;">
         @if (currentCart.Count > 0)
         {
             foreach (var cartitem in currentCart)

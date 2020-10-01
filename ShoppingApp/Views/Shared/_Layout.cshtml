@@ -102,13 +102,13 @@
                         }
                         @if (!isMobile)
                         {
-                            <li id="Cart">@await Html.PartialAsync("_CartPartial")</li>
+                            <li id="Cart" onclick="ImageHint()">@await Html.PartialAsync("_CartPartial")</li>
                         }
                     </ul>
                 </div>
                 @if (isMobile)
                 {
-                    <div id="Cart">@await Html.PartialAsync("_CartPartial")</div>
+                    <div id="Cart" onclick="ImageHint()">@await Html.PartialAsync("_CartPartial")</div>
                 }
             </div>
         </nav>
@@ -130,3 +130,22 @@
     @RenderSection("Scripts", required: false)
 </body>
 </html>
+
+<script>
+    // 這段代碼要放在 Html.PartialAsync("_CartPartial") 之後才能抓到購物車
+    $(document).ready(function () {
+        if (window.location.pathname == "/OrderForm/Create") {
+            // 若是在訂單填寫的頁面，則應該改用訂單明細中的按鈕來進行購物車的操作
+            $('#CartDiv').css("pointer-events", "none");
+        }
+        else {
+            $('#CartDiv').css("pointer-events", "auto");
+        }
+    });
+
+    function ImageHint() {
+        if (window.location.pathname == "/OrderForm/Create") {
+            alert("將游標移到圖片會有放大效果!");
+        }
+    }
+</script>
