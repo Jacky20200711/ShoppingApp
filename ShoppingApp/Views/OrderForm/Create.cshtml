@@ -17,20 +17,19 @@
 </style>
 
 <h4>訂單明細</h4>
-<hr />
 <table class="table">
     <thead>
         <tr>
-            <th>
+            <th style="white-space: nowrap;">
                 產品
             </th>
-            <th>
+            <th style="white-space: nowrap;">
                 單價
             </th>
-            <th>
+            <th style="white-space: nowrap;">
                 數量
             </th>
-            <th>
+            <th style="white-space: nowrap;">
                 圖片
             </th>
             <th></th>
@@ -43,10 +42,10 @@
                 <td>
                     @cartItem.Name
                 </td>
-                <td>
+                <td style="white-space: nowrap;">
                     @cartItem.Price
                 </td>
-                <td>
+                <td style="white-space: nowrap;">
                     @cartItem.Quantity
                 </td>
                 <td>
@@ -61,13 +60,13 @@
         }
         @{
             <tr>
-                <td>
+                <td></td>
+                <td></td>
+                <td style="white-space: nowrap;">
+                    總計 : @currentCart.TotalAmount
                 </td>
-                <td>
-                </td>
-                <td>
-                    總計 : &nbsp; @currentCart.TotalAmount
-                </td>
+                <td></td>
+                <td></td>
             </tr>
         }
     </tbody>
