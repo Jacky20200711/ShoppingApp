@@ -224,6 +224,7 @@ namespace ShoppingApp.Controllers
             // 刪除所有產品
             _context.RemoveRange(_context.Product);
             _context.SaveChanges();
+            _context.Database.ExecuteSqlRaw("DBCC CHECKIDENT('Product', RESEED, 0)");
 
             // 從設定檔取得壁紙的網址
             List<string> ImageUrlList = new List<string>();
@@ -252,7 +253,7 @@ namespace ShoppingApp.Controllers
                 productList.Add(
                     new Product
                     {
-                        Name = "萌妹子壁紙" + (i+1).ToString("D2"),
+                        Name = "萌妹壁紙" + (i+1).ToString("D2"),
                         Description = "可愛的萌妹子壁紙",
                         Price = random.Next(100, 200),
                         PublishDate = DateTime.Now,

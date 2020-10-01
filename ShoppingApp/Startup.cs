@@ -71,8 +71,8 @@ namespace ShoppingApp
 
             services.AddDistributedMemoryCache().AddSession(options =>
             {
-                // Session 只保持 10 分鐘(之後購物車或其他資訊會被清空)
-                options.IdleTimeout = TimeSpan.FromMinutes(10); 
+                // Session 只保持 15 分鐘(之後購物車或其他資訊會被清空)
+                options.IdleTimeout = TimeSpan.FromMinutes(15); 
                 options.Cookie.HttpOnly = true;
             });
         }
