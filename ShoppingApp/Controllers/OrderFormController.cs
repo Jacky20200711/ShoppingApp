@@ -158,7 +158,8 @@ namespace ShoppingApp.Controllers
             }
             else
             {
-                return Content("訂單建立失敗，請查看您的填寫內容、或購物車是否為空。");
+                // 遇到不合法的訂單，或是 User 點選移除按鈕則刷新頁面
+                return View();
             }
         }
 

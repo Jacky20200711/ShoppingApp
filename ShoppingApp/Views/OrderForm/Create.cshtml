@@ -53,7 +53,9 @@
                     <img src="@cartItem.DefaultImageURL" class="ProductImage" style="width:30px; height:30px; cursor:pointer;" />
                 </td>
                 <td>
-                    <input type="button" value="移除" onclick="RemoveFromCart('@cartItem.Id');"/>
+                    <form method="post">
+                        <input type="submit" value="移除" onclick="RemoveFromCart('@cartItem.Id');"/>
+                    </form>
                 </td>
             </tr>
         }

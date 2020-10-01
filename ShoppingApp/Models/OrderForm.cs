@@ -9,17 +9,17 @@ namespace ShoppingApp.Models
 
         public string SenderId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "此欄位不能為空")]
         [Display(Name = "收貨人姓名")]
         [StringLength(30, ErrorMessage = "輸入長度為2~30字", MinimumLength = 2)]
         public string ReceiverName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "此欄位不能為空")]
         [Display(Name = "收貨人電話")]
         [StringLength(15, ErrorMessage = "輸入長度為8~15字", MinimumLength = 8)]
         public string ReceiverPhone { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "此欄位不能為空")]
         [Display(Name = "收貨人住址")]
         [StringLength(60, ErrorMessage = "輸入長度為8~60字", MinimumLength = 8)]
         public string ReceiverAddress { get; set; }
