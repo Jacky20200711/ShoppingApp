@@ -90,7 +90,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,SenderId,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && orderForm.TotalAmount > 0)
             {
                 var currentCart = CartOperator.GetCurrentCart();
 
