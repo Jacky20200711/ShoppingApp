@@ -58,6 +58,7 @@ namespace ShoppingApp
 
                 options.ClientId = googleAuthNSection["ClientId"];
                 options.ClientSecret = googleAuthNSection["ClientSecret"];
+                options.CorrelationCookie.SameSite = SameSiteMode.Unspecified;
             });
 
             // 這段代碼和 AddGoogle 有關，若要修改則必須確保 AddGoogle 運作正常
