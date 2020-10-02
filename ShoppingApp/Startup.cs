@@ -26,8 +26,10 @@ namespace ShoppingApp
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
             services.AddControllersWithViews();
             services.AddRazorPages();
 
@@ -57,23 +59,26 @@ namespace ShoppingApp
                 options.ClientId = googleAuthNSection["ClientId"];
                 options.ClientSecret = googleAuthNSection["ClientSecret"];
             });
-
-            services.AddSession();
+            
             services.AddHttpContextAccessor();
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                options.CheckConsentNeeded = context => false;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+
+           
 
             services.AddDetection();
             services.AddMvc().AddRazorRuntimeCompilation();
 
+            services.AddSession();
             services.AddDistributedMemoryCache().AddSession(options =>
             {
-                // Session 只保持 15 分鐘(之後購物車或其他資訊會被清空)
-                options.IdleTimeout = TimeSpan.FromMinutes(15); 
-                options.Cookie.HttpOnly = true;
+                options.IdleTimeout = TimeSpan.FromMinutes(15);
+            });
+
+
+            // 這段代碼和 AddGoogle 有關，若要修改則必須確保 AddGoogle 運作正常
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.CheckConsentNeeded = context => false;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
             });
         }
 
@@ -83,13 +88,11 @@ namespace ShoppingApp
             app.UseDetection();
             app.UseDeveloperExceptionPage();
             app.UseDatabaseErrorPage();
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseSession();
-            CartOperator.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -97,6 +100,8 @@ namespace ShoppingApp
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+
+            CartOperator.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
         }
     }
 }

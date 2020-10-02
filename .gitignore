@@ -3,3 +3,7 @@ release/
 .vs/
 obj/
 bin/
+ShoppingApp/Properties/PublishProfiles/FolderProfile.pubxml.user
+OpayApi/Properties/PublishProfiles/FolderProfile.pubxml.user
+OpayApi/App_Data/_allpay/2020092709.log
+OpayApi/App_Data/_allpay/2020092708.log

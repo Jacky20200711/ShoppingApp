@@ -90,10 +90,10 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,SenderId,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
         {
-            if (ModelState.IsValid && orderForm.TotalAmount > 0)
-            {
-                var currentCart = CartOperator.GetCurrentCart();
+            var currentCart = CartOperator.GetCurrentCart();
 
+            if (ModelState.IsValid && currentCart.TotalAmount > 0)
+            {
                 try
                 {
                     using var transaction = _context.Database.BeginTransaction();
@@ -153,6 +153,7 @@ namespace ShoppingApp.Controllers
                 HttpContext.Session.SetString(OrderKey, "1");
 
                 // 傳送訂單ID、此筆交易的KEY、購物車給 WebApi
+                _logger.LogInformation($"第{orderForm.Id}號訂單的 KEY={OrderKey}");
                 return Redirect($"{MyApiDomain}/Home/SendToOpay/?OrderId={orderForm.Id}&OrderKey={OrderKey}&JsonString={JsonConvert.SerializeObject(currentCart)}");
             }
             else
@@ -261,6 +262,8 @@ namespace ShoppingApp.Controllers
             // 查看此筆交易的 Key 是否有效
             if (string.IsNullOrEmpty(HttpContext.Session.GetString(OrderKey)))
             {
+                _logger.LogError($"第{OrderId}號訂單返回的 KEY={OrderKey}");
+                _logger.LogError($"第{OrderId}號訂單返回後的 Session[KEY]={HttpContext.Session.GetString(OrderKey)}");
                 return View("PayFail");
             }
             else
