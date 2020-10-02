@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -17,6 +18,12 @@ namespace OpayApi.Controllers
         {
             return Content("404 not found");
         }
+
+        //public ActionResult DebugReloginProblem()
+        //{
+        //    string MyAppDomain = ConfigurationManager.AppSettings["MyAppDomain"];
+        //    return Redirect($"http://shoppingapp.hopto.org");
+        //}
 
         public ActionResult SendToOpay(int OrderId=0, string OrderKey="", string JsonString="")
         {

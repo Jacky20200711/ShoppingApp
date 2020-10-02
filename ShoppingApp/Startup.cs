@@ -59,26 +59,23 @@ namespace ShoppingApp
                 options.ClientId = googleAuthNSection["ClientId"];
                 options.ClientSecret = googleAuthNSection["ClientSecret"];
             });
-            
-            services.AddHttpContextAccessor();
-
-           
-
-            services.AddDetection();
-            services.AddMvc().AddRazorRuntimeCompilation();
-
-            services.AddSession();
-            services.AddDistributedMemoryCache().AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(15);
-            });
-
 
             // 這段代碼和 AddGoogle 有關，若要修改則必須確保 AddGoogle 運作正常
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.CheckConsentNeeded = context => false;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
+            services.AddHttpContextAccessor();
+            services.AddDetection();
+            services.AddMvc().AddRazorRuntimeCompilation();
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(15);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
             });
         }
 
