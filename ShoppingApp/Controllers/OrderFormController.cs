@@ -158,7 +158,7 @@ namespace ShoppingApp.Controllers
             }
             else
             {
-                // 遇到不合法的訂單，或是 User 點選移除按鈕則刷新頁面
+                // 遇到不合法的訂單，直接導回當前頁面
                 return View();
             }
         }

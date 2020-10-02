@@ -52,8 +52,9 @@
                     <img src="@cartItem.DefaultImageURL" class="ProductImage" style="width:30px; height:30px; cursor:pointer;" />
                 </td>
                 <td>
-                    <form method="post">
-                        <input type="submit" value="移除" onclick="RemoveFromCart('@cartItem.Id');"/>
+                    <form method="post" asp-controller="Cart" asp-action="RefreshAfterRemove">
+                        <input type="hidden" name="id" value=@cartItem.Id />
+                        <input type="submit" value="移除" />
                     </form>
                 </td>
             </tr>

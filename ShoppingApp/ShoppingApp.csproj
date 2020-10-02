@@ -11,6 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Migrations\20201002064610_RefreshPage.cs" />
+    <Compile Remove="Data\Migrations\20201002064610_RefreshPage.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="C:\Users\user\.nuget\packages\nlog.config\4.7.4\contentFiles\any\any\NLog.config" />
   </ItemGroup>
 
