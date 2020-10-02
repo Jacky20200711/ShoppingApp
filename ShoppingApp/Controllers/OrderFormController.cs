@@ -18,6 +18,7 @@ using SQLitePCL;
 using X.PagedList;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace ShoppingApp.Controllers
 {
@@ -26,7 +27,7 @@ namespace ShoppingApp.Controllers
         // 每個分頁最多顯示10筆
         private readonly int pageSize = 10;
 
-        // 使用 DI 注入 ApplicationDbContext & LOG
+        // 使用 DI 注入會用到的工具
         private readonly ApplicationDbContext _context;
         private readonly ILogger _logger;
         private readonly UserManager<IdentityUser> _userManager;
@@ -143,18 +144,22 @@ namespace ShoppingApp.Controllers
                 string MyApiDomain = config["AppSetting:MyApiDomain"];
 
                 // 產生此筆交易的KEY
-                string OrderKey = Path.GetRandomFileName() + Path.GetRandomFileName();
+                string UnencryptedKey = Path.GetRandomFileName() + Path.GetRandomFileName();
 
-                byte[] keyBytes = Encoding.UTF8.GetBytes(OrderKey);
+                // 將 KEY 加密
+                byte[] keyBytes = Encoding.UTF8.GetBytes(UnencryptedKey + string.Join("", UnencryptedKey.Reverse()));
+                string EncryptedKey = Convert.ToBase64String(keyBytes);
+                using (var md5 = MD5.Create())
+                {
+                    var result = md5.ComputeHash(Encoding.ASCII.GetBytes(EncryptedKey));
+                    EncryptedKey = BitConverter.ToString(result);
+                }
 
-                OrderKey = Convert.ToBase64String(keyBytes);
-
-                // 暫存此筆交易的KEY
-                HttpContext.Session.SetString(OrderKey, "1");
+                HttpContext.Session.SetInt32(EncryptedKey, orderForm.Id);
 
                 // 傳送訂單ID、此筆交易的KEY、購物車給 WebApi
-                _logger.LogInformation($"第{orderForm.Id}號訂單的 KEY={OrderKey}");
-                return Redirect($"{MyApiDomain}/Home/SendToOpay/?OrderId={orderForm.Id}&OrderKey={OrderKey}&JsonString={JsonConvert.SerializeObject(currentCart)}");
+                _logger.LogInformation($"[{orderForm.SenderEmail}]建立了第{orderForm.Id}號訂單");
+                return Redirect($"{MyApiDomain}/Home/SendToOpay/?OrderKey={UnencryptedKey}&JsonString={JsonConvert.SerializeObject(currentCart)}");
             }
             else
             {
@@ -257,18 +262,22 @@ namespace ShoppingApp.Controllers
 
         [Authorize]
 
-        public IActionResult CheckPayResult(bool PaySuccess=false, int OrderId=0, string Exception="", string OrderKey="")
+        public IActionResult CheckPayResult(bool PaySuccess=false, string Exception="", string OrderKey="")
         {
+            int? GetOrderId = HttpContext.Session.GetInt32(OrderKey);
+            int OrderId = 0;
+
             // 查看此筆交易的 Key 是否有效
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString(OrderKey)))
+            if (GetOrderId == null)
             {
-                _logger.LogError($"第{OrderId}號訂單返回的 KEY={OrderKey}");
-                _logger.LogError($"第{OrderId}號訂單返回後的 Session[KEY]={HttpContext.Session.GetString(OrderKey)}");
-                return View("PayFail");
+                _logger.LogWarning($"[{User.Identity.Name}]提供的 KEY={OrderKey} 為無效");
+                TempData["PayResult"] = $"歡迎光臨 ^___^ 您必須在付款後才能查看付款結果歐~";
+                return View("PayResult");
             }
             else
             {
-                // 若有效，則清除此筆交易的 KEY，確保每個交易的 KEY 都只會被檢查一次
+                // 若有效，則取得此筆交易的ID & 清除此筆交易的 KEY
+                OrderId = (int)GetOrderId;
                 HttpContext.Session.Remove(OrderKey);
             }
 
@@ -276,14 +285,16 @@ namespace ShoppingApp.Controllers
             {
                 _context.OrderForm.FirstOrDefault(o => o.Id == OrderId).CheckOut = "YES";
                 _context.SaveChanges();
-                _logger.LogInformation($"第{OrderId}號訂單付款成功!");
+                _logger.LogInformation($"[{User.Identity.Name}]對第{OrderId}號訂單付款成功!");
+                TempData["PayResult"] = $"付款成功!~請點選[我的訂單]來查看付款結果。";
                 CartOperator.ClearCart();
-                return View("PaySuccess");
+                return View("PayResult");
             }
             else
             {
-                _logger.LogError($"第{OrderId}號訂單付款失敗..." + Exception);
-                return View("PayFail");
+                _logger.LogError($"[{User.Identity.Name}]對第{OrderId}號訂單付款失敗..." + Exception);
+                TempData["PayResult"] = $"付款失敗QQ...詳情請洽歐付寶的客服人員(02-2655-0115)";
+                return View("PayResult");
             }
         }
     }

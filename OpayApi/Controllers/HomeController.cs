@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -14,18 +16,7 @@ namespace OpayApi.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
-        {
-            return Content("404 not found");
-        }
-
-        //public ActionResult DebugReloginProblem()
-        //{
-        //    string MyAppDomain = ConfigurationManager.AppSettings["MyAppDomain"];
-        //    return Redirect($"http://shoppingapp.hopto.org");
-        //}
-
-        public ActionResult SendToOpay(int OrderId=0, string OrderKey="", string JsonString="")
+        public ActionResult SendToOpay(string OrderKey="", string JsonString="")
         {
             // 將 JsonString 轉回購物車
             Cart currentCart = JsonConvert.DeserializeObject<Cart>(JsonString);
@@ -47,8 +38,8 @@ namespace OpayApi.Controllers
 
                     /* 基本參數 */
                     string hostname = Request.Url.Authority;
-                    oPayment.Send.ReturnURL = $"{MyApiDomain}/Home/GetPayResult/?OrderId={OrderId}&OrderKey={OrderKey}";
-                    oPayment.Send.OrderResultURL = $"{MyApiDomain}/Home/GetPayResult/?OrderId={OrderId}&OrderKey={OrderKey}";
+                    oPayment.Send.ReturnURL = $"{MyApiDomain}/Home/GetPayResult/?OrderKey={OrderKey}";
+                    oPayment.Send.OrderResultURL = $"{MyApiDomain}/Home/GetPayResult/?OrderKey={OrderKey}";
                     oPayment.Send.MerchantTradeNo = DateTime.Now.ToString("yyyyMMddHHmmss");
                     oPayment.Send.MerchantTradeDate = DateTime.Now;
                     oPayment.Send.TotalAmount = currentCart.TotalAmount;
@@ -88,7 +79,7 @@ namespace OpayApi.Controllers
             return Content(szHtml);
         }
 
-        public ActionResult GetPayResult(AllInOne oPayment, int OrderId=0, string OrderKey="")
+        public ActionResult GetPayResult(AllInOne oPayment, string OrderKey="")
         {
             string MyAppDomain = ConfigurationManager.AppSettings["MyAppDomain"];
 
@@ -103,16 +94,25 @@ namespace OpayApi.Controllers
 
                 if (enErrors.Count() == 0)
                 {
-                    return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?OrderId={OrderId}&OrderKey={OrderKey}&PaySuccess=true");
+                    // 將 KEY 加密
+                    byte[] keyBytes = Encoding.UTF8.GetBytes(OrderKey + string.Join("", OrderKey.Reverse()));
+                    string EncryptedKey = Convert.ToBase64String(keyBytes);
+                    using (var md5 = MD5.Create())
+                    {
+                        var result = md5.ComputeHash(Encoding.ASCII.GetBytes(EncryptedKey));
+                        EncryptedKey = BitConverter.ToString(result);
+                    }
+
+                    return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?OrderKey={EncryptedKey}&PaySuccess=true");
                 }
                 else
                 {
-                    return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?OrderId={OrderId}&PaySuccess=false");
+                    return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?PaySuccess=false");
                 }
             }
             catch (Exception e)
             {
-                return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?OrderId={OrderId}&PaySuccess=false&Exception={e}");
+                return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?PaySuccess=false&Exception={e}");
             }
         }
     }

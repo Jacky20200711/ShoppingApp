@@ -10,6 +10,7 @@ namespace ShoppingApp.Controllers
 {
     public class OrderDetailController : Controller
     {
+        // 使用 DI 注入會用到的工具
         private readonly ApplicationDbContext _context;
 
         public OrderDetailController(ApplicationDbContext context)

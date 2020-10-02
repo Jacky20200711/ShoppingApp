@@ -6,16 +6,12 @@ namespace ShoppingApp.Controllers
 {
     public class CartController : Controller
     {
+        // 使用 DI 注入會用到的工具
         private readonly ApplicationDbContext _context;
 
         public CartController(ApplicationDbContext context)
         {
             _context = context;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
         }
 
         //加入特定ID的商品到購物車，並回傳購物車頁面

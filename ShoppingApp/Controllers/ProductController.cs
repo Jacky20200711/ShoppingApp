@@ -16,12 +16,12 @@ namespace ShoppingApp.Controllers
 {
     public class ProductController : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        private static IMemoryCache _memoryCache;
-
         //每個分頁最多顯示9筆
         private readonly int pageSize = 9;
+
+        // 使用 DI 注入會用到的工具
+        private readonly ApplicationDbContext _context;
+        private static IMemoryCache _memoryCache;
 
         public ProductController(ApplicationDbContext context, IMemoryCache memoryCache)
         {

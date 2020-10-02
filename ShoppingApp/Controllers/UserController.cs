@@ -25,11 +25,11 @@ namespace ShoppingApp.Controllers
         //每個分頁最多顯示10筆
         private readonly int pageSize = 10;
 
+        // 使用 DI 注入會用到的工具
         private readonly ApplicationDbContext _context;
         private readonly ILogger _logger;
         private readonly UserManager<IdentityUser> _userManager;
 
-        // 注入修改會員的工具
         public UserController(
                 ApplicationDbContext usertext, 
                 ILogger<OrderFormController> logger, 
