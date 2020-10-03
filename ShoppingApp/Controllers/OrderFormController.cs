@@ -44,7 +44,7 @@ namespace ShoppingApp.Controllers
         [Authorize]
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 // 返回該 UserId 所下的訂單，並按照日期排序(新->舊)
                 return View(await _context.OrderForm.Where(o => o.SenderId == User.FindFirstValue(ClaimTypes.NameIdentifier)).OrderByDescending(o => o.CreateTime).ToPagedListAsync(page, pageSize));
@@ -169,7 +169,7 @@ namespace ShoppingApp.Controllers
         // GET: OrderForm/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -194,7 +194,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,SenderId,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -230,7 +230,7 @@ namespace ShoppingApp.Controllers
         // GET: OrderForm/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -255,6 +255,11 @@ namespace ShoppingApp.Controllers
 
         private bool OrderFormExists(int id)
         {
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
+            {
+                return false;
+            }
+
             return _context.OrderForm.Any(e => e.Id == id);
         }
 

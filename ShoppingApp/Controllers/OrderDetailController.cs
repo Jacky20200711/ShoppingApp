@@ -21,7 +21,7 @@ namespace ShoppingApp.Controllers
         // GET: OrderDetail
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -33,7 +33,7 @@ namespace ShoppingApp.Controllers
         // GET: OrderDetail/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -56,7 +56,7 @@ namespace ShoppingApp.Controllers
         // GET: OrderDetail/Create
         public IActionResult Create()
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -71,7 +71,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,OrderId,Name,Price,Quantity")] OrderDetail orderDetail)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -88,7 +88,7 @@ namespace ShoppingApp.Controllers
         // GET: OrderDetail/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -113,7 +113,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,OrderId,Name,Price,Quantity")] OrderDetail orderDetail)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -149,7 +149,7 @@ namespace ShoppingApp.Controllers
         // GET: OrderDetail/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -174,7 +174,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -187,6 +187,11 @@ namespace ShoppingApp.Controllers
 
         private bool OrderDetailExists(int id)
         {
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
+            {
+                return false;
+            }
+
             return _context.OrderDetail.Any(e => e.Id == id);
         }
     }

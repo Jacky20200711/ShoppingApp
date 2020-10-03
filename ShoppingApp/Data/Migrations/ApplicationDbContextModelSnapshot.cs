@@ -219,6 +219,27 @@ namespace ShoppingApp.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("ShoppingApp.Models.AuthorizedMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("InAdminGroup")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("InSellerGroup")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuthorizedMember");
+                });
+
             modelBuilder.Entity("ShoppingApp.Models.Comment", b =>
                 {
                     b.Property<int>("Id")
@@ -293,8 +314,7 @@ namespace ShoppingApp.Data.Migrations
 
                     b.Property<string>("ReceiverPhone")
                         .IsRequired()
-                        .HasColumnType("nvarchar(15)")
-                        .HasMaxLength(15);
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SenderEmail")
                         .HasColumnType("nvarchar(max)");

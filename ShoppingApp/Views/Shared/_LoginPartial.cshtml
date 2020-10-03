@@ -36,14 +36,7 @@
 
         <li style="margin-left:-6px;">
             <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                @if (!isMobile)
-                {
-                    <button type="submit" class="MyButton">登出</button>
-                }
-                else
-                {
-                    <button type="submit" class="MyButton">登出</button>
-                }
+                <button type="submit" class="MyButton">登出</button>
             </form>
         </li>
     }

@@ -11,8 +11,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Data\Migrations\20200929111933_SenderId.cs" />
+    <Compile Remove="Data\Migrations\20200929111933_SenderId.Designer.cs" />
     <Compile Remove="Data\Migrations\20201002064610_RefreshPage.cs" />
     <Compile Remove="Data\Migrations\20201002064610_RefreshPage.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201003111058_AuthorizedMember.cs" />
+    <Compile Remove="Data\Migrations\20201003111058_AuthorizedMember.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201003115247_AuthorizedMember.cs" />
+    <Compile Remove="Data\Migrations\20201003115247_AuthorizedMember.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201003121115_AuthorizedMember.cs" />
+    <Compile Remove="Data\Migrations\20201003121115_AuthorizedMember.Designer.cs" />
+    <Compile Remove="Data\Migrations\20201003121500_AuthorizedMember.cs" />
+    <Compile Remove="Data\Migrations\20201003121500_AuthorizedMember.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -25,7 +35,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8">
       <PrivateAssets>all</PrivateAssets>

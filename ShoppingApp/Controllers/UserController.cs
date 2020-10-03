@@ -3,15 +3,11 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ShoppingApp.Data;
@@ -42,7 +38,7 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -52,15 +48,15 @@ namespace ShoppingApp.Controllers
 
         public ActionResult Delete(string id)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
 
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
 
-            // 令管理員不能刪除自己
-            if (RightChecker.inAdminGroup(user.Email))
+            // 令管理員不能被刪除
+            if (AuthorizeManager.inAdminGroup(user.Email))
             {
                 return Content("404 not found");
             }
@@ -73,7 +69,13 @@ namespace ShoppingApp.Controllers
 
         public ActionResult Edit(string id)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
+            {
+                return Content("404 not found");
+            }
+
+            // 令管理員不能被編輯
+            if (AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -86,17 +88,18 @@ namespace ShoppingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(IdentityUser identityUser)
         {
-            if (!RightChecker.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
-                _logger.LogWarning($"[{User.Identity.Name}]企圖修改其他會員的密碼!");
+                _logger.LogWarning($"非管理員用戶[{User.Identity.Name}]企圖修改其他會員的密碼!");
                 return Content("404 not found");
             }
 
             var user = _context.Users.FirstOrDefault(u => u.Email == identityUser.Email);
 
-            if (RightChecker.inAdminGroup(user.Email))
+            // 令管理員不能被編輯
+            if (AuthorizeManager.inAdminGroup(user.Email))
             {
-                return Content($"管理員[{User.Identity.Name}]不能編輯自己的密碼!");
+                return Content("404 not found");
             }
 
             // 若沒先 RemovePassword 則 LOG 會出現內建的 Warning
@@ -109,7 +112,6 @@ namespace ShoppingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> SendVerifyEmail(IFormCollection post)
         {
-
             // 取出 POST 的資料並轉成字串，避免直接取用使得 LINQ 噴出錯誤
             string userEmail = post["email"];
 
@@ -159,7 +161,6 @@ namespace ShoppingApp.Controllers
                 smtp.EnableSsl = true;
                 smtp.Send(message);
             }
-
             return View("~/Areas/Identity/Pages/Account/ForgotPasswordConfirmation.cshtml");
         }
     }
