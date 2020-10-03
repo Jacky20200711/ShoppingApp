@@ -7,12 +7,10 @@
     a.my-class {
         color: black;
     }
-
-        a.my-class:hover {
-            color: #FF00FF;
-            text-decoration: none;
-        }
-
+    a.my-class:hover {
+        color: #FF00FF;
+        text-decoration: none;
+    }
     li {
         margin-right: 10px;
         cursor: pointer;
@@ -73,12 +71,16 @@
     <br><br><br>@*固定頂端工具列後，會影響到所有頁面的顯示，所以加一些空行將顯示內容往下*@
     @if (isMobile)
     {
-        <br>@*將購物車拉出來顯示後，會影響到所有頁面的顯示，所以加一些空行將顯示內容往下*@
+    <br>@*將購物車拉出來顯示後，會影響到所有頁面的顯示，所以加一些空行將顯示內容往下*@
     }
     <header>
-        <nav class="navbar navbar-expand-md navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top">
+            @if (isMobile)
+            {
+                <div id="Cart" onclick="ImageHint()" style="font-size:large;">@await Html.PartialAsync("_CartPartial")</div>
+            }
             <!-- .navbar-toggler 漢堡式選單按鈕，讓手機瀏覽時可以折疊工具列 -->
-            <button style="float:right;" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <!-- .navbar-toggler-icon 漢堡式選單Icon -->
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -94,11 +96,11 @@
                         }
                         else
                         {
-                            <li>@Html.ActionLink("購物首頁", "Index", "Home", null, new { @class = "my-class" })</li>
-                            <li>@Html.ActionLink("產品管理", "Index", "Product", null, new { @class = "my-class" })</li>
-                            <li>@Html.ActionLink("會員管理", "Index", "User", null, new { @class = "my-class" })</li>
-                            <li>@Html.ActionLink("訂單管理", "Index", "OrderForm", null, new { @class = "my-class" })</li>
-                            <li>@Html.ActionLink("留言管理", "Index", "Comment", null, new { @class = "my-class" })</li>
+                            <li>@Html.ActionLink("首頁", "Index", "Home", null, new { @class = "my-class" })</li>
+                            <li>@Html.ActionLink("產品", "Index", "Product", null, new { @class = "my-class" })</li>
+                            <li>@Html.ActionLink("會員", "Index", "User", null, new { @class = "my-class" })</li>
+                            <li>@Html.ActionLink("訂單", "Index", "OrderForm", null, new { @class = "my-class" })</li>
+                            <li>@Html.ActionLink("留言", "Index", "Comment", null, new { @class = "my-class" })</li>
                         }
                         @if (!isMobile)
                         {
@@ -106,13 +108,10 @@
                         }
                     </ul>
                 </div>
-                @if (isMobile)
-                {
-                    <div id="Cart" onclick="ImageHint()">@await Html.PartialAsync("_CartPartial")</div>
-                }
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -124,6 +123,7 @@
             <p>&copy; @DateTime.Now.Year - 阿貓購物網站 </p>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
