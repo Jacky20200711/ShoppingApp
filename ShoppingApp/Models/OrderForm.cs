@@ -16,7 +16,7 @@ namespace ShoppingApp.Models
 
         [Required(ErrorMessage = "此欄位不能為空")]
         [Display(Name = "收貨人電話")]
-        [StringLength(15, ErrorMessage = "輸入長度為8~15字", MinimumLength = 8)]
+        [RegularExpression(@"^[0-9''-'\d]{10,11}$", ErrorMessage = "輸入內容必須為10~11個數字")]
         public string ReceiverPhone { get; set; }
 
         [Required(ErrorMessage = "此欄位不能為空")]
