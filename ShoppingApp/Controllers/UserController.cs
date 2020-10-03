@@ -42,7 +42,7 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -52,7 +52,7 @@ namespace ShoppingApp.Controllers
 
         public ActionResult Delete(string id)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -60,7 +60,7 @@ namespace ShoppingApp.Controllers
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
 
             // 令管理員不能刪除自己
-            if (user.Email == Admin.name)
+            if (RightChecker.inAdminGroup(user.Email))
             {
                 return Content("404 not found");
             }
@@ -73,7 +73,7 @@ namespace ShoppingApp.Controllers
 
         public ActionResult Edit(string id)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -86,7 +86,7 @@ namespace ShoppingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(IdentityUser identityUser)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 _logger.LogWarning($"[{User.Identity.Name}]企圖修改其他會員的密碼!");
                 return Content("404 not found");
@@ -94,7 +94,7 @@ namespace ShoppingApp.Controllers
 
             var user = _context.Users.FirstOrDefault(u => u.Email == identityUser.Email);
 
-            if (user.Email == Admin.name)
+            if (RightChecker.inAdminGroup(user.Email))
             {
                 return Content($"管理員[{User.Identity.Name}]不能編輯自己的密碼!");
             }

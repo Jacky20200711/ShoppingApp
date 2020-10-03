@@ -32,7 +32,7 @@ namespace ShoppingApp.Controllers
         // GET: Product
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -114,7 +114,7 @@ namespace ShoppingApp.Controllers
         // GET: Product/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -139,7 +139,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL")] Product product)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -175,7 +175,7 @@ namespace ShoppingApp.Controllers
         // GET: Product/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -216,7 +216,7 @@ namespace ShoppingApp.Controllers
         // 重置產品
         public ActionResult ResetProducts()
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }

@@ -7,7 +7,7 @@
 
 <h1>訂單列表</h1>
 
-@if (User.Identity.Name == Admin.name)
+@if (RightChecker.inAdminGroup(User.Identity.Name))
 {
     <p>
         <a asp-action="Create">Create New</a>
@@ -67,7 +67,7 @@
                     @Html.DisplayFor(modelItem => item.CheckOut)
                 </td>
                 <td>
-                    @if (User.Identity.Name == Admin.name)
+                    @if (RightChecker.inAdminGroup(User.Identity.Name))
                     {
                         @*<a asp-action="Edit" asp-route-id="@item.Id">Edit |</a>*@
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete |</a>

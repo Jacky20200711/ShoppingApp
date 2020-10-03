@@ -24,7 +24,7 @@ namespace ShoppingApp.Controllers
         // GET: Comment
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -36,7 +36,7 @@ namespace ShoppingApp.Controllers
         // GET: Comment/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -59,7 +59,7 @@ namespace ShoppingApp.Controllers
         // GET: Comment/Create
         public IActionResult Create()
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -74,7 +74,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Content,UserName,CreateTime,ProductId")] Comment comment)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -91,7 +91,7 @@ namespace ShoppingApp.Controllers
         // GET: Comment/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -116,7 +116,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Content,UserName,CreateTime,ProductId")] Comment comment)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -152,7 +152,7 @@ namespace ShoppingApp.Controllers
         // GET: Comment/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }

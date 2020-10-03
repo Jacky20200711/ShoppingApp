@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CartsCore.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +13,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ShoppingApp.Data;
 using ShoppingApp.Models;
-using SQLitePCL;
 using X.PagedList;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
@@ -46,7 +44,7 @@ namespace ShoppingApp.Controllers
         [Authorize]
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 // 返回該 UserId 所下的訂單，並按照日期排序(新->舊)
                 return View(await _context.OrderForm.Where(o => o.SenderId == User.FindFirstValue(ClaimTypes.NameIdentifier)).OrderByDescending(o => o.CreateTime).ToPagedListAsync(page, pageSize));
@@ -171,7 +169,7 @@ namespace ShoppingApp.Controllers
         // GET: OrderForm/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -196,7 +194,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,SenderId,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }
@@ -232,7 +230,7 @@ namespace ShoppingApp.Controllers
         // GET: OrderForm/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (User.Identity.Name != Admin.name)
+            if (!RightChecker.inAdminGroup(User.Identity.Name))
             {
                 return Content("404 not found");
             }

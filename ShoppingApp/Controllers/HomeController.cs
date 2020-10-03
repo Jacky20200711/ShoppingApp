@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using ShoppingApp.Models;
 
-namespace CartsCore.Controllers
+namespace ShoppingApp.Controllers
 {
     public class HomeController : Controller
     {
