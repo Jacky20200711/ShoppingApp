@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoppingApp.Data;
@@ -8,6 +9,7 @@ using X.PagedList;
 
 namespace ShoppingApp.Controllers
 {
+    [Authorize]
     public class OrderDetailController : Controller
     {
         // 使用 DI 注入會用到的工具
@@ -18,25 +20,16 @@ namespace ShoppingApp.Controllers
             _context = context;
         }
 
-        // GET: OrderDetail
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
-            // 將同樣訂單的資料放一起
             return View(await _context.OrderDetail.OrderByDescending(p => p.OrderId).ToPagedListAsync(page, 10));
         }
 
-        // GET: OrderDetail/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id == null)
             {
@@ -53,28 +46,18 @@ namespace ShoppingApp.Controllers
             return View(orderDetail);
         }
 
-        // GET: OrderDetail/Create
         public IActionResult Create()
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             return View();
         }
 
-        // POST: OrderDetail/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,OrderId,Name,Price,Quantity")] OrderDetail orderDetail)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -85,13 +68,9 @@ namespace ShoppingApp.Controllers
             return View(orderDetail);
         }
 
-        // GET: OrderDetail/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id == null)
             {
@@ -106,17 +85,11 @@ namespace ShoppingApp.Controllers
             return View(orderDetail);
         }
 
-        // POST: OrderDetail/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,OrderId,Name,Price,Quantity")] OrderDetail orderDetail)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id != orderDetail.Id)
             {
@@ -146,13 +119,9 @@ namespace ShoppingApp.Controllers
             return View(orderDetail);
         }
 
-        // GET: OrderDetail/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id == null)
             {
@@ -166,20 +135,6 @@ namespace ShoppingApp.Controllers
                 return NotFound();
             }
 
-            return View(orderDetail);
-        }
-
-        // POST: OrderDetail/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
-
-            var orderDetail = await _context.OrderDetail.FindAsync(id);
             _context.OrderDetail.Remove(orderDetail);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

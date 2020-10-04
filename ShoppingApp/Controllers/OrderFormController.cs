@@ -20,6 +20,7 @@ using System.Security.Cryptography;
 
 namespace ShoppingApp.Controllers
 {
+    [Authorize]
     public class OrderFormController : Controller
     {
         // 每個分頁最多顯示10筆
@@ -40,8 +41,6 @@ namespace ShoppingApp.Controllers
             _userManager = userManager;
         }
 
-        // GET: OrderForm
-        [Authorize]
         public async Task<IActionResult> Index(int page = 1)
         {
             if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
@@ -56,7 +55,6 @@ namespace ShoppingApp.Controllers
             }
         }
 
-        // GET: OrderForm/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -74,17 +72,12 @@ namespace ShoppingApp.Controllers
             return View(_context.OrderDetail.Where(o => o.OrderId == id).ToList());
         }
 
-        // GET: OrderForm/Create
-        [Authorize]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: OrderForm/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize]
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,SenderId,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
@@ -166,13 +159,9 @@ namespace ShoppingApp.Controllers
             }
         }
 
-        // GET: OrderForm/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id == null)
             {
@@ -187,17 +176,11 @@ namespace ShoppingApp.Controllers
             return View(orderForm);
         }
 
-        // POST: OrderForm/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,SenderId,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id != orderForm.Id)
             {
@@ -227,13 +210,9 @@ namespace ShoppingApp.Controllers
             return View(orderForm);
         }
 
-        // GET: OrderForm/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -262,8 +241,6 @@ namespace ShoppingApp.Controllers
 
             return _context.OrderForm.Any(e => e.Id == id);
         }
-
-        [Authorize]
 
         public IActionResult CheckPayResult(bool PaySuccess=false, string Exception="", string OrderKey="")
         {

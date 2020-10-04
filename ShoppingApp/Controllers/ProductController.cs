@@ -29,19 +29,14 @@ namespace ShoppingApp.Controllers
             _memoryCache = memoryCache;
         }
 
-        // GET: Product
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
-
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            
             // 按照產品的日期排序(新->舊)
             return View(await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, 10));
         }
 
-        // GET: Product/Details/5
         public async Task<IActionResult> Details(int? id, int page = 1)
         {
             if (id == null)
@@ -87,16 +82,12 @@ namespace ShoppingApp.Controllers
             return View(await productAndComments.ToPagedListAsync(page, 10));
         }
 
-        // GET: Product/Create
         [Authorize]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Product/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -111,13 +102,9 @@ namespace ShoppingApp.Controllers
             return View(product);
         }
 
-        // GET: Product/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id == null)
             {
@@ -132,17 +119,11 @@ namespace ShoppingApp.Controllers
             return View(product);
         }
 
-        // POST: Product/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL")] Product product)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id != product.Id)
             {
@@ -172,13 +153,9 @@ namespace ShoppingApp.Controllers
             return View(product);
         }
 
-        // GET: Product/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             var product = await _context.Product.FindAsync(id);
             _context.Product.Remove(product);
@@ -218,20 +195,16 @@ namespace ShoppingApp.Controllers
             }
         }
 
-        // 重置產品
         public ActionResult ResetProducts()
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             // 刪除所有產品
             _context.RemoveRange(_context.Product);
             _context.SaveChanges();
             _context.Database.ExecuteSqlRaw("DBCC CHECKIDENT('Product', RESEED, 0)");
 
-            // 從設定檔取得壁紙的網址
+            // 從設定檔取得產品的網址
             List<string> ImageUrlList = new List<string>();
 
             var builder = new ConfigurationBuilder()
@@ -248,7 +221,7 @@ namespace ShoppingApp.Controllers
                 }
             }
 
-            // 重新創建所有的產品
+            // 重新創建所有產品
             List<Product> productList = new List<Product>();
 
             for (int i = 0; i < ImageUrlList.Count; i++)
@@ -274,7 +247,6 @@ namespace ShoppingApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // 負責展示產品的Action
         public async Task<IActionResult> ShowProducts(int page = 1)
         {
             // 從 Cache 取出這一頁的圖片資訊

@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoppingApp.Data;
@@ -8,6 +9,7 @@ using X.PagedList;
 
 namespace ShoppingApp.Controllers
 {
+    [Authorize]
     public class CommentController : Controller
     {
         //每個分頁最多顯示10筆
@@ -21,25 +23,17 @@ namespace ShoppingApp.Controllers
             _context = context;
         }
 
-        // GET: Comment
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             // 按照留言的建立日期排序(新->舊)
             return View(await _context.Comment.OrderByDescending(c => c.CreateTime).ToPagedListAsync(page, pageSize));
         }
 
-        // GET: Comment/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id == null)
             {
@@ -56,28 +50,18 @@ namespace ShoppingApp.Controllers
             return View(comment);
         }
 
-        // GET: Comment/Create
         public IActionResult Create()
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             return View();
         }
 
-        // POST: Comment/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Content,UserName,CreateTime,ProductId")] Comment comment)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -88,13 +72,9 @@ namespace ShoppingApp.Controllers
             return View(comment);
         }
 
-        // GET: Comment/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id == null)
             {
@@ -109,17 +89,11 @@ namespace ShoppingApp.Controllers
             return View(comment);
         }
 
-        // POST: Comment/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Content,UserName,CreateTime,ProductId")] Comment comment)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id != comment.Id)
             {
@@ -149,13 +123,9 @@ namespace ShoppingApp.Controllers
             return View(comment);
         }
 
-        // GET: Comment/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             var comment = await _context.Comment.FindAsync(id);
             _context.Comment.Remove(comment);

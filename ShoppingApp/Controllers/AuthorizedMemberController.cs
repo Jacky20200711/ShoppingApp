@@ -20,23 +20,20 @@ namespace ShoppingApp.Controllers
             _context = context;
         }
 
-        // GET: AuthorizedMember
         // 只有超級管理員可以查看特權用戶的列表
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (User.Identity.Name != AuthorizeManager.SuperAdmin)
-            {
-                return Content("404 not found");
-            }
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
 
             return View(await _context.AuthorizedMember.ToPagedListAsync(page, pageSize));
         }
 
-        // GET: AuthorizedMember/Details/5
         // 只有超級管理員可以查看特權用戶的權限
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || User.Identity.Name != AuthorizeManager.SuperAdmin)
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            if (id == null)
             {
                 return NotFound();
             }
@@ -51,29 +48,20 @@ namespace ShoppingApp.Controllers
             return View(authorizedMember);
         }
 
-        // GET: AuthorizedMember/Create
+        // 只有超級管理員可以新增其他管理員
         public IActionResult Create()
         {
-            if (User.Identity.Name != AuthorizeManager.SuperAdmin)
-            {
-                return Content("404 not found");
-            }
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
 
             return View();
         }
 
-        // POST: AuthorizedMember/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         // 只有超級管理員可以新增其他管理員
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Email,InAdminGroup,InSellerGroup")] AuthorizedMember authorizedMember)
         {
-            if (User.Identity.Name != AuthorizeManager.SuperAdmin)
-            {
-                return Content("404 not found");
-            }
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -85,10 +73,11 @@ namespace ShoppingApp.Controllers
             return View(authorizedMember);
         }
 
-        // GET: AuthorizedMember/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || User.Identity.Name != AuthorizeManager.SuperAdmin)
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            if (id == null)
             {
                 return NotFound();
             }
@@ -101,15 +90,17 @@ namespace ShoppingApp.Controllers
             return View(authorizedMember);
         }
 
-        // POST: AuthorizedMember/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         // 只有超級管理員可以編輯其他特權用戶
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Email,InAdminGroup,InSellerGroup")] AuthorizedMember authorizedMember)
         {
-            if (id != authorizedMember.Id || authorizedMember.Email != AuthorizeManager.SuperAdmin)
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            // 令超級管理員無法編輯自己
+            if (authorizedMember.Email == AuthorizeManager.SuperAdmin) return NotFound();
+
+            if (id != authorizedMember.Id)
             {
                 return NotFound();
             }
@@ -138,11 +129,12 @@ namespace ShoppingApp.Controllers
             return View(authorizedMember);
         }
 
-        // GET: AuthorizedMember/Delete/5
         // 只有超級管理員可以刪除其他特權用戶
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || User.Identity.Name != AuthorizeManager.SuperAdmin)
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            if (id == null)
             {
                 return NotFound();
             }
@@ -153,6 +145,9 @@ namespace ShoppingApp.Controllers
             {
                 return NotFound();
             }
+
+            // 令超級管理員無法刪除自己
+            if (authorizedMember.Email == AuthorizeManager.SuperAdmin) return NotFound();
 
             _context.AuthorizedMember.Remove(authorizedMember);
             await _context.SaveChangesAsync();

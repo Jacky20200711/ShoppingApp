@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using ShoppingApp.Models;
 using System;
+using System.Linq;
 
 namespace ShoppingApp
 {
@@ -81,8 +82,9 @@ namespace ShoppingApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, ApplicationDbContext context)
         {
+            AuthorizeManager.refreshHashTable(context);
             app.UseDetection();
             app.UseDeveloperExceptionPage();
             app.UseDatabaseErrorPage();

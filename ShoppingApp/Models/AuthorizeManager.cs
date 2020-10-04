@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using ShoppingApp.Data;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ShoppingApp.Models
 {
@@ -52,6 +54,29 @@ namespace ShoppingApp.Models
             else
             {
                 SellerGroup.Remove(authorizedMember.Email);
+            }
+        }
+
+        public static void refreshHashTable(ApplicationDbContext _context)
+        {
+            // 確保超級管理員在群組裡
+            AdminGroup.Add(SuperAdmin);
+            SellerGroup.Add(SuperAdmin);
+
+            // 查看其他特權用戶的權限，添加到對應的群組
+            List<AuthorizedMember> authorizedMembers = _context.AuthorizedMember.ToList();
+
+            foreach (AuthorizedMember m in authorizedMembers)
+            {
+                if(m.InAdminGroup)
+                {
+                    AdminGroup.Add(m.Email);
+                }
+
+                if (m.InSellerGroup)
+                {
+                    SellerGroup.Add(m.Email);
+                }
             }
         }
     }

@@ -38,49 +38,40 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             return View(await _context.Users.ToPagedListAsync(page, pageSize));
         }
 
         public ActionResult Delete(string id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
 
-            // 令管理員不能被刪除
-            if (AuthorizeManager.inAdminGroup(user.Email))
+            // 令超級管理員不能被刪除
+            if (user.Email == AuthorizeManager.SuperAdmin)
             {
-                return Content("404 not found");
+                return NotFound();
             }
 
             _context.Users.Remove(user);
             _context.SaveChanges();
-
+            _logger.LogInformation($"[{User.Identity.Name}]刪除了[{user.Email}]");
             return RedirectToAction("Index");
         }
 
         public ActionResult Edit(string id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
-
-            // 令管理員不能被編輯
-            if (AuthorizeManager.inAdminGroup(User.Identity.Name))
-            {
-                return Content("404 not found");
-            }
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
 
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
+
+            // 令超級管理員不能被編輯
+            if (user.Email == AuthorizeManager.SuperAdmin)
+            {
+                return NotFound();
+            }
 
             return View(user);
         }
@@ -90,22 +81,22 @@ namespace ShoppingApp.Controllers
         {
             if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
             {
-                _logger.LogWarning($"非管理員用戶[{User.Identity.Name}]企圖修改其他會員的密碼!");
-                return Content("404 not found");
+                _logger.LogWarning($"非管理員用戶[{User.Identity.Name}]企圖修改會員的資料!");
+                return NotFound();
             }
 
             var user = _context.Users.FirstOrDefault(u => u.Email == identityUser.Email);
 
-            // 令管理員不能被編輯
-            if (AuthorizeManager.inAdminGroup(user.Email))
+            // 令超級管理員不能被編輯
+            if (user.Email == AuthorizeManager.SuperAdmin)
             {
-                return Content("404 not found");
+                return NotFound();
             }
 
             // 若沒先 RemovePassword 則 LOG 會出現內建的 Warning
             await _userManager.RemovePasswordAsync(user);
             await _userManager.AddPasswordAsync(user, identityUser.PasswordHash);
-
+            _logger.LogInformation($"[{User.Identity.Name}]修改了[{user.Email}]的密碼");
             return RedirectToAction("Index");
         }
 
@@ -161,6 +152,7 @@ namespace ShoppingApp.Controllers
                 smtp.EnableSsl = true;
                 smtp.Send(message);
             }
+            _logger.LogInformation($"系統寄了新密碼給[{userEmail}]");
             return View("~/Areas/Identity/Pages/Account/ForgotPasswordConfirmation.cshtml");
         }
     }
