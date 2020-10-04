@@ -55,6 +55,17 @@ namespace ShoppingApp.Controllers
                 return NotFound();
             }
 
+            // 查看該使用者是否為特權用戶，如果是...則從特權資料表和 HashTable 中移除
+            var authorizedMember = _context.AuthorizedMember.FirstOrDefault(m => m.Email == user.Email);
+
+            if(authorizedMember != null)
+            {
+                AuthorizeManager.updateHashTable(authorizedMember, "delete");
+                _context.AuthorizedMember.Remove(authorizedMember);
+                _context.SaveChanges();
+            }
+
+            // 刪除該使用者
             _context.Users.Remove(user);
             _context.SaveChanges();
             _logger.LogInformation($"[{User.Identity.Name}]刪除了[{user.Email}]");
