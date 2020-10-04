@@ -1,9 +1,9 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -43,6 +43,39 @@ namespace ShoppingApp.Controllers
             return View(await _context.Users.ToPagedListAsync(page, pageSize));
         }
 
+        public IActionResult Create()
+        {
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Email,PasswordHash")] IdentityUser identityUser)
+        {
+            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+
+            // 這並不是用 Entity Framework 產生的 CRUD，所以要自行檢查欄位
+            if (string.IsNullOrEmpty(identityUser.Email) ||
+                string.IsNullOrEmpty(identityUser.PasswordHash) ||
+                !Regex.IsMatch(identityUser.Email, @"^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$") ||
+                identityUser.PasswordHash.Length < 6)
+            {
+                ViewData["CreateUserError"] = "輸入資料錯誤!";
+                return View();
+            }
+
+            var user = new IdentityUser { UserName = identityUser.Email, Email = identityUser.Email };
+
+            // _userManager 會自動幫你檢查該郵件是否已被註冊，若是...則不會進行動作
+            await _userManager.CreateAsync(user, identityUser.PasswordHash);
+
+            _logger.LogInformation($"[{User.Identity.Name}]新增了用戶[{user.Email}]");
+
+            return RedirectToAction("Index");
+        }
+
         public ActionResult Delete(string id)
         {
             if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
@@ -68,7 +101,7 @@ namespace ShoppingApp.Controllers
             // 刪除該使用者
             _context.Users.Remove(user);
             _context.SaveChanges();
-            _logger.LogInformation($"[{User.Identity.Name}]刪除了[{user.Email}]");
+            _logger.LogInformation($"[{User.Identity.Name}]刪除了用戶[{user.Email}]");
             return RedirectToAction("Index");
         }
 
