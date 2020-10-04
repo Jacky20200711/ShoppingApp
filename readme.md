@@ -45,18 +45,18 @@ win10(64bit) + Visual Studio 2019 + .NET Core MVC + IIS10
 &emsp;
 &emsp;
 &emsp;
-# 使用歐付寶的測試卡號進行付款    
+# 使用測試卡號進行付款    
 ![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO7.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
-# 歐付寶回傳付款結果    
+# 取得付款結果    
 ![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO8.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
-# 查看我的訂單    
-![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO8.PNG?raw=true)
+# 查看剛剛的訂單    
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO9.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
