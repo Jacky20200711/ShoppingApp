@@ -85,18 +85,23 @@ namespace ShoppingApp.Controllers
                 return NotFound();
             }
 
-            var user = _context.Users.FirstOrDefault(u => u.Email == identityUser.Email);
+            var user = _context.Users.FirstOrDefault(u => u.Id == identityUser.Id);
 
             // 令超級管理員不能被編輯
             if (user.Email == AuthorizeManager.SuperAdmin)
             {
                 return NotFound();
             }
+            else
+            {
+                user.Email = identityUser.Email;
+                user.UserName = identityUser.Email;
+            }
 
             // 若沒先 RemovePassword 則 LOG 會出現內建的 Warning
             await _userManager.RemovePasswordAsync(user);
             await _userManager.AddPasswordAsync(user, identityUser.PasswordHash);
-            _logger.LogInformation($"[{User.Identity.Name}]修改了[{user.Email}]的密碼");
+            _logger.LogInformation($"[{User.Identity.Name}]修改了[{user.Email}]的資料");
             return RedirectToAction("Index");
         }
 

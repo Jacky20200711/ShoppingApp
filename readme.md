@@ -15,33 +15,48 @@
 win10(64bit) + Visual Studio 2019 + .NET Core MVC + IIS10  
 &emsp;
 &emsp;
-# 網站示意圖(首頁)    
+# 首頁    
 ![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO1.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
-# 網站示意圖(註冊)   
+# 登入   
 ![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO2.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
-# 網站示意圖(留言)   
+# 留言   
 ![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO3.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
-# 網站示意圖(購物車)   
+# 購物車   
 ![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO4.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
-# 網站示意圖(填寫訂單)   
+# 填寫訂單   
 ![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO5.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
-# 網站示意圖(查看訂單)    
+# 將訂單傳送給歐付寶   
 ![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO6.PNG?raw=true)
+&emsp;
+&emsp;
+&emsp;
+# 使用歐付寶的測試卡號進行付款    
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO7.PNG?raw=true)
+&emsp;
+&emsp;
+&emsp;
+# 歐付寶回傳付款結果    
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO8.PNG?raw=true)
+&emsp;
+&emsp;
+&emsp;
+# 查看我的訂單    
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO8.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
