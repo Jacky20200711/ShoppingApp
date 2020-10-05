@@ -7,17 +7,12 @@ namespace ShoppingApp.Models
     // 令權限管理類別為靜態，類似 Singleton 的概念(只需要存在一個供所有人存取)
     public static class AuthorizeManager
     {
-        // 可以控制所有用戶的最高級管理員
+        // 可以控制所有用戶和資料的超級管理員
         public static string SuperAdmin = "fewer135@gmail.com";
 
         // 將特權用戶的資訊存入到記憶體(HashTable)，模擬 Cache 的概念
-        private static HashSet<string> AdminGroup = new HashSet<string> {
-            SuperAdmin
-        };
-
-        private static HashSet<string> SellerGroup = new HashSet<string> {
-            SuperAdmin
-        };
+        private static HashSet<string> AdminGroup = new HashSet<string> { SuperAdmin };
+        private static HashSet<string> SellerGroup = new HashSet<string> { SuperAdmin };
 
         public static bool inAdminGroup(string email)
         {
@@ -29,43 +24,81 @@ namespace ShoppingApp.Models
             return SellerGroup.Contains(email);
         }
 
-        public static void updateHashTable(AuthorizedMember authorizedMember, string action="")
+        public static bool inAuthorizedMember(string email)
         {
-            if(action == "delete")
-            {
-                AdminGroup.Remove(authorizedMember.Email);
-                SellerGroup.Remove(authorizedMember.Email);
-                return;
-            }
+            return AdminGroup.Contains(email) || SellerGroup.Contains(email);
+        }
 
-            if (authorizedMember.InAdminGroup)
+        // 請確認欲變更的使用者存在於 HashTable 中再來 Call 這個函數
+        public static void updateAuthority(string action , ApplicationDbContext _context, string email, string newEmail="", AuthorizedMember authorizedMember=null)
+        {
+            switch(action)
             {
-                AdminGroup.Add(authorizedMember.Email);
-            }
-            else
-            {
-                AdminGroup.Remove(authorizedMember.Email);
-            }
+                case "DeleteAll":
+                {
+                    AdminGroup.Remove(email);
+                    SellerGroup.Remove(email);
+                    authorizedMember = _context.AuthorizedMember.FirstOrDefault(m => m.Email == email);
+                    _context.AuthorizedMember.Remove(authorizedMember);
+                    _context.SaveChanges();
+                    return;
+                }
 
-            if (authorizedMember.InAdminGroup)
-            {
-                SellerGroup.Add(authorizedMember.Email);
-            }
-            else
-            {
-                SellerGroup.Remove(authorizedMember.Email);
+                case "DeleteFromHashTable":
+                {
+                    AdminGroup.Remove(email);
+                    SellerGroup.Remove(email);
+                    return;
+                }
+
+                case "ModifyEmail":
+                {
+                    // 變更資料庫儲存的郵件
+                    authorizedMember = _context.AuthorizedMember.FirstOrDefault(m => m.Email == email);
+                    authorizedMember.Email = newEmail;
+                    _context.SaveChanges();
+
+                    // 從 HashTable 中刪除舊的郵件
+                    AdminGroup.Remove(email);
+                    SellerGroup.Remove(email);
+
+                    // 檢查 & 在 HashTable 添加新的郵件
+                    if (authorizedMember.InAdminGroup) AdminGroup.Add(newEmail);
+                    if (authorizedMember.InSellerGroup) SellerGroup.Add(newEmail);
+                    return;
+                }
+
+                case "UpdateHashTableByAuthorizedMember":
+                {
+                    if (authorizedMember.InAdminGroup)
+                        AdminGroup.Add(authorizedMember.Email);
+                    else
+                        AdminGroup.Remove(authorizedMember.Email);
+
+                    if (authorizedMember.InSellerGroup)
+                        SellerGroup.Add(authorizedMember.Email);
+                    else
+                        SellerGroup.Remove(authorizedMember.Email);
+
+                    return;
+                }
             }
         }
 
         public static void refreshHashTable(ApplicationDbContext _context)
         {
-            // 確保超級管理員在群組裡
+            // 清空HashTable
+            AdminGroup.Clear();
+            SellerGroup.Clear();
+
+            // 重新添加超級管理員到HashTable
             AdminGroup.Add(SuperAdmin);
             SellerGroup.Add(SuperAdmin);
 
-            // 查看其他特權用戶的權限，添加到對應的群組
+            // 從 DB 取出所有的特權用戶
             List<AuthorizedMember> authorizedMembers = _context.AuthorizedMember.ToList();
 
+            // 重新添加到HashTable
             foreach (AuthorizedMember m in authorizedMembers)
             {
                 if(m.InAdminGroup)

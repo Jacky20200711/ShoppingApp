@@ -89,13 +89,9 @@ namespace ShoppingApp.Controllers
             }
 
             // 查看該使用者是否為特權用戶，如果是...則從特權資料表和 HashTable 中移除
-            var authorizedMember = _context.AuthorizedMember.FirstOrDefault(m => m.Email == user.Email);
-
-            if(authorizedMember != null)
+            if(AuthorizeManager.inAuthorizedMember(user.Email))
             {
-                AuthorizeManager.updateHashTable(authorizedMember, "delete");
-                _context.AuthorizedMember.Remove(authorizedMember);
-                _context.SaveChanges();
+                AuthorizeManager.updateAuthority("DeleteAll", _context, user.Email, null, null);
             }
 
             // 刪除該使用者
@@ -138,6 +134,12 @@ namespace ShoppingApp.Controllers
             }
             else
             {
+                // 如果是特權用戶，則變更此特權用戶的郵件
+                if(AuthorizeManager.inAuthorizedMember(user.Email))
+                {
+                    AuthorizeManager.updateAuthority("ModifyEmail", _context, user.Email, identityUser.Email);
+                }
+
                 user.Email = identityUser.Email;
                 user.UserName = identityUser.Email;
             }

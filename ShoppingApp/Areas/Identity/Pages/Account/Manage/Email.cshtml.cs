@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using ShoppingApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using ShoppingApp.Models;
 
 namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
 {
@@ -106,6 +107,12 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
                 // 若此信箱沒有被註冊過，則允許修改信箱
                 if(GetUserByEmail == null)
                 {
+                    // 檢查是否為特權用戶
+                    if(AuthorizeManager.inAuthorizedMember(user.Email))
+                    {
+                        AuthorizeManager.updateAuthority("ModifyEmail", _context, user.Email, Input.NewEmail);
+                    }
+
                     user.UserName = Input.NewEmail;
                     user.Email = Input.NewEmail;
                     await _userManager.UpdateAsync(user);
