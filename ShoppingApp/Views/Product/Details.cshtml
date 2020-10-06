@@ -1,4 +1,6 @@
 ﻿@using X.PagedList.Mvc.Core
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @model X.PagedList.IPagedList<ShoppingApp.Models.ProductAndComment>
 
 @{
@@ -74,9 +76,18 @@
         @*輸入留言*@
         @using (Html.BeginForm("AddComment", "Product", FormMethod.Post, new { onsubmit = "return checkLen();" }))
         {
-            <span style="display:none;">@Html.TextBox("id", Model.FirstOrDefault().TheProduct.Id)</span>
-            @Html.TextBox("comment", null, new { id = "PostComment", @class = "text-field" })
-            <input type="submit" value="留言" class="btn btn-primary" />
+            string DisableComment = HttpContextAccessor.HttpContext.Session.GetString("DisableComment");
+
+            if (DisableComment == null)
+            {
+                <span style="display:none;">@Html.TextBox("id", Model.FirstOrDefault().TheProduct.Id)</span>
+                @Html.TextBox("comment", null, new { id = "PostComment", @class = "text-field" })
+                <input type="submit" value="留言" class="btn btn-primary" />
+            }
+            else
+            {
+                <span style="color:red;">@DisableComment</span>
+            }
         }
     }
     @*返回並刷新頁面，可以避免表單資料消失*@

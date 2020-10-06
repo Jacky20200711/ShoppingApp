@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -177,6 +178,11 @@ namespace ShoppingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(int id, string comment)
         {
+            if (HttpContext.Session.GetString("DisableComment") != null)
+            {
+                return RedirectToAction("Details", new { id });
+            }
+
             if (string.IsNullOrEmpty(comment) || comment.Length < 2 || comment.Length > 100)
             {
                 return Content("輸入長度有誤!");
@@ -191,6 +197,29 @@ namespace ShoppingApp.Controllers
                     Content = comment
                 });
                 await _context.SaveChangesAsync();
+
+                // 計算留言次數
+                int? CommentCount = HttpContext.Session.GetInt32("CommentCount");
+                if (CommentCount == null)
+                {
+                    HttpContext.Session.SetInt32("CommentCount", 1);
+                }
+                else
+                {
+                    int getCommentCount = (int)CommentCount + 1;
+
+                    // 若達到 5 次，則禁止留言
+                    if(getCommentCount == 5)
+                    {
+                        HttpContext.Session.Remove("CommentCount");
+                        HttpContext.Session.SetString("DisableComment", "您的留言次數過多，暫時無法發言!");
+                    }
+                    else
+                    {
+                        HttpContext.Session.SetInt32("CommentCount", getCommentCount);
+                    }
+                }
+
                 return RedirectToAction("Details", new { id });
             }
         }
