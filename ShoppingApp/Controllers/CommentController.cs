@@ -133,6 +133,16 @@ namespace ShoppingApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> DeleteAllComment(int? id)
+        {
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            var comments = await _context.Comment.ToListAsync();
+            _context.Comment.RemoveRange(comments);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
         private bool CommentExists(int id)
         {
             if (!AuthorizeManager.inAdminGroup(User.Identity.Name))

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using ShoppingApp.Data;
 using ShoppingApp.Models;
 using X.PagedList;
@@ -23,11 +24,13 @@ namespace ShoppingApp.Controllers
         // 使用 DI 注入會用到的工具
         private readonly ApplicationDbContext _context;
         private static IMemoryCache _memoryCache;
+        private readonly ILogger _logger;
 
-        public ProductController(ApplicationDbContext context, IMemoryCache memoryCache)
+        public ProductController(ApplicationDbContext context, IMemoryCache memoryCache, ILogger<OrderFormController> logger)
         {
             _context = context;
             _memoryCache = memoryCache;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index(int page = 1)
@@ -77,6 +80,25 @@ namespace ShoppingApp.Controllers
                     TheProduct = product,
                     TheComment = null
                 });
+            }
+
+            // 檢查這個 IP 是否被禁言
+            string ClientIP = HttpContext.Connection.RemoteIpAddress.ToString();
+
+            if (AuthorizeManager.isDisableCommentIP(ClientIP))
+            {
+                // 檢查是否達到解封時間
+                if (AuthorizeManager.itTimeToUnLock(ClientIP))
+                {
+                    AuthorizeManager.unLock(ClientIP);
+                    HttpContext.Session.Remove("DisableComment");
+                    _logger.LogInformation($"[{ClientIP}]解封發言!");
+                }
+                else
+                {
+                    // 持續在前端顯示禁言
+                    HttpContext.Session.SetString("DisableComment", ClientIP);
+                }
             }
 
             // 傳送封裝的類別，每頁顯示10筆留言
@@ -178,11 +200,7 @@ namespace ShoppingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(int id, string comment)
         {
-            if (HttpContext.Session.GetString("DisableComment") != null)
-            {
-                return RedirectToAction("Details", new { id });
-            }
-
+            // 檢查留言長度
             if (string.IsNullOrEmpty(comment) || comment.Length < 2 || comment.Length > 100)
             {
                 return Content("輸入長度有誤!");
@@ -208,11 +226,13 @@ namespace ShoppingApp.Controllers
                 {
                     int getCommentCount = (int)CommentCount + 1;
 
-                    // 若達到 5 次，則禁止留言
+                    // 若達到 5 次，則將使用者IP添加到封鎖列表
                     if(getCommentCount == 5)
                     {
+                        string ClientIP = HttpContext.Connection.RemoteIpAddress.ToString();
                         HttpContext.Session.Remove("CommentCount");
-                        HttpContext.Session.SetString("DisableComment", "您的留言次數過多，暫時無法發言!");
+                        AuthorizeManager.addDisableCommentIP(ClientIP);
+                        _logger.LogWarning($"[{ClientIP}]已被禁言!");
                     }
                     else
                     {
