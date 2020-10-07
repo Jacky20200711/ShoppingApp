@@ -16,37 +16,31 @@ namespace ShoppingApp.Models
         private static HashSet<string> AdminGroup = new HashSet<string> { SuperAdmin };
         private static HashSet<string> SellerGroup = new HashSet<string> { SuperAdmin };
 
-        // 封鎖留言過多的IP
-        private static HashSet<string> DisableCommentIP = new HashSet<string>();
-
-        // 儲存被封鎖IP的時間
-        private static Dictionary<string, DateTime> DisableTime = new Dictionary<string, DateTime>();
+        // KEY => 封鎖留言過多的IP & Value => 紀錄封鎖的時間
+        private static Dictionary<string, DateTime> DisableCommentIP = new Dictionary<string, DateTime>();
 
         public static void addDisableCommentIP(string IP)
         {
-            DisableCommentIP.Add(IP);
-            DisableTime[IP] = Convert.ToDateTime(DateTime.Now);
+            DisableCommentIP[IP] = Convert.ToDateTime(DateTime.Now);
         }
 
         // 確認封鎖經過的時間是否大於30分鐘
         public static bool itTimeToUnLock(string IP)
         {
             DateTime CurrentTime = Convert.ToDateTime(DateTime.Now);
-            DateTime BlockTime = DisableTime[IP];
+            DateTime BlockTime = DisableCommentIP[IP];
             TimeSpan timeSpan = CurrentTime.Subtract(BlockTime);
             return timeSpan.Minutes > 30;
         }
 
-        // 解封
         public static void unLock(string IP)
         {
             DisableCommentIP.Remove(IP);
-            DisableTime.Remove(IP);
         }
 
         public static bool isDisableCommentIP(string IP)
         {
-            return DisableCommentIP.Contains(IP);
+            return DisableCommentIP.ContainsKey(IP);
         }
 
         public static bool inAdminGroup(string email)
