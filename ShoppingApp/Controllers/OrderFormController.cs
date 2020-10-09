@@ -43,7 +43,7 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
             {
                 // 返回該 UserId 所下的訂單，並按照日期排序(新->舊)
                 return View(await _context.OrderForm.Where(o => o.SenderId == User.FindFirstValue(ClaimTypes.NameIdentifier)).OrderByDescending(o => o.CreateTime).ToPagedListAsync(page, pageSize));
@@ -161,7 +161,7 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Edit(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id == null)
             {
@@ -180,7 +180,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,SenderId,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id != orderForm.Id)
             {
@@ -212,7 +212,7 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -228,13 +228,14 @@ namespace ShoppingApp.Controllers
 
                 // 提交變更
                 transaction.Commit();
+                _logger.LogWarning($"[{User.Identity.Name}]刪除了第{order.Id}號訂單，下單者為[{order.SenderEmail}]");
             }
             return RedirectToAction(nameof(Index));
         }
 
         private bool OrderFormExists(int id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
             {
                 return false;
             }
@@ -276,6 +277,15 @@ namespace ShoppingApp.Controllers
                 TempData["PayResult"] = $"付款失敗QQ...詳情請洽歐付寶的客服人員(02-2655-0115)";
                 return View("PayResult");
             }
+        }
+
+        public async Task<IActionResult> DeleteAll()
+        {
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            _context.RemoveRange(_context.OrderForm);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

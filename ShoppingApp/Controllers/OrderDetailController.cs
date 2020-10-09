@@ -22,14 +22,14 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             return View(await _context.OrderDetail.OrderByDescending(p => p.OrderId).ToPagedListAsync(page, 10));
         }
 
         public async Task<IActionResult> Details(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id == null)
             {
@@ -48,7 +48,7 @@ namespace ShoppingApp.Controllers
 
         public IActionResult Create()
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             return View();
         }
@@ -57,7 +57,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,OrderId,Name,Price,Quantity")] OrderDetail orderDetail)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -70,7 +70,7 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Edit(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id == null)
             {
@@ -89,7 +89,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,OrderId,Name,Price,Quantity")] OrderDetail orderDetail)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id != orderDetail.Id)
             {
@@ -121,7 +121,7 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id == null)
             {
@@ -142,12 +142,21 @@ namespace ShoppingApp.Controllers
 
         private bool OrderDetailExists(int id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
             {
                 return false;
             }
 
             return _context.OrderDetail.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> DeleteAll()
+        {
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            _context.RemoveRange(_context.OrderDetail);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

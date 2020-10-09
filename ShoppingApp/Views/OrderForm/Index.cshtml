@@ -7,12 +7,10 @@
 
 <h1>訂單列表</h1>
 
-@if (AuthorizeManager.inAdminGroup(User.Identity.Name))
-{
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-}
+<p>
+    <a asp-action="Create">Create New</a>&nbsp;&nbsp;&nbsp;
+    <a asp-action="DeleteAll">Delete All</a>
+</p>
 
 <table class="table">
     <thead>
@@ -67,7 +65,7 @@
                     @Html.DisplayFor(modelItem => item.CheckOut)
                 </td>
                 <td>
-                    @if (AuthorizeManager.inAdminGroup(User.Identity.Name))
+                    @if (AuthorizeManager.InAdminGroup(User.Identity.Name))
                     {
                         @*<a asp-action="Edit" asp-route-id="@item.Id">Edit |</a>*@
                         <a asp-action="Delete" asp-route-id="@item.Id">Delete |</a>

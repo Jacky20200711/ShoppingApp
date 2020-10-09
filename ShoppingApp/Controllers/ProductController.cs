@@ -35,7 +35,7 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
             
             // 按照產品的日期排序(新->舊)
             return View(await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, 10));
@@ -85,12 +85,12 @@ namespace ShoppingApp.Controllers
             // 檢查這個 IP 是否被禁言
             string ClientIP = HttpContext.Connection.RemoteIpAddress.ToString();
 
-            if (AuthorizeManager.isDisableCommentIP(ClientIP))
+            if (AuthorizeManager.IsDisableCommentIP(ClientIP))
             {
                 // 檢查是否達到解封時間
-                if (AuthorizeManager.itTimeToUnLock(ClientIP))
+                if (AuthorizeManager.ItTimeToUnLock(ClientIP))
                 {
-                    AuthorizeManager.unLock(ClientIP);
+                    AuthorizeManager.UnLock(ClientIP);
                     HttpContext.Session.Remove("DisableComment");
                     _logger.LogInformation($"[{ClientIP}]解封發言!");
                 }
@@ -127,7 +127,7 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Edit(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id == null)
             {
@@ -146,7 +146,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL")] Product product)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             if (id != product.Id)
             {
@@ -178,17 +178,27 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             var product = await _context.Product.FindAsync(id);
             _context.Product.Remove(product);
+            await _context.SaveChangesAsync();
+            _logger.LogWarning($"[{User.Identity.Name}]刪除了產品[{product.Name}]");
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> DeleteAll()
+        {
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            _context.RemoveRange(_context.Product);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
             {
                 return false;
             }
@@ -231,7 +241,7 @@ namespace ShoppingApp.Controllers
                     {
                         string ClientIP = HttpContext.Connection.RemoteIpAddress.ToString();
                         HttpContext.Session.Remove("CommentCount");
-                        AuthorizeManager.addDisableCommentIP(ClientIP);
+                        AuthorizeManager.AddDisableCommentIP(ClientIP);
                         _logger.LogWarning($"[{ClientIP}]已被禁言!");
                     }
                     else
@@ -246,7 +256,7 @@ namespace ShoppingApp.Controllers
 
         public ActionResult ResetProducts()
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             // 刪除所有產品
             _context.RemoveRange(_context.Product);
@@ -283,7 +293,7 @@ namespace ShoppingApp.Controllers
                         Name = "萌妹壁紙" + (i+1).ToString("D2"),
                         Description = "可愛的萌妹子壁紙",
                         Price = random.Next(100, 200),
-                        PublishDate = DateTime.Now,
+                        PublishDate = DateTime.Now.AddSeconds(i),
                         Quantity = 200,
                         DefaultImageURL = ImageUrlList[i]
                     }

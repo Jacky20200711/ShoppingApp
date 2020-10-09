@@ -88,7 +88,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse" id="navbarSupportedContent">
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
-                        @if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
+                        @if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
                         {
                             <li>@Html.ActionLink("購物首頁", "Index", "Home", null, new { @class = "my-class" })</li>
                             <li>@Html.ActionLink("聯絡方式", "Contact", "Home", null, new { @class = "my-class" })</li>
@@ -101,8 +101,9 @@
                             <li>@Html.ActionLink("會員", "Index", "User", null, new { @class = "my-class" })</li>
                             <li>@Html.ActionLink("訂單", "Index", "OrderForm", null, new { @class = "my-class" })</li>
                             <li>@Html.ActionLink("留言", "Index", "Comment", null, new { @class = "my-class" })</li>
+                            <li>@Html.ActionLink("匯出", "Index", "CSV", null, new { @class = "my-class" })</li>
 
-                            if(User.Identity.Name == AuthorizeManager.SuperAdmin)
+                            if (User.Identity.Name == AuthorizeManager.SuperAdmin)
                             {
                                 <li>@Html.ActionLink("權限", "Index", "AuthorizedMember", null, new { @class = "my-class" })</li>
                             }

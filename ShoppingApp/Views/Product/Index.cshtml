@@ -9,12 +9,17 @@
 
 <p>
     <a asp-action="Create">Create New</a>&nbsp;&nbsp;&nbsp;
-    <a asp-action="ResetProducts">ResetProducts</a>
+    <a asp-action="DeleteAll">Delete All</a>&nbsp;&nbsp;&nbsp;
+    <a asp-action="ResetProducts">Reset</a>&nbsp;&nbsp;&nbsp;
+    <a asp-controller="CSV" asp-action="ImportProduct">Import</a>
 </p>
 
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Id)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.FirstOrDefault().Name)
             </th>
@@ -30,7 +35,8 @@
             <th>
                 @Html.DisplayNameFor(model => model.FirstOrDefault().Quantity)
             </th>
-            <th></th><th></th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>

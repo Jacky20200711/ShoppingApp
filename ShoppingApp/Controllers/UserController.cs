@@ -38,14 +38,14 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Index(int page = 1)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             return View(await _context.Users.ToPagedListAsync(page, pageSize));
         }
 
         public IActionResult Create()
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             return View();
         }
@@ -54,7 +54,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Email,PasswordHash")] IdentityUser identityUser)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             // 這並不是用 Entity Framework 產生的 CRUD，所以要自行檢查欄位
             if (string.IsNullOrEmpty(identityUser.Email) ||
@@ -78,7 +78,7 @@ namespace ShoppingApp.Controllers
 
         public ActionResult Delete(string id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
 
@@ -89,21 +89,21 @@ namespace ShoppingApp.Controllers
             }
 
             // 查看該使用者是否為特權用戶，如果是...則從特權資料表和 HashTable 中移除
-            if(AuthorizeManager.inAuthorizedMember(user.Email))
+            if(AuthorizeManager.InAuthorizedMember(user.Email))
             {
-                AuthorizeManager.updateAuthority("DeleteAll", _context, user.Email, null, null);
+                AuthorizeManager.UpdateAuthority("DeleteAll", _context, user.Email, null, null);
             }
 
             // 刪除該使用者
             _context.Users.Remove(user);
             _context.SaveChanges();
-            _logger.LogInformation($"[{User.Identity.Name}]刪除了用戶[{user.Email}]");
+            _logger.LogWarning($"[{User.Identity.Name}]刪除了用戶[{user.Email}]");
             return RedirectToAction("Index");
         }
 
         public ActionResult Edit(string id)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
 
@@ -119,7 +119,7 @@ namespace ShoppingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(IdentityUser identityUser)
         {
-            if (!AuthorizeManager.inAdminGroup(User.Identity.Name))
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
             {
                 _logger.LogWarning($"非管理員用戶[{User.Identity.Name}]企圖修改會員的資料!");
                 return NotFound();
@@ -135,9 +135,9 @@ namespace ShoppingApp.Controllers
             else
             {
                 // 如果是特權用戶，則變更此特權用戶的郵件
-                if(AuthorizeManager.inAuthorizedMember(user.Email))
+                if(AuthorizeManager.InAuthorizedMember(user.Email))
                 {
-                    AuthorizeManager.updateAuthority("ModifyEmail", _context, user.Email, identityUser.Email);
+                    AuthorizeManager.UpdateAuthority("ModifyEmail", _context, user.Email, identityUser.Email);
                 }
 
                 user.Email = identityUser.Email;
@@ -205,6 +205,15 @@ namespace ShoppingApp.Controllers
             }
             _logger.LogInformation($"系統寄了新密碼給[{userEmail}]");
             return View("~/Areas/Identity/Pages/Account/ForgotPasswordConfirmation.cshtml");
+        }
+
+        public async Task<IActionResult> DeleteAll()
+        {
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            _context.RemoveRange(_context.Users.Where(m => m.Email != AuthorizeManager.SuperAdmin));
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

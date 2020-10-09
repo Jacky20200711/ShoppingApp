@@ -67,7 +67,7 @@ namespace ShoppingApp.Controllers
             {
                 _context.Add(authorizedMember);
                 await _context.SaveChangesAsync();
-                AuthorizeManager.updateAuthority("UpdateHashTableByAuthorizedMember", null, null, null, authorizedMember);
+                AuthorizeManager.UpdateAuthority("UpdateHashTableByAuthorizedMember", null, null, null, authorizedMember);
                 return RedirectToAction(nameof(Index));
             }
             return View(authorizedMember);
@@ -111,7 +111,7 @@ namespace ShoppingApp.Controllers
                 {
                     _context.Update(authorizedMember);
                     await _context.SaveChangesAsync();
-                    AuthorizeManager.updateAuthority("UpdateHashTableByAuthorizedMember", null, null, null, authorizedMember);
+                    AuthorizeManager.UpdateAuthority("UpdateHashTableByAuthorizedMember", null, null, null, authorizedMember);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -151,7 +151,7 @@ namespace ShoppingApp.Controllers
 
             _context.AuthorizedMember.Remove(authorizedMember);
             await _context.SaveChangesAsync();
-            AuthorizeManager.updateAuthority("DeleteFromHashTable", null, null, null, authorizedMember);
+            AuthorizeManager.UpdateAuthority("DeleteFromHashTable", null, null, null, authorizedMember);
             return RedirectToAction(nameof(Index));
         }
 

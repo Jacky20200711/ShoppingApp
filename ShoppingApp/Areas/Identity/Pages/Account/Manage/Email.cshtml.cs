@@ -108,9 +108,9 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
                 if(GetUserByEmail == null)
                 {
                     // 檢查是否為特權用戶
-                    if(AuthorizeManager.inAuthorizedMember(user.Email))
+                    if(AuthorizeManager.InAuthorizedMember(user.Email))
                     {
-                        AuthorizeManager.updateAuthority("ModifyEmail", _context, user.Email, Input.NewEmail);
+                        AuthorizeManager.UpdateAuthority("ModifyEmail", _context, user.Email, Input.NewEmail);
                     }
 
                     user.UserName = Input.NewEmail;
