@@ -79,5 +79,14 @@ namespace ShoppingApp.Controllers
 
             return RedirectToRoute(new { controller = "Product", action = "Index" });
         }
+
+        public IActionResult ImportUser()
+        {
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            CSVManager.ImportUser(_context);
+
+            return RedirectToRoute(new { controller = "User", action = "Index" });
+        }
     }
 }

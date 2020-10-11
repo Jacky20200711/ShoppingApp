@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ShoppingApp.Data;
 using System;
@@ -9,7 +10,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ShoppingApp.Models
 {
@@ -19,16 +19,6 @@ namespace ShoppingApp.Models
         private class ProductMap : ClassMap<Product>
         {
             public ProductMap()
-            {
-                AutoMap(CultureInfo.InvariantCulture);
-                Map(m => m.Id).Ignore();
-            }
-        }
-
-        // 讀取的時候忽略ID屬性
-        private class OrderFormMap : ClassMap<OrderForm>
-        {
-            public OrderFormMap()
             {
                 AutoMap(CultureInfo.InvariantCulture);
                 Map(m => m.Id).Ignore();
@@ -57,7 +47,7 @@ namespace ShoppingApp.Models
 
         public static string GetConfigValue(string Key)
         {
-            // 從設定檔取得備份路徑
+            // 從設定檔取得對應的設定值
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json");
@@ -69,7 +59,7 @@ namespace ShoppingApp.Models
 
         public static string GetFilePath(string TableName)
         {
-            // 從設定檔取得備份路徑
+            // 從設定檔取得匯出路徑
             string ExportPath = GetConfigValue("ExportPath"); 
 
             // 取得當前時間
@@ -99,7 +89,7 @@ namespace ShoppingApp.Models
 
         public static void ExportUser(ApplicationDbContext _context)
         {
-            List<IdentityUser> DataList = _context.Users.ToList();
+            List<IdentityUser> DataList = _context.Users.Where(m => m.Email != AuthorizeManager.SuperAdmin).ToList();
 
             string FilePath = GetFilePath("User");
 
@@ -153,7 +143,7 @@ namespace ShoppingApp.Models
             // 從設定檔取得匯入檔的路徑
             string ImportPath = GetConfigValue("ImportPath");
 
-            // 找到目標檔案
+            // 找到目標檔案並匯入
             foreach (string FilePath in Directory.GetFileSystemEntries(ImportPath, "*.csv"))
             {
                 string fname =  Path.GetFileNameWithoutExtension(FilePath);
@@ -163,8 +153,30 @@ namespace ShoppingApp.Models
                     using var reader = new StreamReader(FilePath, Encoding.UTF8);
                     var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
                     csvReader.Configuration.RegisterClassMap<ProductMap>();
-                    List<Product> ProductList = csvReader.GetRecords<Product>().ToList();
+                    var ProductList = csvReader.GetRecords<Product>().ToList();
                     _context.Product.AddRange(ProductList);
+                    _context.SaveChanges();
+                    return;
+                }
+            }
+        }
+
+        public static void ImportUser(ApplicationDbContext _context)
+        {
+            // 從設定檔取得匯入檔的路徑
+            string ImportPath = GetConfigValue("ImportPath");
+
+            // 找到目標檔案並匯入
+            foreach (string FilePath in Directory.GetFileSystemEntries(ImportPath, "*.csv"))
+            {
+                string fname = Path.GetFileNameWithoutExtension(FilePath);
+
+                if (fname.StartsWith("User"))
+                {
+                    using var reader = new StreamReader(FilePath, Encoding.UTF8);
+                    var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
+                    var UserList = csvReader.GetRecords<IdentityUser>().ToList();
+                    _context.Users.AddRange(UserList);
                     _context.SaveChanges();
                     return;
                 }
