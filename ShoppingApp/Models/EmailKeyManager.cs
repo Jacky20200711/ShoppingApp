@@ -8,11 +8,11 @@ namespace ShoppingApp.Models
 {
     public static  class EmailKeyManager
     {
-        // KEY => 隨機產生 & Value => 寄送認證信的郵件
-        private static Dictionary<string, string> EmailKeys = new Dictionary<string, string>();
+        // KEY => 在 UserController/SendVerifyEmail 隨機產生 & Value => 寄送認證信的郵件
+        private static readonly Dictionary<string, string> EmailKeys = new Dictionary<string, string>();
 
         // 紀錄該IP的寄送次數
-        private static Dictionary<string, int> SendCount = new Dictionary<string, int>();
+        private static readonly Dictionary<string, int> SendCount = new Dictionary<string, int>();
 
         public static void IncrementCount(string IP)
         {

@@ -1,7 +1,5 @@
 ﻿using ShoppingApp.Data;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace ShoppingApp.Models
@@ -13,35 +11,8 @@ namespace ShoppingApp.Models
         public static string SuperAdmin = "fewer135@gmail.com";
 
         // 將特權用戶的資訊存入到記憶體(HashTable)，模擬 Cache 的概念
-        private static HashSet<string> AdminGroup = new HashSet<string> { SuperAdmin };
-        private static HashSet<string> SellerGroup = new HashSet<string> { SuperAdmin };
-
-        // KEY => 封鎖留言過多的IP & Value => 紀錄封鎖的時間
-        private static Dictionary<string, DateTime> DisableCommentIP = new Dictionary<string, DateTime>();
-
-        public static void AddDisableCommentIP(string IP)
-        {
-            DisableCommentIP[IP] = DateTime.Now;
-        }
-
-        // 確認封鎖經過的時間是否大於30分鐘
-        public static bool ItTimeToUnLock(string IP)
-        {
-            DateTime CurrentTime = DateTime.Now;
-            DateTime LockTime = DisableCommentIP[IP];
-            TimeSpan timeSpan = CurrentTime.Subtract(LockTime);
-            return timeSpan.Minutes > 30;
-        }
-
-        public static void UnLock(string IP)
-        {
-            DisableCommentIP.Remove(IP);
-        }
-
-        public static bool IsDisableCommentIP(string IP)
-        {
-            return DisableCommentIP.ContainsKey(IP);
-        }
+        private static readonly HashSet<string> AdminGroup = new HashSet<string> { SuperAdmin };
+        private static readonly HashSet<string> SellerGroup = new HashSet<string> { SuperAdmin };
 
         public static bool InAdminGroup(string email)
         {

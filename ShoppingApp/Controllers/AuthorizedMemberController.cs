@@ -149,9 +149,7 @@ namespace ShoppingApp.Controllers
             // 令超級管理員無法刪除自己
             if (authorizedMember.Email == AuthorizeManager.SuperAdmin) return NotFound();
 
-            _context.AuthorizedMember.Remove(authorizedMember);
-            await _context.SaveChangesAsync();
-            AuthorizeManager.UpdateAuthority("DeleteFromHashTable", null, null, null, authorizedMember);
+            AuthorizeManager.UpdateAuthority("DeleteAll", _context, authorizedMember.Email, null, null);
             return RedirectToAction(nameof(Index));
         }
 

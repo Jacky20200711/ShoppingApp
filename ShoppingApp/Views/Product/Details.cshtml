@@ -76,9 +76,7 @@
         @*輸入留言*@
         @using (Html.BeginForm("AddComment", "Product", FormMethod.Post, new { onsubmit = "return checkLen();" }))
         {
-            string DisableComment = HttpContextAccessor.HttpContext.Session.GetString("DisableComment");
-
-            if (DisableComment == null)
+            if (TempData["ProductDetail"] == null)
             {
                 <span style="display:none;">@Html.TextBox("id", Model.FirstOrDefault().TheProduct.Id)</span>
                 @Html.TextBox("comment", null, new { id = "PostComment", @class = "text-field" })
@@ -86,7 +84,7 @@
             }
             else
             {
-                <p style="color:red;">您的留言次數過多，暫時無法留言!</p>
+                <p style="color:red;">@TempData["ProductDetail"]</p>
             }
         }
     }

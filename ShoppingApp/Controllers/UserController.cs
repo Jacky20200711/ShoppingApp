@@ -156,9 +156,8 @@ namespace ShoppingApp.Controllers
         {
             // 檢查這個IP的寄送次數
             string ClientIP = HttpContext.Connection.RemoteIpAddress.ToString();
-            if (EmailKeyManager.GetSendCountByIP(ClientIP) > 3)
+            if (EmailKeyManager.GetSendCountByIP(ClientIP) > 2)
             {
-                _logger.LogWarning($"[{ClientIP}]寄送驗證信的次數太多，已被系統封鎖");
                 TempData["ForgotPasswordConfirmation"] = "您的寄送次數已達上限，請聯絡網站的管理員!";
                 return View("~/Areas/Identity/Pages/Account/ForgotPasswordConfirmation.cshtml");
             }

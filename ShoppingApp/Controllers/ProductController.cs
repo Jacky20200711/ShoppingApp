@@ -82,25 +82,6 @@ namespace ShoppingApp.Controllers
                 });
             }
 
-            // 檢查這個 IP 是否被禁言
-            string ClientIP = HttpContext.Connection.RemoteIpAddress.ToString();
-
-            if (AuthorizeManager.IsDisableCommentIP(ClientIP))
-            {
-                // 檢查是否達到解封時間
-                if (AuthorizeManager.ItTimeToUnLock(ClientIP))
-                {
-                    AuthorizeManager.UnLock(ClientIP);
-                    HttpContext.Session.Remove("DisableComment");
-                    _logger.LogInformation($"[{ClientIP}]解封發言!");
-                }
-                else
-                {
-                    // 持續在前端顯示禁言
-                    HttpContext.Session.SetString("DisableComment", ClientIP);
-                }
-            }
-
             // 傳送封裝的類別，每頁顯示10筆留言
             return View(await productAndComments.ToPagedListAsync(page, 10));
         }
@@ -210,10 +191,22 @@ namespace ShoppingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(int id, string comment)
         {
+            // 檢查這個IP的留言次數
+            string ClientIP = HttpContext.Connection.RemoteIpAddress.ToString();
+            if (CommentManager.GetCommentCountByIP(ClientIP) > 4)
+            {
+                TempData["ProductDetail"] = "您的留言次數已達上限，請聯絡網站的管理員!";
+                return RedirectToAction("Details", new { id });
+            }
+            else
+            {
+                CommentManager.IncrementCount(ClientIP);
+            }
+
             // 檢查留言長度
             if (string.IsNullOrEmpty(comment) || comment.Length < 2 || comment.Length > 100)
             {
-                return Content("輸入長度有誤!");
+                TempData["ProductDetail"] = "請檢查您的留言內容!";
             }
             else
             {
@@ -225,33 +218,8 @@ namespace ShoppingApp.Controllers
                     Content = comment
                 });
                 await _context.SaveChangesAsync();
-
-                // 計算留言次數
-                int? CommentCount = HttpContext.Session.GetInt32("CommentCount");
-                if (CommentCount == null)
-                {
-                    HttpContext.Session.SetInt32("CommentCount", 1);
-                }
-                else
-                {
-                    int getCommentCount = (int)CommentCount + 1;
-
-                    // 若達到 5 次，則將使用者IP添加到封鎖列表
-                    if(getCommentCount == 5)
-                    {
-                        string ClientIP = HttpContext.Connection.RemoteIpAddress.ToString();
-                        HttpContext.Session.Remove("CommentCount");
-                        AuthorizeManager.AddDisableCommentIP(ClientIP);
-                        _logger.LogWarning($"[{ClientIP}]已被禁言!");
-                    }
-                    else
-                    {
-                        HttpContext.Session.SetInt32("CommentCount", getCommentCount);
-                    }
-                }
-
-                return RedirectToAction("Details", new { id });
             }
+            return RedirectToAction("Details", new { id });
         }
 
         public ActionResult ResetProducts()
