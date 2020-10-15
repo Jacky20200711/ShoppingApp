@@ -26,7 +26,10 @@ namespace ShoppingApp.Controllers
         private static IMemoryCache _memoryCache;
         private readonly ILogger _logger;
 
-        public ProductController(ApplicationDbContext context, IMemoryCache memoryCache, ILogger<OrderFormController> logger)
+        public ProductController(
+            ApplicationDbContext context, 
+            IMemoryCache memoryCache, 
+            ILogger<OrderFormController> logger)
         {
             _context = context;
             _memoryCache = memoryCache;

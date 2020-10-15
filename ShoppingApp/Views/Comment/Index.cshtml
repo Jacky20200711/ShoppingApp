@@ -8,23 +8,24 @@
 
 <p>
     <a asp-action="Create">Create New</a>&nbsp;&nbsp;&nbsp;
-    <a asp-action="DeleteAll">Delete All</a>
+    <a asp-action="DeleteAll">Delete All</a>&nbsp;&nbsp;&nbsp;
+    <a asp-controller="CSV" asp-action="ImportComment">Import</a>
 </p>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().Content)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().ProductId)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.FirstOrDefault().UserName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().CreateTime)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Content)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().ProductId)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().CreateTime)
             </th>
             <th></th>
         </tr>
@@ -34,16 +35,16 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Content)
+                    @Html.DisplayFor(modelItem => item.ProductId)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.UserName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.CreateTime)
+                    @Html.DisplayFor(modelItem => item.Content)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ProductId)
+                    @Html.DisplayFor(modelItem => item.CreateTime)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

@@ -88,5 +88,25 @@ namespace ShoppingApp.Controllers
 
             return RedirectToRoute(new { controller = "User", action = "Index" });
         }
+
+        public IActionResult ImportOrder()
+        {
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            string result = CSVManager.ImportOrder(_context);
+
+            if (!string.IsNullOrEmpty(result)) return Content(result);
+
+            return RedirectToRoute(new { controller = "OrderForm", action = "Index" });
+        }
+
+        public IActionResult ImportComment()
+        {
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            CSVManager.ImportComment(_context);
+
+            return RedirectToRoute(new { controller = "Comment", action = "Index" });
+        }
     }
 }

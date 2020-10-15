@@ -1,6 +1,8 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ShoppingApp.Data;
 using System;
@@ -152,10 +154,9 @@ namespace ShoppingApp.Models
                     using var reader = new StreamReader(FilePath, Encoding.UTF8);
                     var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
                     csvReader.Configuration.RegisterClassMap<ProductMap>();
-                    var ProductList = csvReader.GetRecords<Product>().ToList();
-                    _context.Product.AddRange(ProductList);
+                    var DataList = csvReader.GetRecords<Product>().ToList();
+                    _context.Product.AddRange(DataList);
                     _context.SaveChanges();
-                    return;
                 }
             }
         }
@@ -174,10 +175,82 @@ namespace ShoppingApp.Models
                 {
                     using var reader = new StreamReader(FilePath, Encoding.UTF8);
                     var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
-                    var UserList = csvReader.GetRecords<IdentityUser>().ToList();
-                    _context.Users.AddRange(UserList);
+                    var DataList = csvReader.GetRecords<IdentityUser>().ToList();
+                    _context.Users.AddRange(DataList);
                     _context.SaveChanges();
-                    return;
+                }
+            }
+        }
+
+        public static string ImportOrder(ApplicationDbContext _context)
+        {
+            // 從設定檔取得匯入檔的路徑
+            string ImportPath = GetConfigValue("ImportPath");
+            string FilePath1="", FilePath2="";
+
+            // 找到訂單和明細的檔案
+            foreach (string FilePath in Directory.GetFileSystemEntries(ImportPath, "*.csv"))
+            {
+                string fname = Path.GetFileNameWithoutExtension(FilePath);
+
+                if (fname.StartsWith("OrderForm"))
+                {
+                    FilePath1 = FilePath;
+                }
+
+                if (fname.StartsWith("OrderDetail"))
+                {
+                    FilePath2 = FilePath;
+                }
+            }
+
+            try
+            {
+                // 讀取訂單(必須讀取 Id 因為會連動到訂單明細)
+                using var reader = new StreamReader(FilePath1, Encoding.UTF8);
+                var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
+                var DataList = csvReader.GetRecords<OrderForm>().ToList();
+
+                // 讀取明細(忽略明細Id)
+                using var reader2 = new StreamReader(FilePath2, Encoding.UTF8);
+                var csvReader2 = new CsvReader(reader2, CultureInfo.InvariantCulture);
+                csvReader2.Configuration.RegisterClassMap<OrderDetailMap>();
+                var DataList2 = csvReader2.GetRecords<OrderDetail>().ToList();
+
+                // 使用 SQL 令 OrderForm 暫時可以指定 Id
+                using var transaction = _context.Database.BeginTransaction();
+                _context.OrderForm.AddRange(DataList);
+                _context.OrderDetail.AddRange(DataList2);
+                _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.OrderForm ON");
+                _context.SaveChanges();
+                _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.OrderForm OFF");
+                transaction.Commit();
+                return "";
+            }
+            catch (Exception e)
+            {
+                return e.ToString();
+            }
+        }
+
+        public static void ImportComment(ApplicationDbContext _context)
+        {
+            // 從設定檔取得匯入檔的路徑
+            string ImportPath = GetConfigValue("ImportPath");
+
+            // 找到目標檔案並匯入
+            foreach (string FilePath in Directory.GetFileSystemEntries(ImportPath, "*.csv"))
+            {
+                string fname = Path.GetFileNameWithoutExtension(FilePath);
+
+                if (fname.StartsWith("Comment"))
+                {
+                    using var reader = new StreamReader(FilePath, Encoding.UTF8);
+                    var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
+                    csvReader.Configuration.RegisterClassMap<CommentMap>();
+                    var DataList = csvReader.GetRecords<Comment>().ToList();
+                    _context.Comment.AddRange(DataList);
+                    _context.SaveChanges();
                 }
             }
         }

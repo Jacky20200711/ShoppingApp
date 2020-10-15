@@ -216,17 +216,16 @@ namespace ShoppingApp.Controllers
 
             using (var transaction = _context.Database.BeginTransaction())
             {
-                // 刪除訂單明細並更新資料庫
+                // 刪除訂單明細
                 var orderDetails = _context.OrderDetail.Where(o => o.OrderId == id);
                 _context.OrderDetail.RemoveRange(orderDetails);
-                await _context.SaveChangesAsync();
 
-                // 刪除訂單並更新資料庫
+                // 刪除訂單
                 var order = await _context.OrderForm.FindAsync(id);
                 _context.OrderForm.Remove(order);
-                await _context.SaveChangesAsync();
 
                 // 提交變更
+                await _context.SaveChangesAsync();
                 transaction.Commit();
                 _logger.LogWarning($"[{User.Identity.Name}]刪除了第{order.Id}號訂單，下單者為[{order.SenderEmail}]");
             }
@@ -283,8 +282,12 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
 
+            // 刪除訂單時，連動刪除明細
+            using var transaction = _context.Database.BeginTransaction();
+            _context.RemoveRange(_context.OrderDetail);
             _context.RemoveRange(_context.OrderForm);
             await _context.SaveChangesAsync();
+            transaction.Commit();
             return RedirectToAction(nameof(Index));
         }
     }
