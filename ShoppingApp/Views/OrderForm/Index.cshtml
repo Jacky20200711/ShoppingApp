@@ -7,10 +7,13 @@
 
 <h1>訂單列表</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>&nbsp;&nbsp;&nbsp;
-    <a asp-action="DeleteAll">Delete All</a>
-</p>
+@if (AuthorizeManager.InAdminGroup(User.Identity.Name))
+{
+    <p>
+        <a asp-action="Create">Create New</a>&nbsp;&nbsp;&nbsp;
+        <a asp-action="DeleteAll">Delete All</a>
+    </p>
+}
 
 <table class="table">
     <thead>
