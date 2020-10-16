@@ -117,7 +117,7 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
                     user.Email = Input.NewEmail;
                     await _userManager.UpdateAsync(user);
                     _logger.LogInformation($"[{email}]的郵件已經變更為[{Input.NewEmail}]");
-                    StatusMessage = $"您的郵件已經變更成[{Input.NewEmail}]，下次登入時請改用新的郵件。";
+                    StatusMessage = $"您的郵件已經變更成[{Input.NewEmail}]，請重新登入以利繼續操作!!!";
                 }
                 else
                 {

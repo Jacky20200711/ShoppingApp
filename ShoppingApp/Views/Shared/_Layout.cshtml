@@ -93,6 +93,11 @@
                             <li>@Html.ActionLink("購物首頁", "Index", "Home", null, new { @class = "my-class" })</li>
                             <li>@Html.ActionLink("聯絡方式", "Contact", "Home", null, new { @class = "my-class" })</li>
                             <li>@Html.ActionLink("我的訂單", "Index", "OrderForm", null, new { @class = "my-class" })</li>
+
+                            if (AuthorizeManager.InSellerGroup(User.Identity.Name))
+                            {
+                                <li>@Html.ActionLink("我的產品", "Index", "Product2", null, new { @class = "my-class" })</li>
+                            }
                         }
                         else
                         {
@@ -102,6 +107,7 @@
                             <li>@Html.ActionLink("訂單", "Index", "OrderForm", null, new { @class = "my-class" })</li>
                             <li>@Html.ActionLink("留言", "Index", "Comment", null, new { @class = "my-class" })</li>
                             <li>@Html.ActionLink("匯出", "Index", "CSV", null, new { @class = "my-class" })</li>
+                            <li>@Html.ActionLink("賣方", "Index", "Product2", null, new { @class = "my-class" })</li>
 
                             if (User.Identity.Name == AuthorizeManager.SuperAdmin)
                             {

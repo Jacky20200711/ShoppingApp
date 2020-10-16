@@ -29,7 +29,7 @@ namespace ShoppingApp.Models
             return AdminGroup.Contains(email) || SellerGroup.Contains(email);
         }
 
-        // 請確認欲變更的使用者存在於 HashTable 中再來 Call 這個函數
+        // 一律由這個 Function 來處理權限的變動
         public static void UpdateAuthority(string action , ApplicationDbContext _context, string email, string newEmail="", AuthorizedMember authorizedMember=null)
         {
             switch(action)

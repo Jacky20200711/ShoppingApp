@@ -18,5 +18,6 @@ namespace ShoppingApp.Data
         public DbSet<ShoppingApp.Models.OrderForm> OrderForm { get; set; }
         public DbSet<ShoppingApp.Models.Comment> Comment { get; set; }
         public DbSet<ShoppingApp.Models.AuthorizedMember> AuthorizedMember { get; set; }
+        public DbSet<ShoppingApp.Models.Product2> Product2 { get; set; }
     }
 }

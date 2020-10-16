@@ -6,10 +6,10 @@ namespace ShoppingApp.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "SenderId",
-                table: "OrderForm",
-                nullable: true);
+            //migrationBuilder.AddColumn<string>(
+            //    name: "SenderId",
+            //    table: "OrderForm",
+            //    nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
