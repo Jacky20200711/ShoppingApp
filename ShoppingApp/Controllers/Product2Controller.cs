@@ -149,6 +149,9 @@ namespace ShoppingApp.Controllers
             {
                 try
                 {
+                    product2.SellerEmail = User.Identity.Name;
+                    product2.SellerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
                     _context.Update(product2);
                     await _context.SaveChangesAsync();
                 }

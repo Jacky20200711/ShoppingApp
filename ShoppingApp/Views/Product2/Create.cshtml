@@ -4,9 +4,8 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<h1>新增產品</h1>
 
-<h4>Product2</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -27,11 +26,11 @@
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @*<div class="form-group">
                 <label asp-for="PublishDate" class="control-label"></label>
                 <input asp-for="PublishDate" class="form-control" />
                 <span asp-validation-for="PublishDate" class="text-danger"></span>
-            </div>
+            </div>*@
             <div class="form-group">
                 <label asp-for="Quantity" class="control-label"></label>
                 <input asp-for="Quantity" class="form-control" />
@@ -42,16 +41,16 @@
                 <input asp-for="DefaultImageURL" class="form-control" />
                 <span asp-validation-for="DefaultImageURL" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            @*<div class="form-group">
                 <label asp-for="SellerEmail" class="control-label"></label>
                 <input asp-for="SellerEmail" class="form-control" />
                 <span asp-validation-for="SellerEmail" class="text-danger"></span>
-            </div>
-            <div class="form-group">
+            </div>*@
+            @*<div class="form-group">
                 <label asp-for="SellerId" class="control-label"></label>
                 <input asp-for="SellerId" class="form-control" />
                 <span asp-validation-for="SellerId" class="text-danger"></span>
-            </div>
+            </div>*@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

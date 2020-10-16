@@ -17,7 +17,6 @@ namespace ShoppingApp.Models
         [Required]
         public int Price { get; set; }
 
-        [Required]
         public DateTime PublishDate { get; set; }
 
         [Required]
@@ -26,10 +25,8 @@ namespace ShoppingApp.Models
         [Required]
         public string DefaultImageURL { get; set; }
 
-        [Required]
         public string SellerEmail { get; set; }
 
-        [Required]
         public string SellerId { get; set; }
     }
 }

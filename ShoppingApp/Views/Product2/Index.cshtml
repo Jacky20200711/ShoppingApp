@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<ShoppingApp.Models.Product2>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "產品列表";
 }
 
-<h1>Index</h1>
+<h1>產品列表</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,35 +13,38 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                產品擁有者
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Description)
+                名稱
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                描述
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PublishDate)
+                價格
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Quantity)
+                庫存
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DefaultImageURL)
+                上架日期
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.SellerEmail)
+                圖片網址
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SellerId)
-            </th>
+            @*<th>
+            @Html.DisplayNameFor(model => model.SellerId)
+        </th>*@
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SellerEmail)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
@@ -52,24 +55,21 @@
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PublishDate)
+                @Html.DisplayFor(modelItem => item.Quantity)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
+                @Html.DisplayFor(modelItem => item.PublishDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.DefaultImageURL)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SellerEmail)
-            </td>
-            <td>
+            @*<td>
                 @Html.DisplayFor(modelItem => item.SellerId)
-            </td>
+            </td>*@
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Id">編輯</a> |
+                @*<a asp-action="Details" asp-route-id="@item.Id">詳細</a> |*@
+                <a asp-action="Delete" asp-route-id="@item.Id">刪除</a>
             </td>
         </tr>
 }
