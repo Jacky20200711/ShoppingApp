@@ -111,7 +111,7 @@ namespace ShoppingApp.Controllers
                 {
                     _context.Update(authorizedMember);
                     await _context.SaveChangesAsync();
-                    AuthorizeManager.UpdateAuthority("UpdateHashTableByAuthorizedMember", null, null, null, authorizedMember);
+                    AuthorizeManager.UpdateAuthority("UpdateHashTableByAuthorizedMember", _context, null, null, authorizedMember);
                 }
                 catch (DbUpdateConcurrencyException)
                 {

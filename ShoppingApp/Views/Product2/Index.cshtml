@@ -7,7 +7,8 @@
 <h1>產品列表</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create">點此建立產品 (最多6個)</a>&nbsp;
+    <span class="text-danger">@TempData["ReachLimit"]</span>
 </p>
 <table class="table">
     <thead>

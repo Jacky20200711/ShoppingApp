@@ -25,7 +25,6 @@ namespace ShoppingApp.Controllers
             _userManager = userManager;
         }
 
-        // GET: Product2
         public async Task<IActionResult> Index()
         {
             if (AuthorizeManager.InAdminGroup(User.Identity.Name))
@@ -44,7 +43,6 @@ namespace ShoppingApp.Controllers
             }
         }
 
-        // GET: Product2/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (!AuthorizeManager.InAuthorizedMember(User.Identity.Name)) return NotFound();
@@ -70,7 +68,6 @@ namespace ShoppingApp.Controllers
             return View(product2);
         }
 
-        // GET: Product2/Create
         public IActionResult Create()
         {
             if (!AuthorizeManager.InAuthorizedMember(User.Identity.Name)) return NotFound();
@@ -78,20 +75,28 @@ namespace ShoppingApp.Controllers
             return View();
         }
 
-        // POST: Product2/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL,SellerEmail,SellerId")] Product2 product2)
         {
             if (!AuthorizeManager.InAuthorizedMember(User.Identity.Name)) return NotFound();
-                        
+
+            string UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var ProductList = _context.Product2.Where(m => m.SellerId == UserId).ToList();
+
+            // 檢查該使用者上架的產品數量
+            if (ProductList != null && ProductList.Count > 5)
+            {
+                TempData["ReachLimit"] = "建立失敗，您的產品數量已達上限!";
+                return RedirectToAction("Index");
+            }
+
             if (ModelState.IsValid)
             {
                 product2.PublishDate = DateTime.Now;
                 product2.SellerEmail = User.Identity.Name;
-                product2.SellerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                product2.SellerId = UserId;
 
                 _context.Add(product2);
                 await _context.SaveChangesAsync();
@@ -100,7 +105,6 @@ namespace ShoppingApp.Controllers
             return View(product2);
         }
 
-        // GET: Product2/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (!AuthorizeManager.InAuthorizedMember(User.Identity.Name)) return NotFound();
@@ -125,20 +129,11 @@ namespace ShoppingApp.Controllers
             return View(product2);
         }
 
-        // POST: Product2/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL,SellerEmail,SellerId")] Product2 product2)
         {
             if (!AuthorizeManager.InAuthorizedMember(User.Identity.Name)) return NotFound();
-
-            // 令沒有管理權限的 Seller 只能編輯自己上架的產品
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
-            {
-                if (product2.SellerId != User.FindFirstValue(ClaimTypes.NameIdentifier)) return NotFound();
-            }
 
             if (id != product2.Id)
             {
@@ -151,6 +146,12 @@ namespace ShoppingApp.Controllers
                 {
                     product2.SellerEmail = User.Identity.Name;
                     product2.SellerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                    // 令沒有管理權限的 Seller 只能編輯自己上架的產品
+                    if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
+                    {
+                        if (product2.SellerId != User.FindFirstValue(ClaimTypes.NameIdentifier)) return NotFound();
+                    }
 
                     _context.Update(product2);
                     await _context.SaveChangesAsync();
@@ -171,7 +172,6 @@ namespace ShoppingApp.Controllers
             return View(product2);
         }
 
-        // GET: Product2/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (!AuthorizeManager.InAuthorizedMember(User.Identity.Name)) return NotFound();

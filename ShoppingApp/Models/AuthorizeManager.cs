@@ -30,58 +30,89 @@ namespace ShoppingApp.Models
         }
 
         // 一律由這個 Function 來處理權限的變動
-        public static void UpdateAuthority(string action , ApplicationDbContext _context, string email, string newEmail="", AuthorizedMember authorizedMember=null)
+        public static void UpdateAuthority(string action,
+            ApplicationDbContext _context,
+            string email,
+            string newEmail = "",
+            AuthorizedMember authorizedMember = null)
         {
             switch(action)
             {
                 case "DeleteAll":
-                {
-                    AdminGroup.Remove(email);
-                    SellerGroup.Remove(email);
-                    authorizedMember = _context.AuthorizedMember.FirstOrDefault(m => m.Email == email);
-                    _context.AuthorizedMember.Remove(authorizedMember);
-                    _context.SaveChanges();
-                    return;
-                }
+                    {
+                        AdminGroup.Remove(email);
+                        SellerGroup.Remove(email);
+                        using var transaction = _context.Database.BeginTransaction();
+                        authorizedMember = _context.AuthorizedMember.FirstOrDefault(m => m.Email == email);
+                        _context.AuthorizedMember.Remove(authorizedMember);
+                        _context.RemoveRange(_context.Product2.Where(m => m.SellerEmail == email));
+                        _context.SaveChanges();
+                        transaction.Commit();
+                        return;
+                    }
 
                 case "DeleteFromHashTable":
-                {
-                    AdminGroup.Remove(email);
-                    SellerGroup.Remove(email);
-                    return;
-                }
+                    {
+                        AdminGroup.Remove(email);
+                        SellerGroup.Remove(email);
+                        return;
+                    }
 
                 case "ModifyEmail":
-                {
-                    // 變更資料庫儲存的郵件
-                    authorizedMember = _context.AuthorizedMember.FirstOrDefault(m => m.Email == email);
-                    authorizedMember.Email = newEmail;
-                    _context.SaveChanges();
+                    {
+                        using var transaction = _context.Database.BeginTransaction();
 
-                    // 從 HashTable 中刪除舊的郵件
-                    AdminGroup.Remove(email);
-                    SellerGroup.Remove(email);
+                        // 變更權限資料表儲存的郵件
+                        authorizedMember = _context.AuthorizedMember.FirstOrDefault(m => m.Email == email);
+                        authorizedMember.Email = newEmail;
 
-                    // 檢查 & 在 HashTable 添加新的郵件
-                    if (authorizedMember.InAdminGroup) AdminGroup.Add(newEmail);
-                    if (authorizedMember.InSellerGroup) SellerGroup.Add(newEmail);
-                    return;
-                }
+                        // 變更上架資料表儲存的郵件
+                        var ProductList = _context.Product2.Where(m => m.SellerEmail == email).ToList();
+
+                        foreach(var p in ProductList)
+                        {
+                            p.SellerEmail = newEmail;
+                        }
+
+                        _context.SaveChanges();
+                        transaction.Commit();
+
+                        // 從 HashTable 中刪除舊的郵件
+                        AdminGroup.Remove(email);
+                        SellerGroup.Remove(email);
+
+                        // 檢查 & 在 HashTable 添加新的郵件
+                        if (authorizedMember.InAdminGroup) AdminGroup.Add(newEmail);
+                        if (authorizedMember.InSellerGroup) SellerGroup.Add(newEmail);
+                        return;
+                    }
 
                 case "UpdateHashTableByAuthorizedMember":
-                {
-                    if (authorizedMember.InAdminGroup)
-                        AdminGroup.Add(authorizedMember.Email);
-                    else
-                        AdminGroup.Remove(authorizedMember.Email);
+                    {
+                        if (authorizedMember.InAdminGroup)
+                        {
+                            AdminGroup.Add(authorizedMember.Email);
+                        }
+                        else
+                        {
+                            AdminGroup.Remove(authorizedMember.Email);
+                        }
 
-                    if (authorizedMember.InSellerGroup)
-                        SellerGroup.Add(authorizedMember.Email);
-                    else
-                        SellerGroup.Remove(authorizedMember.Email);
+                        if (authorizedMember.InSellerGroup)
+                        {
+                            SellerGroup.Add(authorizedMember.Email);
+                        }
+                        else
+                        {
+                            SellerGroup.Remove(authorizedMember.Email);
 
-                    return;
-                }
+                            // 連動刪除上架的產品
+                            _context.RemoveRange(_context.Product2.Where(m => m.SellerEmail == authorizedMember.Email));
+                            _context.SaveChanges();
+                        }
+
+                        return;
+                    }
             }
         }
 

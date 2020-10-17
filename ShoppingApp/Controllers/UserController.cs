@@ -249,8 +249,15 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
 
+            // 清空權限 & 會員 & 上架的資料表 
+            _context.RemoveRange(_context.AuthorizedMember.Where(m => m.Email != AuthorizeManager.SuperAdmin));
             _context.RemoveRange(_context.Users.Where(m => m.Email != AuthorizeManager.SuperAdmin));
+            _context.RemoveRange(_context.Product2);
             await _context.SaveChangesAsync();
+
+            // 刷新權限的HashTable
+            AuthorizeManager.RefreshHashTable(_context);
+
             return RedirectToAction(nameof(Index));
         }
     }
