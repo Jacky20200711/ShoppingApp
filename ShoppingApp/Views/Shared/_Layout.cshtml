@@ -91,7 +91,6 @@
                         @if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
                         {
                             <li>@Html.ActionLink("購物首頁", "Index", "Home", null, new { @class = "my-class" })</li>
-                            <li>@Html.ActionLink("聯絡方式", "Contact", "Home", null, new { @class = "my-class" })</li>
                             <li>@Html.ActionLink("我的訂單", "Index", "OrderForm", null, new { @class = "my-class" })</li>
 
                             if (AuthorizeManager.InSellerGroup(User.Identity.Name))
@@ -106,13 +105,14 @@
                             <li>@Html.ActionLink("會員", "Index", "User", null, new { @class = "my-class" })</li>
                             <li>@Html.ActionLink("訂單", "Index", "OrderForm", null, new { @class = "my-class" })</li>
                             <li>@Html.ActionLink("留言", "Index", "Comment", null, new { @class = "my-class" })</li>
-                            <li>@Html.ActionLink("匯出", "Index", "CSV", null, new { @class = "my-class" })</li>
                             <li>@Html.ActionLink("賣方", "Index", "Product2", null, new { @class = "my-class" })</li>
 
                             if (User.Identity.Name == AuthorizeManager.SuperAdmin)
                             {
                                 <li>@Html.ActionLink("權限", "Index", "AuthorizedMember", null, new { @class = "my-class" })</li>
                             }
+
+                            <li>@Html.ActionLink("匯出", "Index", "CSV", null, new { @class = "my-class" })</li>
                         }
                         @if (!isMobile)
                         {
@@ -132,7 +132,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            <p>&copy; @DateTime.Now.Year - 阿貓購物網站 </p>
+            <p>&copy; 若有問題，請寄信給 fewer135@gmail.com</p>
         </div>
     </footer>
 
