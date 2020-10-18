@@ -25,5 +25,7 @@ namespace ShoppingApp.Models
 
         [Required]
         public string DefaultImageURL { get; set; }
+
+        public bool FromProduct2 { get; set; }
     }
 }

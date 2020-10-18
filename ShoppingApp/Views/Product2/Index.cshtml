@@ -14,10 +14,11 @@
 
 <p>
     <a asp-action="Create">點此建立產品 (最多6個)</a>&nbsp;&nbsp;&nbsp;
-    <span>★建立後的產品統一由管理員上架，時間為每天的上午九點和下午三點。</span>
+    <span>★管理員會將建立好的清單更新到購物頁面，時間為每天的上午九點和下午三點。</span>
+    &nbsp;&nbsp;
     @if (AuthorizeManager.InAdminGroup(User.Identity.Name))
     {
-        <a asp-action="PutOnShelf">點此上架所有賣方的產品</a>
+        <a asp-action="ResetShelf">點此將清單更新到購物頁面</a>
     }
 </p>
 

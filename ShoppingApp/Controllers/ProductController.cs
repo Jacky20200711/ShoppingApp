@@ -98,10 +98,12 @@ namespace ShoppingApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL,FromProduct2")] Product product)
         {
             if (ModelState.IsValid)
             {
+                product.PublishDate = DateTime.Now;
+                product.FromProduct2 = false;
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -128,7 +130,7 @@ namespace ShoppingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL,FromProduct2")] Product product)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
@@ -141,6 +143,7 @@ namespace ShoppingApp.Controllers
             {
                 try
                 {
+                    product.FromProduct2 = false;
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
@@ -261,14 +264,15 @@ namespace ShoppingApp.Controllers
                 productList.Add(
                     new Product
                     {
-                        Name = "萌妹壁紙" + (i+1).ToString("D2"),
+                        Name = "萌妹壁紙" + (i + 1).ToString("D2"),
                         Description = "可愛的萌妹子壁紙",
                         Price = random.Next(100, 200),
                         PublishDate = DateTime.Now.AddSeconds(i),
                         Quantity = 200,
-                        DefaultImageURL = ImageUrlList[i]
+                        DefaultImageURL = ImageUrlList[i],
+                        FromProduct2 = false
                     }
-                );
+                ); ;
             }
 
             _context.AddRange(productList);

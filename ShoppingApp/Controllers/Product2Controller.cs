@@ -212,34 +212,41 @@ namespace ShoppingApp.Controllers
             return _context.Product2.Any(e => e.Id == id);
         }
 
-        public async Task<IActionResult> PutOnShelf()
+        public async Task<IActionResult> ResetShelf()
         {
-            // 管理員群組才能上架產品
+            // 管理員群組才能將賣方的清單更新到購物頁面
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
-            // 取得賣方建立的產品列表
-            string UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            using var transaction = _context.Database.BeginTransaction();
 
-            var SellList = _context.Product2.Where(m => m.SellerId == UserId).ToList();
+            // 刪除所有來自 Product2 的產品
+            var ProductFrom2 = _context.Product.Where(m => m.FromProduct2 == true);
+            _context.Product.RemoveRange(ProductFrom2);
+
+            // 取得賣方建立的產品列表
+            var SellList = _context.Product2.ToList();
 
             // 將賣方的產品轉成販售中的產品
             List<Product> ProductList = new List<Product>();
 
-            foreach(var p in SellList)
+            foreach (var p in SellList)
             {
-                ProductList.Add(new Product { 
+                ProductList.Add(new Product
+                {
                     Name = p.Name,
                     Description = p.Description,
                     Price = p.Price,
                     PublishDate = p.PublishDate,
                     Quantity = p.Quantity,
-                    DefaultImageURL = p.DefaultImageURL
+                    DefaultImageURL = p.DefaultImageURL,
+                    FromProduct2 = true
                 });
             }
 
             // 存入販售中的資料表
             _context.Product.AddRange(ProductList);
             await _context.SaveChangesAsync();
+            transaction.Commit();
 
             // 清除所有購物分頁的快取
             int PageAmount = _context.Product.Count() / 9 + 1;
