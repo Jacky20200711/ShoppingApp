@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using System.Text;
 using System.Web;
+using System.Web.Http.Results;
 using System.Web.Mvc;
 
 namespace OpayApi.Controllers
@@ -92,17 +94,17 @@ namespace OpayApi.Controllers
                 oPayment.HashIV = ConfigurationManager.AppSettings["HashIV"];
                 enErrors.AddRange(oPayment.CheckOutFeedback(ref htFeedback));
 
+                // 將 KEY 加密
+                byte[] keyBytes = Encoding.UTF8.GetBytes(OrderKey + string.Join("", OrderKey.Reverse()));
+                string EncryptedKey = Convert.ToBase64String(keyBytes);
+                using (var md5 = MD5.Create())
+                {
+                    var result = md5.ComputeHash(Encoding.ASCII.GetBytes(EncryptedKey));
+                    EncryptedKey = BitConverter.ToString(result);
+                }
+
                 if (enErrors.Count() == 0)
                 {
-                    // 將 KEY 加密
-                    byte[] keyBytes = Encoding.UTF8.GetBytes(OrderKey + string.Join("", OrderKey.Reverse()));
-                    string EncryptedKey = Convert.ToBase64String(keyBytes);
-                    using (var md5 = MD5.Create())
-                    {
-                        var result = md5.ComputeHash(Encoding.ASCII.GetBytes(EncryptedKey));
-                        EncryptedKey = BitConverter.ToString(result);
-                    }
-
                     return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?OrderKey={EncryptedKey}&PaySuccess=true");
                 }
                 else
@@ -110,9 +112,9 @@ namespace OpayApi.Controllers
                     return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?PaySuccess=false");
                 }
             }
-            catch (Exception e)
+            catch(Exception e)
             {
-                return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?PaySuccess=false&Exception={e}");
+                return Content($"發生錯誤{e}，請將錯誤訊息截圖並寄給網站的管理員!");
             }
         }
     }

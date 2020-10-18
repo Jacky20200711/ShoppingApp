@@ -242,38 +242,38 @@ namespace ShoppingApp.Controllers
             return _context.OrderForm.Any(e => e.Id == id);
         }
 
-        public IActionResult CheckPayResult(bool PaySuccess=false, string Exception="", string OrderKey="")
+        public IActionResult CheckPayResult(bool PaySuccess=false, string OrderKey="")
         {
+
+            if (!PaySuccess)
+            {
+                TempData["PayResult"] = $"付款失敗QQ...詳情請洽歐付寶的客服人員(02-2655-0115)";
+                return View("PayResult");
+            }
+
             int? GetOrderId = HttpContext.Session.GetInt32(OrderKey);
             int OrderId = 0;
 
             // 查看此筆交易的 Key 是否有效
             if (GetOrderId == null)
             {
-                _logger.LogWarning($"[{User.Identity.Name}]提供的 KEY={OrderKey} 為無效");
-                TempData["PayResult"] = $"歡迎光臨 ^___^ 您必須在付款後才能查看付款結果歐~";
-                return View("PayResult");
+                return NotFound();
             }
             else
             {
                 // 若有效，則取得此筆交易的ID & 清除此筆交易的 KEY
                 OrderId = (int)GetOrderId;
                 HttpContext.Session.Remove(OrderKey);
-            }
 
-            if (PaySuccess)
-            {
+                // 修改訂單狀態
                 _context.OrderForm.FirstOrDefault(o => o.Id == OrderId).CheckOut = "YES";
                 _context.SaveChanges();
                 _logger.LogInformation($"[{User.Identity.Name}]對第{OrderId}號訂單付款成功!");
-                TempData["PayResult"] = $"付款成功!~請點選[我的訂單]來查看付款結果。";
+
+                // 清空購物車
                 CartOperator.ClearCart();
-                return View("PayResult");
-            }
-            else
-            {
-                _logger.LogError($"[{User.Identity.Name}]對第{OrderId}號訂單付款失敗..." + Exception);
-                TempData["PayResult"] = $"付款失敗QQ...詳情請洽歐付寶的客服人員(02-2655-0115)";
+
+                TempData["PayResult"] = $"付款成功!~請點選[我的訂單]來查看付款結果。";
                 return View("PayResult");
             }
         }
