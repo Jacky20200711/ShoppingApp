@@ -1,16 +1,19 @@
 ﻿@using X.PagedList.Mvc.Core
-@using Microsoft.AspNetCore.Http
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @model X.PagedList.IPagedList<ShoppingApp.Models.ProductAndComment>
-
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@inject Wangkanai.Detection.Services.IDetectionService DetectionService
 @{
     ViewData["Title"] = "產品資訊與留言";
+
+    bool isMobile = @DetectionService.Device.Type == Wangkanai.Detection.Models.Device.Mobile;
+
+    string ImgWidth = isMobile ? "max-width:100%;" : "width:340px;";
 }
 
 <h1>產品資訊</h1>
 
 <div>
-    <div><img style="max-width:100%; height:auto;" src="@Html.DisplayFor(model => model.FirstOrDefault().TheProduct.DefaultImageURL)" /></div>
+    <div><img style="@ImgWidth height: 360px; " src="@Html.DisplayFor(model => model.FirstOrDefault().TheProduct.DefaultImageURL)" /></div>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">

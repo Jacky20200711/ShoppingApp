@@ -5,13 +5,20 @@
     ViewData["Title"] = "產品管理";
 }
 
+<style>
+    .ProductImage:hover {
+        transform: scale(3);
+    }
+</style>
+
 <h1>產品列表</h1>
 
 <p>
     <a asp-action="Create">Create New</a>&nbsp;&nbsp;&nbsp;
     <a asp-action="DeleteAll">Delete All</a>&nbsp;&nbsp;&nbsp;
     <a asp-action="ResetProducts">Reset</a>&nbsp;&nbsp;&nbsp;
-    <a asp-controller="CSV" asp-action="ImportProduct">Import</a>
+    <a asp-controller="CSV" asp-action="ImportProduct">Import</a>&nbsp;&nbsp;&nbsp;
+    <a asp-controller="Product" asp-action="ClearCache">ClearCache</a>
 </p>
 
 <table class="table">
@@ -44,7 +51,7 @@
         {
             <tr>
                 <td>
-                    <img src="@Html.DisplayFor(modelItem => item.DefaultImageURL)" width="30" height="30" />
+                    <img class="ProductImage" src="@Html.DisplayFor(modelItem => item.DefaultImageURL)" width="30" height="30" />
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)

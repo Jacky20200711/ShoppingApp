@@ -295,5 +295,18 @@ namespace ShoppingApp.Controllers
                 return View(_memoryCache.Get($"ProductPage{page}"));
             }
         }
+
+        public IActionResult ClearCache()
+        {
+            // 清除所有購物分頁的快取
+            int PageAmount = _context.Product.Count() / 9 + 1;
+
+            for (int Page = 1; Page <= PageAmount; Page++)
+            {
+                _memoryCache.Remove($"ProductPage{Page}");
+            }
+
+            return RedirectToAction("ShowProducts");
+        }
     }
 }

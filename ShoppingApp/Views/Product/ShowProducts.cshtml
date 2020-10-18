@@ -1,8 +1,12 @@
 ﻿@using X.PagedList.Mvc.Core
 @model X.PagedList.IPagedList<ShoppingApp.Models.Product>
-
+@inject Wangkanai.Detection.Services.IDetectionService DetectionService
 @{
     ViewBag.Title = "阿貓購物網站";
+
+    bool isMobile = @DetectionService.Device.Type == Wangkanai.Detection.Models.Device.Mobile;
+
+    string ImgWidth = isMobile ? "max-width:100%;" : "width:340px;";
 }
 
 <div class="row">
@@ -10,7 +14,7 @@
     {
         <div class="col-sm-6 col-md-4" style="margin-bottom:20px;">
             <div class="thumbnail">
-                <img class="ProductImg" style="max-width:100%; height:auto;" src="@product.DefaultImageURL" alt="商品圖片">
+                <img class="ProductImg" style="@ImgWidth height:360px;" src="@product.DefaultImageURL" alt="商品圖片">
                 <div class="caption">
                     <h3>@product.Name</h3>
                     <p>

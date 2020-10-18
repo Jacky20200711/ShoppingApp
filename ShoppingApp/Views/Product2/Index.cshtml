@@ -4,17 +4,31 @@
     ViewData["Title"] = "產品列表";
 }
 
-<h1>產品列表</h1>
+<style>
+    .ProductImage:hover {
+        transform: scale(3);
+    }
+</style>
+
+<h1>產品列表</h1><span class="text-danger">@TempData["ReachLimit"]</span>
 
 <p>
-    <a asp-action="Create">點此建立產品 (最多6個)</a>&nbsp;
-    <span class="text-danger">@TempData["ReachLimit"]</span>
+    <a asp-action="Create">點此建立產品 (最多6個)</a>&nbsp;&nbsp;&nbsp;
+    <span>★建立後的產品統一由管理員上架，時間為每天的上午九點和下午三點。</span>
+    @if (AuthorizeManager.InAdminGroup(User.Identity.Name))
+    {
+        <a asp-action="PutOnShelf">點此上架所有賣方的產品</a>
+    }
 </p>
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                產品擁有者
+                圖片
+            </th>
+            <th>
+                擁有者
             </th>
             <th>
                 名稱
@@ -31,48 +45,51 @@
             <th>
                 上架日期
             </th>
-            <th>
-                圖片網址
-            </th>
             @*<th>
-            @Html.DisplayNameFor(model => model.SellerId)
-        </th>*@
+                圖片網址
+            </th>*@
+            @*<th>
+                @Html.DisplayNameFor(model => model.SellerId)
+            </th>*@
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.SellerEmail)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PublishDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DefaultImageURL)
-            </td>
-            @*<td>
-                @Html.DisplayFor(modelItem => item.SellerId)
-            </td>*@
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">編輯</a> |
-                @*<a asp-action="Details" asp-route-id="@item.Id">詳細</a> |*@
-                <a asp-action="Delete" asp-route-id="@item.Id">刪除</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    <img class="ProductImage" src="@Html.DisplayFor(modelItem => item.DefaultImageURL)" width="30" height="30" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SellerEmail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PublishDate)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.DefaultImageURL)
+                </td>*@
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.SellerId)
+                </td>*@
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">編輯</a> |
+                    @*<a asp-action="Details" asp-route-id="@item.Id">詳細</a> |*@
+                    <a asp-action="Delete" asp-route-id="@item.Id">刪除</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

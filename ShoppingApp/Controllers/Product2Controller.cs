@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using ShoppingApp.Data;
 using ShoppingApp.Models;
 
@@ -18,11 +19,15 @@ namespace ShoppingApp.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
+        private static IMemoryCache _memoryCache;
 
-        public Product2Controller(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public Product2Controller(ApplicationDbContext context, 
+            UserManager<IdentityUser> userManager,
+            IMemoryCache memoryCache)
         {
             _context = context;
             _userManager = userManager;
+            _memoryCache = memoryCache;
         }
 
         public async Task<IActionResult> Index()
@@ -205,6 +210,46 @@ namespace ShoppingApp.Controllers
             if (!AuthorizeManager.InAuthorizedMember(User.Identity.Name)) return false;
 
             return _context.Product2.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> PutOnShelf()
+        {
+            // 管理員群組才能上架產品
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
+            // 取得賣方建立的產品列表
+            string UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var SellList = _context.Product2.Where(m => m.SellerId == UserId).ToList();
+
+            // 將賣方的產品轉成販售中的產品
+            List<Product> ProductList = new List<Product>();
+
+            foreach(var p in SellList)
+            {
+                ProductList.Add(new Product { 
+                    Name = p.Name,
+                    Description = p.Description,
+                    Price = p.Price,
+                    PublishDate = p.PublishDate,
+                    Quantity = p.Quantity,
+                    DefaultImageURL = p.DefaultImageURL
+                });
+            }
+
+            // 存入販售中的資料表
+            _context.Product.AddRange(ProductList);
+            await _context.SaveChangesAsync();
+
+            // 清除所有購物分頁的快取
+            int PageAmount = _context.Product.Count() / 9 + 1;
+            
+            for(int Page = 1; Page <= PageAmount; Page++)
+            {
+                _memoryCache.Remove($"ProductPage{Page}");
+            }
+
+            return RedirectToRoute(new { controller = "Product", action = "ShowProducts" });
         }
     }
 }
