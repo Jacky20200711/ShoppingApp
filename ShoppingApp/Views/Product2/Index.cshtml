@@ -14,11 +14,13 @@
 
 <p>
     <a asp-action="Create">點此建立產品 (最多6個)</a>&nbsp;&nbsp;&nbsp;
-    <span>★管理員會將建立好的清單更新到購物頁面，時間為每天的上午九點和下午三點。</span>
-    &nbsp;&nbsp;
+    <span>★管理員會將您的清單更新到購物頁面，時間為每天的上午九點和下午三點。</span>
+    <br>
     @if (AuthorizeManager.InAdminGroup(User.Identity.Name))
     {
-        <a asp-action="ResetShelf">點此將清單更新到購物頁面</a>
+        <a asp-action="ResetShelf">點此將清單更新到購物頁面</a><span>&nbsp;&nbsp;&nbsp;</span>
+        <a asp-action="DeleteAll">DeleteAll</a><span>&nbsp;&nbsp;&nbsp;</span>
+        <a asp-action="ImportProduct2" asp-controller="CSV">Import</a><span>&nbsp;&nbsp;&nbsp;</span>
     }
 </p>
 

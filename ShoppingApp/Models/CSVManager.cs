@@ -1,7 +1,6 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ShoppingApp.Data;
@@ -40,6 +39,26 @@ namespace ShoppingApp.Models
         private class CommentMap : ClassMap<Comment>
         {
             public CommentMap()
+            {
+                AutoMap(CultureInfo.InvariantCulture);
+                Map(m => m.Id).Ignore();
+            }
+        }
+
+        // 讀取的時候忽略ID屬性
+        private class Product2Map : ClassMap<Product2>
+        {
+            public Product2Map()
+            {
+                AutoMap(CultureInfo.InvariantCulture);
+                Map(m => m.Id).Ignore();
+            }
+        }
+
+        // 讀取的時候忽略ID屬性
+        private class AuthorizedMemberMap : ClassMap<AuthorizedMember>
+        {
+            public AuthorizedMemberMap()
             {
                 AutoMap(CultureInfo.InvariantCulture);
                 Map(m => m.Id).Ignore();
@@ -131,12 +150,36 @@ namespace ShoppingApp.Models
             csvWriter.WriteRecords(DataList);
         }
 
+        public static void ExportProduct2(ApplicationDbContext _context)
+        {
+            List<Product2> DataList = _context.Product2.OrderBy(m => m.SellerEmail).ToList();
+
+            string FilePath = GetFilePath("SellerProduct");
+
+            using var writer = new StreamWriter(FilePath, false, Encoding.UTF8);
+            using var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture);
+            csvWriter.WriteRecords(DataList);
+        }
+
+        public static void ExportAuthorizedMember(ApplicationDbContext _context)
+        {
+            List<AuthorizedMember> DataList = _context.AuthorizedMember.ToList();
+
+            string FilePath = GetFilePath("AuthorizedMember");
+
+            using var writer = new StreamWriter(FilePath, false, Encoding.UTF8);
+            using var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture);
+            csvWriter.WriteRecords(DataList);
+        }
+
         public static void ExportAll(ApplicationDbContext _context)
         {
             ExportProduct(_context);
             ExportUser(_context);
             ExportOrderForm(_context);
             ExportComment(_context);
+            ExportProduct2(_context);
+            ExportAuthorizedMember(_context);
         }
 
         public static void ImportProduct(ApplicationDbContext _context)
@@ -253,6 +296,53 @@ namespace ShoppingApp.Models
                     _context.SaveChanges();
                 }
             }
+        }
+
+        public static void ImportProduct2(ApplicationDbContext _context)
+        {
+            // 從設定檔取得匯入檔的路徑
+            string ImportPath = GetConfigValue("ImportPath");
+
+            // 找到目標檔案並匯入
+            foreach (string FilePath in Directory.GetFileSystemEntries(ImportPath, "*.csv"))
+            {
+                string fname = Path.GetFileNameWithoutExtension(FilePath);
+
+                if (fname.StartsWith("SellerProduct"))
+                {
+                    using var reader = new StreamReader(FilePath, Encoding.UTF8);
+                    var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
+                    csvReader.Configuration.RegisterClassMap<Product2Map>();
+                    var DataList = csvReader.GetRecords<Product2>().ToList();
+                    _context.Product2.AddRange(DataList);
+                    _context.SaveChanges();
+                }
+            }
+        }
+
+        public static void ImportAuthorizedMember(ApplicationDbContext _context)
+        {
+            // 從設定檔取得匯入檔的路徑
+            string ImportPath = GetConfigValue("ImportPath");
+
+            // 找到目標檔案並匯入
+            foreach (string FilePath in Directory.GetFileSystemEntries(ImportPath, "*.csv"))
+            {
+                string fname = Path.GetFileNameWithoutExtension(FilePath);
+
+                if (fname.StartsWith("AuthorizedMember"))
+                {
+                    using var reader = new StreamReader(FilePath, Encoding.UTF8);
+                    var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
+                    csvReader.Configuration.RegisterClassMap<AuthorizedMemberMap>();
+                    var DataList = csvReader.GetRecords<AuthorizedMember>().ToList();
+                    _context.AuthorizedMember.AddRange(DataList);
+                    _context.SaveChanges();
+                }
+            }
+
+            // 刷新權限表格
+            AuthorizeManager.RefreshHashTable(_context);
         }
     }
 }

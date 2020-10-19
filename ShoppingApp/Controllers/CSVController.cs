@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShoppingApp.Data;
 using ShoppingApp.Models;
@@ -62,6 +58,24 @@ namespace ShoppingApp.Controllers
             return RedirectToAction("Index");
         }
 
+        public IActionResult ExportProduct2()
+        {
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
+            CSVManager.ExportProduct2(_context);
+
+            return RedirectToAction("Index");
+        }
+
+        public IActionResult ExportAuthorizedMember()
+        {
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            CSVManager.ExportAuthorizedMember(_context);
+
+            return RedirectToAction("Index");
+        }
+
         public IActionResult ExportAll()
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
@@ -107,6 +121,24 @@ namespace ShoppingApp.Controllers
             CSVManager.ImportComment(_context);
 
             return RedirectToRoute(new { controller = "Comment", action = "Index" });
+        }
+
+        public IActionResult ImportProduct2()
+        {
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            CSVManager.ImportProduct2(_context);
+
+            return RedirectToRoute(new { controller = "Product2", action = "Index" });
+        }
+
+        public IActionResult ImportAuthorizedMember()
+        {
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            CSVManager.ImportAuthorizedMember(_context);
+
+            return RedirectToRoute(new { controller = "AuthorizedMember", action = "Index" });
         }
     }
 }

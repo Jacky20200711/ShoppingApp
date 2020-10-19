@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShoppingApp.Data;
@@ -8,6 +9,7 @@ using X.PagedList;
 
 namespace ShoppingApp.Controllers
 {
+    [Authorize]
     public class AuthorizedMemberController : Controller
     {
         //每個分頁最多顯示10筆

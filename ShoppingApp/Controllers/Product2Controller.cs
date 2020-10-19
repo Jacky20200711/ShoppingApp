@@ -205,6 +205,16 @@ namespace ShoppingApp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> DeleteAll()
+        {
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
+            _context.RemoveRange(_context.Product2);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
         private bool Product2Exists(int id)
         {
             if (!AuthorizeManager.InAuthorizedMember(User.Identity.Name)) return false;
