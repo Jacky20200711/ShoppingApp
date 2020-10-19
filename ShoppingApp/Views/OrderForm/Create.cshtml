@@ -17,6 +17,23 @@
 </style>
 
 <h4>訂單明細</h4>
+
+@{
+    if (ViewBag.QuantityError != null)
+    {
+        <div class="text-danger">
+            庫存不足，請重新調整您的購買數量!
+        </div>
+
+        foreach (string QuantityError in ViewBag.QuantityError)
+        {
+            <div class="text-danger">
+                @QuantityError
+            </div>
+        }
+    }
+}
+
 <table class="table">
     <thead>
         <tr>

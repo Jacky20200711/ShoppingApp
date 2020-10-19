@@ -268,7 +268,7 @@ namespace ShoppingApp.Controllers
                         Description = "可愛的萌妹子壁紙",
                         Price = random.Next(100, 200),
                         PublishDate = DateTime.Now.AddSeconds(i),
-                        Quantity = 200,
+                        Quantity = 5,
                         DefaultImageURL = ImageUrlList[i],
                         FromProduct2 = false
                     }

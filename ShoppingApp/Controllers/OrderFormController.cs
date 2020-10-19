@@ -17,6 +17,7 @@ using X.PagedList;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace ShoppingApp.Controllers
 {
@@ -30,15 +31,18 @@ namespace ShoppingApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger _logger;
         private readonly UserManager<IdentityUser> _userManager;
+        private static IMemoryCache _memoryCache;
 
         public OrderFormController(
                 ApplicationDbContext context, 
                 ILogger<OrderFormController> logger,
-                UserManager<IdentityUser> userManager)
+                UserManager<IdentityUser> userManager,
+                IMemoryCache memoryCache)
         {
             _context = context;
             _logger = logger;
             _userManager = userManager;
+            _memoryCache = memoryCache;
         }
 
         public async Task<IActionResult> Index(int page = 1)
@@ -86,6 +90,25 @@ namespace ShoppingApp.Controllers
 
             if (ModelState.IsValid && currentCart.TotalAmount > 0)
             {
+                // 檢查庫存
+                List<string> QuantityError = new List<string>();
+
+                foreach (var p in currentCart)
+                {
+                    Product product = await _context.Product.Where(m => m.Id == p.Id).FirstOrDefaultAsync();
+
+                    if (product.Quantity < p.Quantity)
+                    {
+                        QuantityError.Add($"{product.Name}只剩{product.Quantity}個!");
+                    }
+                }
+
+                if (QuantityError.Count > 0)
+                {
+                    ViewBag.QuantityError = QuantityError;
+                    return View();
+                }
+
                 try
                 {
                     using var transaction = _context.Database.BeginTransaction();
@@ -242,7 +265,7 @@ namespace ShoppingApp.Controllers
             return _context.OrderForm.Any(e => e.Id == id);
         }
 
-        public IActionResult CheckPayResult(bool PaySuccess=false, string OrderKey="")
+        public async Task<IActionResult> CheckPayResult(bool PaySuccess=false, string OrderKey="")
         {
 
             if (!PaySuccess)
@@ -269,6 +292,31 @@ namespace ShoppingApp.Controllers
                 _context.OrderForm.FirstOrDefault(o => o.Id == OrderId).CheckOut = "YES";
                 _context.SaveChanges();
                 _logger.LogInformation($"[{User.Identity.Name}]對第{OrderId}號訂單付款成功!");
+
+                // 更新庫存
+                Cart CurrentCart = CartOperator.GetCurrentCart();
+                foreach (var cartItem in CurrentCart)
+                {
+                    Product product = _context.Product.Where(m => m.Id == cartItem.Id).FirstOrDefault();
+
+                    if(cartItem.Quantity <= product.Quantity)
+                    {
+                        product.Quantity -= cartItem.Quantity;
+                    }
+                    else
+                    {
+                        product.Quantity = 0;
+                    }
+                }
+                await _context.SaveChangesAsync();
+
+                // 移除購物頁面的快取，避免顯示舊的庫存
+                int PageAmount = _context.Product.Count() / 9 + 1;
+
+                for (int Page = 1; Page <= PageAmount; Page++)
+                {
+                    _memoryCache.Remove($"ProductPage{Page}");
+                }
 
                 // 清空購物車
                 CartOperator.ClearCart();

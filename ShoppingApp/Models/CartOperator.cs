@@ -7,8 +7,7 @@ namespace ShoppingApp.Models
 {
     public static class CartOperator
     {
-        /// <summary>
-        /// 注入 HttpContextAccessor ，讓這個類別可以利用 HttpContext 來存取 Session
+        // 注入 HttpContextAccessor ，讓這個類別可以利用 HttpContext 來存取 Session
         private static IHttpContextAccessor _contextAccessor;
 
         public static HttpContext Current => _contextAccessor.HttpContext;
@@ -17,7 +16,6 @@ namespace ShoppingApp.Models
         {
             _contextAccessor = contextAccessor;
         }
-        /// </summary>
 
         public static Cart GetCurrentCart()
         {
@@ -34,16 +32,16 @@ namespace ShoppingApp.Models
             // 取得 Session 中的購物車
             var GuestCart = GetCurrentCart();
 
+            // 判斷購物車內是否有此 Id 的商品
             var findItem = GuestCart.cartItems.Where(s => s.Id == id).FirstOrDefault();
 
-            //判斷購物車內是否有此ID的商品
             if (GuestCart.Contains(findItem))
             {
                 findItem.Quantity += 1;
             }
             else
             {
-                //此項ID不存在於購物車內，從資料庫撈取產品並加入購物車
+                // 若此項ID不存在於購物車內，則從資料庫撈取產品並加入購物車
                 Product product = db.Product.Where(s => s.Id == id).FirstOrDefault();
 
                 GuestCart.Add(new CartItem()
@@ -61,24 +59,19 @@ namespace ShoppingApp.Models
         }
 
 
-        //移除相同ID的Product
         public static void RemoveProduct(int id)
         {
-            // 取得 Session 中的購物車
             var GuestCart = GetCurrentCart();
 
             var findItem = GuestCart.cartItems.Where(s => s.Id == id).FirstOrDefault();
-
             GuestCart.Remove(findItem);
 
             // 更新 Session 中的購物車
             _contextAccessor.HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(GuestCart));
         }
 
-        //清空購物車
         public static void ClearCart()
         {
-            // 取得 Session 中的購物車
             var GuestCart = GetCurrentCart();
 
             GuestCart.Clear();

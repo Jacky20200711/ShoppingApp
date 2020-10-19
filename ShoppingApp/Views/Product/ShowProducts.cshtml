@@ -6,7 +6,7 @@
 
     bool isMobile = @DetectionService.Device.Type == Wangkanai.Detection.Models.Device.Mobile;
 
-    string ImgWidth = isMobile ? "max-width:100%;" : "width:340px;";
+    string ImgWidth = isMobile ? "max-width:100%;" : "width:336px;";
 }
 
 <div class="row">
@@ -18,7 +18,8 @@
                 <div class="caption">
                     <h3>@product.Name</h3>
                     <p>
-                        <span>售價 : @product.Price</span>
+                        <span>售價 : @product.Price</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <span>庫存 : @product.Quantity</span>
                     </p>
                     <p>
                         <a onclick="AddToCart('@product.Id')" href="javascript:void(0);"
