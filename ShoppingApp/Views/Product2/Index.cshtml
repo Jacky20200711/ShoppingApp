@@ -8,22 +8,29 @@
     .ProductImage:hover {
         transform: scale(3);
     }
+
+    .LinkDiv a {
+        position: relative;
+        top: 8px;
+        left: 2px;
+    }
 </style>
 
-<h1>產品列表</h1><span class="text-danger">@TempData["ReachLimit"]</span>
+<h1>產品清單</h1><span class="text-danger">@TempData["ReachLimit"]</span>
 
-<p>
+<div class="LinkDiv">
     <a asp-action="Create">點此建立產品 (最多6個)</a>&nbsp;&nbsp;&nbsp;
-    <span>★管理員會將您的清單更新到購物頁面，時間為每天的上午九點和下午三點。</span>
-    <br>
     @if (AuthorizeManager.InAdminGroup(User.Identity.Name))
     {
         <a asp-action="ResetShelf">點此將清單更新到購物頁面</a><span>&nbsp;&nbsp;&nbsp;</span>
         <a asp-action="DeleteAll">DeleteAll</a><span>&nbsp;&nbsp;&nbsp;</span>
         <a asp-action="ImportProduct2" asp-controller="CSV">Import</a><span>&nbsp;&nbsp;&nbsp;</span>
     }
-</p>
-
+</div>
+<br>
+<p>★管理員會將您的清單更新到購物頁面，時間為每天的上午九點和下午三點。</p>
+<p>★請在清單更新之前，確認您的產品庫存輸入無誤。</p>
+<br>
 <table class="table">
     <thead>
         <tr>
@@ -48,17 +55,12 @@
             <th>
                 上架日期
             </th>
-            @*<th>
-                圖片網址
-            </th>*@
-            @*<th>
-                @Html.DisplayNameFor(model => model.SellerId)
-            </th>*@
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model) {
+        @foreach (var item in Model)
+        {
             <tr>
                 <td>
                     <img class="ProductImage" src="@Html.DisplayFor(modelItem => item.DefaultImageURL)" width="30" height="30" />
@@ -81,15 +83,8 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.PublishDate)
                 </td>
-                @*<td>
-                    @Html.DisplayFor(modelItem => item.DefaultImageURL)
-                </td>*@
-                @*<td>
-                    @Html.DisplayFor(modelItem => item.SellerId)
-                </td>*@
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">編輯</a> |
-                    @*<a asp-action="Details" asp-route-id="@item.Id">詳細</a> |*@
                     <a asp-action="Delete" asp-route-id="@item.Id">刪除</a>
                 </td>
             </tr>

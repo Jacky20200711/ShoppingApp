@@ -12,6 +12,7 @@
 08.使用 Cache 和 HashTable 來儲存部分資料  
 09.使用 X.PagedList.Mvc.Core 來做分頁  
 10.使用 CsvHelper 來匯出或匯入資料庫  
+11.使用 Wangkanai 來判斷用戶的裝置類型  
   
 # 開發環境  
 win10(64bit) + Visual Studio 2019 + .NET Core 3.1 MVC + IIS 10  

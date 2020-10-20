@@ -12,53 +12,38 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
+                <label asp-for="Name" class="control-label">名稱</label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
+                <label asp-for="Description" class="control-label">描述</label>
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
+                <label asp-for="Price" class="control-label">價格</label>
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
-            @*<div class="form-group">
-                <label asp-for="PublishDate" class="control-label"></label>
-                <input asp-for="PublishDate" class="form-control" />
-                <span asp-validation-for="PublishDate" class="text-danger"></span>
-            </div>*@
             <div class="form-group">
-                <label asp-for="Quantity" class="control-label"></label>
+                <label asp-for="Quantity" class="control-label">庫存</label>
                 <input asp-for="Quantity" class="form-control" />
                 <span asp-validation-for="Quantity" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DefaultImageURL" class="control-label"></label>
+                <label asp-for="DefaultImageURL" class="control-label">圖片網址</label>
                 <input asp-for="DefaultImageURL" class="form-control" />
                 <span asp-validation-for="DefaultImageURL" class="text-danger"></span>
             </div>
-            @*<div class="form-group">
-                <label asp-for="SellerEmail" class="control-label"></label>
-                <input asp-for="SellerEmail" class="form-control" />
-                <span asp-validation-for="SellerEmail" class="text-danger"></span>
-            </div>*@
-            @*<div class="form-group">
-                <label asp-for="SellerId" class="control-label"></label>
-                <input asp-for="SellerId" class="form-control" />
-                <span asp-validation-for="SellerId" class="text-danger"></span>
-            </div>*@
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="建立" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">回上一頁</a>
 </div>
 
