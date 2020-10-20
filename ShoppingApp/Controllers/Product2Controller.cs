@@ -238,10 +238,10 @@ namespace ShoppingApp.Controllers
             var ProductFrom2 = _context.Product.Where(m => m.FromProduct2 == true);
             _context.Product.RemoveRange(ProductFrom2);
 
-            // 取得賣方建立的產品列表
+            // 取得賣方建立的產品清單
             var SellList = _context.Product2.ToList();
 
-            // 將賣方的產品轉成販售中的產品
+            // 將賣方的產品加入販售
             List<Product> ProductList = new List<Product>();
 
             foreach (var p in SellList)
