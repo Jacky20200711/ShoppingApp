@@ -39,9 +39,28 @@ namespace ShoppingApp.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
-            
-            // 按照產品的日期排序(新->舊)
-            return View(await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, 10));
+
+            // 以當前 Session 的排序類型做排序 
+            return (HttpContext.Session.GetString("SortType")) switch
+            {
+                "Date" => View(await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, 10)),
+                "Sell" => View(await _context.Product.OrderByDescending(p => p.SellVolume).ToPagedListAsync(page, 10)),
+                _ => View(await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, 10)),
+            };
+        }
+
+        public async Task<IActionResult> SortByDate(int page = 1)
+        {
+            HttpContext.Session.SetString("SortType", "Date");
+
+            return View("Index", await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, 10));
+        }
+
+        public async Task<IActionResult> SortBySell(int page = 1)
+        {
+            HttpContext.Session.SetString("SortType", "Sell");
+
+            return View("Index", await _context.Product.OrderByDescending(p => p.SellVolume).ToPagedListAsync(page, 10));
         }
 
         public async Task<IActionResult> Details(int? id, int page = 1)
@@ -274,11 +293,12 @@ namespace ShoppingApp.Controllers
                         Description = "可愛的萌妹子壁紙",
                         Price = random.Next(100, 200),
                         PublishDate = DateTime.Now.AddSeconds(i),
-                        Quantity = 5,
+                        Quantity = random.Next(30, 50),
                         DefaultImageURL = ImageUrlList[i],
-                        FromProduct2 = false
+                        FromProduct2 = false,
+                        SellVolume = random.Next(30, 50) - 25
                     }
-                ); ;
+                );
             }
 
             _context.AddRange(productList);

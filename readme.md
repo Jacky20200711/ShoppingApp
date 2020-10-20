@@ -19,47 +19,57 @@ win10(64bit) + Visual Studio 2019 + .NET Core 3.1 MVC + IIS 10
 &emsp;
 &emsp;
 # 首頁    
-![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO1.PNG?raw=true)
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO_01.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
 # 登入   
-![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO2.PNG?raw=true)
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO_02.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
 # 留言   
-![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO3.PNG?raw=true)
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO_03.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
 # 購物車   
-![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO4.PNG?raw=true)
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO_04.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
 # 填寫訂單   
-![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO5.PNG?raw=true)
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO_05.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
 # 將訂單傳送給歐付寶   
-![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO6.PNG?raw=true)
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO_06.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
 # 使用測試卡號進行付款    
-![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO7.PNG?raw=true)
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO_07.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
 # 取得付款結果    
-![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO8.PNG?raw=true)
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO_08.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;
 # 查看剛剛的訂單    
-![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO9.PNG?raw=true)
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO_09.PNG?raw=true)
+&emsp;
+&emsp;
+&emsp;
+# 管理員開通權限後，可以讓使用者上架自己的產品    
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO_10.PNG?raw=true)
+&emsp;
+&emsp;
+&emsp;
+# 管理員可以將上架清單更新到購物頁面    
+![image](https://github.com/Jacky20200711/ShoppingApp_CoreMVC/blob/master/DEMO_11.PNG?raw=true)
 &emsp;
 &emsp;
 &emsp;

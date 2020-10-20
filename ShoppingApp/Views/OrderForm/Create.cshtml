@@ -21,13 +21,9 @@
 @{
     if (ViewBag.QuantityError != null)
     {
-        <div class="text-danger">
-            庫存不足，請重新調整您的購買數量!
-        </div>
-
         foreach (string QuantityError in ViewBag.QuantityError)
         {
-            <div class="text-danger">
+            <div class="text-danger" style="font-size:20px;">
                 @QuantityError
             </div>
         }

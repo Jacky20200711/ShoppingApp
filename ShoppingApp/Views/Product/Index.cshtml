@@ -17,33 +17,38 @@
     <a asp-action="Create">Create New</a>&nbsp;&nbsp;&nbsp;
     <a asp-action="DeleteAll">Delete All</a>&nbsp;&nbsp;&nbsp;
     <a asp-action="ResetProducts">Reset</a>&nbsp;&nbsp;&nbsp;
+    <a asp-action="ClearCache">ClearCache</a>&nbsp;&nbsp;&nbsp;
     <a asp-controller="CSV" asp-action="ImportProduct">Import</a>&nbsp;&nbsp;&nbsp;
-    <a asp-controller="Product" asp-action="ClearCache">ClearCache</a>
+</p>
+
+<p>
+    @Html.ActionLink("SortByDate", "SortByDate", "Product", new { page = Model.PageNumber})&nbsp;&nbsp;&nbsp;
+    @Html.ActionLink("SortBySell", "SortBySell", "Product", new { page = Model.PageNumber})&nbsp;&nbsp;&nbsp;
 </p>
 
 <table class="table">
     <thead>
         <tr>
             <th>
-                Img
+                圖片
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().Name)
+                名稱
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().Description)
+                描述
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().Price)
+                價格
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().SellVolume)
+                銷量
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().Quantity)
+                庫存
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().PublishDate)
+                上架日期
             </th>
             <th></th>
             <th></th>
@@ -75,8 +80,8 @@
                     @Html.DisplayFor(modelItem => item.PublishDate)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id">編輯</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">刪除</a>
                 </td>
             </tr>
         }

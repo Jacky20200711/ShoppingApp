@@ -88,18 +88,26 @@ namespace ShoppingApp.Controllers
         {
             var currentCart = CartOperator.GetCurrentCart();
 
-            if (ModelState.IsValid && currentCart.TotalAmount > 0)
+            if (ModelState.IsValid)
             {
-                // 檢查庫存
                 List<string> QuantityError = new List<string>();
 
+                // 檢查購物車是否為空
+                if (currentCart.Count() < 1)
+                {
+                    QuantityError.Add($"您的購物車內沒有任何東西!");
+                    ViewBag.QuantityError = QuantityError;
+                    return View();
+                }
+
+                // 檢查庫存
                 foreach (var p in currentCart)
                 {
                     Product product = await _context.Product.Where(m => m.Id == p.Id).FirstOrDefaultAsync();
 
                     if (product.Quantity < p.Quantity)
                     {
-                        QuantityError.Add($"{product.Name}只剩{product.Quantity}個!");
+                        QuantityError.Add($"庫存不足，{product.Name}只剩{product.Quantity}個!");
                     }
                 }
 

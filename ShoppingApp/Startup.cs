@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using ShoppingApp.Data;
 using Microsoft.Extensions.Configuration;
@@ -8,9 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Http;
 using ShoppingApp.Models;
 using System;
-using System.Linq;
-using Microsoft.Extensions.Caching.Memory;
-using X.PagedList;
 
 namespace ShoppingApp
 {
@@ -84,19 +80,8 @@ namespace ShoppingApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, ApplicationDbContext _context, IMemoryCache _memoryCache)
+        public void Configure(IApplicationBuilder app, ApplicationDbContext _context)
         {
-            // 將購物頁面的資訊放入快取
-            int PageAmount = _context.Product.Count() / 9 + 1;
-
-            for (int Page = 1; Page <= PageAmount; Page++)
-            {
-                _memoryCache.Set(
-                    $"ProductPage{Page}",
-                    _context.Product.OrderByDescending(p => p.PublishDate).ToPagedList(Page, 9)
-                );
-            }
-
             AuthorizeManager.RefreshHashTable(_context);
             app.UseDetection();
             app.UseDeveloperExceptionPage();
