@@ -28,5 +28,7 @@ namespace ShoppingApp.Models
         public string SellerEmail { get; set; }
 
         public string SellerId { get; set; }
+
+        public int SellVolume { get; set; }
     }
 }

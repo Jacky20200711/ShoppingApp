@@ -50,6 +50,9 @@
                 價格
             </th>
             <th>
+                銷量
+            </th>
+            <th>
                 庫存
             </th>
             <th>
@@ -76,6 +79,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SellVolume)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Quantity)

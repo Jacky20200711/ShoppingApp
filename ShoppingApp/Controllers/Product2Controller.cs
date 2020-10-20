@@ -82,7 +82,7 @@ namespace ShoppingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL,SellerEmail,SellerId")] Product2 product2)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL,SellerEmail,SellerId,SellVolume")] Product2 product2)
         {
             if (!AuthorizeManager.InAuthorizedMember(User.Identity.Name)) return NotFound();
 
@@ -102,6 +102,7 @@ namespace ShoppingApp.Controllers
                 product2.PublishDate = DateTime.Now;
                 product2.SellerEmail = User.Identity.Name;
                 product2.SellerId = UserId;
+                product2.SellVolume = 0;
 
                 _context.Add(product2);
                 await _context.SaveChangesAsync();
@@ -136,7 +137,7 @@ namespace ShoppingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL,SellerEmail,SellerId")] Product2 product2)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,Quantity,DefaultImageURL")] Product2 product2)
         {
             if (!AuthorizeManager.InAuthorizedMember(User.Identity.Name)) return NotFound();
 
@@ -149,16 +150,20 @@ namespace ShoppingApp.Controllers
             {
                 try
                 {
-                    product2.SellerEmail = User.Identity.Name;
-                    product2.SellerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
                     // 令沒有管理權限的 Seller 只能編輯自己上架的產品
                     if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
                     {
                         if (product2.SellerId != User.FindFirstValue(ClaimTypes.NameIdentifier)) return NotFound();
                     }
 
-                    _context.Update(product2);
+                    // 重寫編輯代碼(因為只需要更新部分欄位)
+                    Product2 product = _context.Product2.Where(m => m.Id == id).FirstOrDefault();
+                    product.Name = product2.Name;
+                    product.Description = product2.Description;
+                    product.Price = product2.Price;
+                    product.Quantity = product2.Quantity;
+                    product.DefaultImageURL = product2.DefaultImageURL;
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
