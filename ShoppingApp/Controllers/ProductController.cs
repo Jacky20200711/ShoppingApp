@@ -98,12 +98,13 @@ namespace ShoppingApp.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL,FromProduct2")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,Quantity,DefaultImageURL")] Product product)
         {
             if (ModelState.IsValid)
             {
                 product.PublishDate = DateTime.Now;
                 product.FromProduct2 = false;
+                product.SellVolume = 0;
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -130,7 +131,7 @@ namespace ShoppingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,PublishDate,Quantity,DefaultImageURL,FromProduct2")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,Quantity,DefaultImageURL")] Product product)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
@@ -143,8 +144,13 @@ namespace ShoppingApp.Controllers
             {
                 try
                 {
-                    product.FromProduct2 = false;
-                    _context.Update(product);
+                    // 查看此產品是否來自賣方
+                    Product prod = _context.Product.Where(m => m.Id == id).FirstOrDefault();
+                    prod.Name = product.Name;
+                    prod.Description = product.Description;
+                    prod.Price = product.Price;
+                    prod.Quantity = product.Quantity;
+                    prod.DefaultImageURL = product.DefaultImageURL;
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

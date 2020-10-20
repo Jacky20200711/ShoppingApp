@@ -37,10 +37,13 @@
                 @Html.DisplayNameFor(model => model.FirstOrDefault().Price)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().PublishDate)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().SellVolume)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.FirstOrDefault().Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().PublishDate)
             </th>
             <th></th>
             <th></th>
@@ -63,10 +66,13 @@
                     @Html.DisplayFor(modelItem => item.Price)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.PublishDate)
+                    @Html.DisplayFor(modelItem => item.SellVolume)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PublishDate)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
