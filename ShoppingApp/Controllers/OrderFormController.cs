@@ -293,19 +293,21 @@ namespace ShoppingApp.Controllers
                 _context.SaveChanges();
                 _logger.LogInformation($"[{User.Identity.Name}]對第{OrderId}號訂單付款成功!");
 
-                // 更新庫存
+                // 更新庫存和銷量
                 Cart CurrentCart = CartOperator.GetCurrentCart();
                 foreach (var cartItem in CurrentCart)
                 {
                     Product product = _context.Product.Where(m => m.Id == cartItem.Id).FirstOrDefault();
 
-                    if(cartItem.Quantity <= product.Quantity)
+                    product.Quantity -= cartItem.Quantity;
+                    product.SellVolume += cartItem.Quantity;
+
+                    // 連動更新 Product2 的庫存和銷量
+                    if (product.FromProduct2)
                     {
-                        product.Quantity -= cartItem.Quantity;
-                    }
-                    else
-                    {
-                        product.Quantity = 0;
+                        Product2 product2 = _context.Product2.Where(m => m.Id == product.Product2Id).FirstOrDefault();
+                        product2.Quantity -= cartItem.Quantity;
+                        product2.SellVolume += cartItem.Quantity;
                     }
                 }
                 await _context.SaveChangesAsync();

@@ -254,11 +254,12 @@ namespace ShoppingApp.Controllers
                     PublishDate = p.PublishDate,
                     Quantity = p.Quantity,
                     DefaultImageURL = p.DefaultImageURL,
-                    FromProduct2 = true
+                    FromProduct2 = true,
+                    SellVolume = 0,
+                    Product2Id = p.Id
                 });
             }
 
-            // 存入販售中的資料表
             _context.Product.AddRange(ProductList);
             await _context.SaveChangesAsync();
             transaction.Commit();
