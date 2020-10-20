@@ -107,9 +107,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
 
-            string result = CSVManager.ImportOrder(_context);
-
-            if (!string.IsNullOrEmpty(result)) return Content(result);
+            CSVManager.ImportOrder(_context);
 
             return RedirectToRoute(new { controller = "OrderForm", action = "Index" });
         }

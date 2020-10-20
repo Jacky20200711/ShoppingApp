@@ -3,6 +3,7 @@ using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using NLog;
 using ShoppingApp.Data;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ namespace ShoppingApp.Models
 {
     public static class CSVManager
     {
+        private static Logger _logger = LogManager.GetCurrentClassLogger();
+
         // 讀取的時候忽略ID屬性
         private class ProductMap : ClassMap<Product>
         {
@@ -225,7 +228,7 @@ namespace ShoppingApp.Models
             }
         }
 
-        public static string ImportOrder(ApplicationDbContext _context)
+        public static void ImportOrder(ApplicationDbContext _context)
         {
             // 從設定檔取得匯入檔的路徑
             string ImportPath = GetConfigValue("ImportPath");
@@ -268,11 +271,10 @@ namespace ShoppingApp.Models
                 _context.SaveChanges();
                 _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.OrderForm OFF");
                 transaction.Commit();
-                return "";
             }
             catch (Exception e)
             {
-                return e.ToString();
+                _logger.Error(e.ToString());
             }
         }
 
