@@ -1,5 +1,7 @@
 ﻿@using X.PagedList.Mvc.Core
+@using Microsoft.AspNetCore.Http
 @model X.PagedList.IPagedList<ShoppingApp.Models.Product>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = "產品管理";
@@ -22,8 +24,10 @@
 </p>
 
 <p>
-    @Html.ActionLink("SortByDate", "SortByDate", "Product", new { page = Model.PageNumber})&nbsp;&nbsp;&nbsp;
-    @Html.ActionLink("SortBySell", "SortBySell", "Product", new { page = Model.PageNumber})&nbsp;&nbsp;&nbsp;
+    @Html.ActionLink("按日期排序", "SortByDate", "Product", new { page = Model.PageNumber })&nbsp;&nbsp;&nbsp;
+    @Html.ActionLink("按銷量排序", "SortBySell", "Product", new { page = Model.PageNumber })&nbsp;&nbsp;&nbsp;
+    <a asp-action="GetProfit">計算當前獲利</a>&nbsp;&nbsp;&nbsp;
+    <span>@HttpContextAccessor.HttpContext.Session.GetString("TotalProfit")</span>
 </p>
 
 <table class="table">

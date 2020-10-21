@@ -63,6 +63,24 @@ namespace ShoppingApp.Controllers
             return View("Index", await _context.Product.OrderByDescending(p => p.SellVolume).ToPagedListAsync(page, 10));
         }
 
+        public IActionResult GetProfit()
+        {
+            int profit = 0;
+
+            // 排除來自賣方的產品
+            List<Product> ProductList = _context.Product.Where(m => m.FromProduct2 == false).ToList();
+
+            foreach(Product product in ProductList)
+            {
+                profit += product.Price * product.SellVolume;
+            }
+
+            // 使用 Session 持久化儲存，讓這個值可以持續顯示在頁面
+            HttpContext.Session.SetString("TotalProfit", $"總共獲利 : {profit}");
+
+            return RedirectToAction("Index");
+        }
+
         public async Task<IActionResult> Details(int? id, int page = 1)
         {
             if (id == null)

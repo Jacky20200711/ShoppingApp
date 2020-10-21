@@ -62,8 +62,13 @@
         </tr>
     </thead>
     <tbody>
+        @{
+            int profit = 0;
+        }
         @foreach (var item in Model)
         {
+            profit += item.Price * item.SellVolume;
+
             <tr>
                 <td>
                     <img class="ProductImage" src="@Html.DisplayFor(modelItem => item.DefaultImageURL)" width="30" height="30" />
@@ -97,3 +102,4 @@
         }
     </tbody>
 </table>
+<div>總共獲利 : @profit</div>
