@@ -52,6 +52,8 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> SortByDate(int page = 1)
         {
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
             HttpContext.Session.SetString("SortType", "Date");
 
             return View("Index", await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, pageSize2));
@@ -59,6 +61,8 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> SortBySell(int page = 1)
         {
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
             HttpContext.Session.SetString("SortType", "Sell");
 
             return View("Index", await _context.Product.OrderByDescending(p => p.SellVolume).ToPagedListAsync(page, pageSize2));
@@ -66,6 +70,8 @@ namespace ShoppingApp.Controllers
 
         public IActionResult GetProfit()
         {
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
             int profit = 0;
 
             // 排除來自賣方的產品
@@ -127,17 +133,19 @@ namespace ShoppingApp.Controllers
             return View(await productAndComments.ToPagedListAsync(page, 10));
         }
 
-        [Authorize]
         public IActionResult Create()
         {
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
             return View();
         }
 
-        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,Price,Quantity,DefaultImageURL")] Product product)
         {
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
             if (ModelState.IsValid)
             {
                 product.PublishDate = DateTime.Now;
@@ -229,10 +237,7 @@ namespace ShoppingApp.Controllers
 
         private bool ProductExists(int id)
         {
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
-            {
-                return false;
-            }
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return false;
 
             return _context.Product.Any(e => e.Id == id);
         }
@@ -347,6 +352,8 @@ namespace ShoppingApp.Controllers
 
         public IActionResult ClearCache()
         {
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
             // 清除所有購物分頁的快取
             int PageAmount = _context.Product.Count() / 9 + 1;
 

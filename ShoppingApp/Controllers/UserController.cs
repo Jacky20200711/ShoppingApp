@@ -119,11 +119,7 @@ namespace ShoppingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(IdentityUser identityUser)
         {
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
-            {
-                _logger.LogWarning($"非管理員用戶[{User.Identity.Name}]企圖修改會員的資料!");
-                return NotFound();
-            }
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             var user = _context.Users.FirstOrDefault(u => u.Id == identityUser.Id);
 

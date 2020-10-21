@@ -66,14 +66,17 @@ namespace ShoppingApp.Controllers
                 return NotFound();
             }
 
-            var orderForm = await _context.OrderForm
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (orderForm == null)
+            // 如果不是管理員，則只能查看自己的訂單明細
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
             {
-                return NotFound();
+                string UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                OrderForm orderForm = await _context.OrderForm.Where(m => m.Id == id).FirstOrDefaultAsync();
+
+                if (orderForm.SenderId != UserId) return NotFound(); 
             }
 
-            return View(_context.OrderDetail.Where(o => o.OrderId == id).ToList());
+            return View(await _context.OrderDetail.Where(o => o.OrderId == id).ToListAsync());
         }
 
         public IActionResult Create()
@@ -265,10 +268,7 @@ namespace ShoppingApp.Controllers
 
         private bool OrderFormExists(int id)
         {
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
-            {
-                return false;
-            }
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return false;
 
             return _context.OrderForm.Any(e => e.Id == id);
         }

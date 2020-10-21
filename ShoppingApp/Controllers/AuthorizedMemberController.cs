@@ -157,10 +157,7 @@ namespace ShoppingApp.Controllers
 
         private bool AuthorizedMemberExists(int id)
         {
-            if (User.Identity.Name != AuthorizeManager.SuperAdmin)
-            {
-                return false;
-            }
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return false;
 
             return _context.AuthorizedMember.Any(e => e.Id == id);
         }

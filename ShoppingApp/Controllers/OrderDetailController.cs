@@ -142,10 +142,7 @@ namespace ShoppingApp.Controllers
 
         private bool OrderDetailExists(int id)
         {
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
-            {
-                return false;
-            }
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return false;
 
             return _context.OrderDetail.Any(e => e.Id == id);
         }

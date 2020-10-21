@@ -148,10 +148,7 @@ namespace ShoppingApp.Controllers
 
         private bool CommentExists(int id)
         {
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
-            {
-                return false;
-            }
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return false;
 
             return _context.Comment.Any(e => e.Id == id);
         }
