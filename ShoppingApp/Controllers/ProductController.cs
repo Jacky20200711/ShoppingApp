@@ -190,7 +190,6 @@ namespace ShoppingApp.Controllers
             {
                 try
                 {
-                    // 查看此產品是否來自賣方
                     Product prod = _context.Product.Where(m => m.Id == id).FirstOrDefault();
                     prod.Name = product.Name;
                     prod.Description = product.Description;
@@ -246,11 +245,13 @@ namespace ShoppingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(int id, string comment)
         {
-            // 檢查這個IP的留言次數
             string ClientIP = HttpContext.Connection.RemoteIpAddress.ToString();
+
+            // 檢查這個IP的留言次數
             if (CommentManager.GetCommentCountByIP(ClientIP) > 4)
             {
                 TempData["ProductDetail"] = "您的留言次數已達上限，請聯絡網站的管理員!";
+
                 return RedirectToAction("Details", new { id });
             }
             else
@@ -261,7 +262,7 @@ namespace ShoppingApp.Controllers
             // 檢查留言長度
             if (string.IsNullOrEmpty(comment) || comment.Length < 2 || comment.Length > 100)
             {
-                TempData["ProductDetail"] = "請檢查您的留言內容!";
+                TempData["ProductDetail"] = "請檢查您的留言長度!";
             }
             else
             {
@@ -281,7 +282,7 @@ namespace ShoppingApp.Controllers
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
-            // 刪除所有產品
+            // 刪除所有產品 & Reset產品資料表的Id
             _context.RemoveRange(_context.Product);
             _context.SaveChanges();
             _context.Database.ExecuteSqlRaw("DBCC CHECKIDENT('Product', RESEED, 0)");
@@ -327,18 +328,18 @@ namespace ShoppingApp.Controllers
 
             _context.AddRange(productList);
             _context.SaveChanges();
-
-            return RedirectToAction(nameof(Index));
+            ClearCache();
+            return RedirectToAction("ShowProducts");
         }
 
         public async Task<IActionResult> ShowProducts(int page = 1)
         {
-            // 從 Cache 取出這一頁的圖片資訊
+            // 從 Cache 取出這一頁的產品資訊
             if (_memoryCache.Get($"ProductPage{page}") != null)
             {
                 return View(_memoryCache.Get($"ProductPage{page}"));
             }
-            // 將這一頁的圖片資訊存入 Cache
+            // 將這一頁的產品資訊存入 Cache
             else
             {
                 _memoryCache.Set(
@@ -354,7 +355,7 @@ namespace ShoppingApp.Controllers
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
-            // 清除所有購物分頁的快取
+            // 清除所有購物分頁的 Cache
             int PageAmount = _context.Product.Count() / 9 + 1;
 
             for (int Page = 1; Page <= PageAmount; Page++)
