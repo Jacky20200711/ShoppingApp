@@ -253,7 +253,7 @@ namespace ShoppingApp.Models
                 csvReader2.Configuration.RegisterClassMap<OrderDetailMap>();
                 var DataList2 = csvReader2.GetRecords<OrderDetail>().ToList();
 
-                // OrderForm 的 Id 會連動到 OrderDetail，所以必須匯入Id
+                // OrderForm 的 Id 會連動到 OrderDetail，所以也必須匯入
                 using var transaction = _context.Database.BeginTransaction();
                 _context.OrderForm.AddRange(DataList);
                 _context.OrderDetail.AddRange(DataList2);
@@ -306,7 +306,7 @@ namespace ShoppingApp.Models
                     var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
                     var DataList = csvReader.GetRecords<Product2>().ToList();
 
-                    // Product2 的 Id 會連動到 Product，所以必須匯入Id
+                    // Product2 的 Id 會連動到 Product，所以也必須匯入
                     using var transaction = _context.Database.BeginTransaction();
                     _context.Product2.AddRange(DataList);
                     _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Product2 ON");
