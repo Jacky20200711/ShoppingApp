@@ -245,21 +245,21 @@ namespace ShoppingApp.Controllers
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
-            using (var transaction = _context.Database.BeginTransaction())
-            {
-                // 刪除訂單明細
-                var orderDetails = _context.OrderDetail.Where(o => o.OrderId == id);
-                _context.OrderDetail.RemoveRange(orderDetails);
+            using var transaction = _context.Database.BeginTransaction();
 
-                // 刪除訂單
-                var order = await _context.OrderForm.FindAsync(id);
-                _context.OrderForm.Remove(order);
+            // 刪除訂單明細
+            var orderDetails = _context.OrderDetail.Where(o => o.OrderId == id);
+            _context.OrderDetail.RemoveRange(orderDetails);
 
-                // 提交變更
-                await _context.SaveChangesAsync();
-                transaction.Commit();
-                _logger.LogWarning($"[{User.Identity.Name}]刪除了第{order.Id}號訂單，下單者為[{order.SenderEmail}]");
-            }
+            // 刪除訂單
+            var order = await _context.OrderForm.FindAsync(id);
+            _context.OrderForm.Remove(order);
+
+            // 提交變更
+            await _context.SaveChangesAsync();
+            transaction.Commit();
+
+            _logger.LogWarning($"[{User.Identity.Name}]刪除了第{order.Id}號訂單，下單者為[{order.SenderEmail}]");
             return RedirectToAction(nameof(Index));
         }
 
