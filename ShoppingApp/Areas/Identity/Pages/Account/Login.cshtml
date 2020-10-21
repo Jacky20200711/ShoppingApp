@@ -7,6 +7,23 @@
 
 <h1>@ViewData["Title"]</h1>
 
+<script>
+    function AddGmail() {
+        var InputOfEmail = document.getElementById("InputOfEmail");
+        // 若 Input 沒有 gmail 則幫忙補上
+        if (InputOfEmail.value.indexOf("@@gmail") < 0) {
+            InputOfEmail.value = InputOfEmail.value + "@@gmail.com";
+        }
+    }
+    function AddYahoo() {
+        var InputOfEmail = document.getElementById("InputOfEmail");
+        // 若 Input 沒有 yahoo 則幫忙補上
+        if (InputOfEmail.value.indexOf("@@yahoo") < 0) {
+            InputOfEmail.value = InputOfEmail.value + "@@yahoo.com.tw";
+        }
+    }
+</script>
+
 <div class="row">
     <div class="col-md-4">
         <h4>歡迎登入(^___^)</h4>
@@ -15,8 +32,11 @@
                 <hr />
                 <div class="text-danger">@ViewData["LoginFail"]</div>
                 <div class="form-group">
-                    <label asp-for="Input.Email">請輸入您的郵件</label>
-                    <input asp-for="Input.Email" class="form-control" />
+                    <label asp-for="Input.Email">請輸入您的郵件&nbsp;&nbsp;
+                        <a href="javascript:void(0)" onclick="AddGmail();">接Gmail</a>&nbsp;&nbsp;
+                        <a href="javascript:void(0)" onclick="AddYahoo();">接Yahoo</a>
+                    </label>
+                    <input asp-for="Input.Email" class="form-control" id="InputOfEmail"/>
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
                 <div class="form-group">
