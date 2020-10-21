@@ -126,12 +126,6 @@ namespace ShoppingApp.Controllers
                 return NotFound();
             }
 
-            // 令沒有管理權限的 Seller 只能編輯自己上架的產品
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
-            {
-                if (product2.SellerId != User.FindFirstValue(ClaimTypes.NameIdentifier)) return NotFound();
-            }
-
             return View(product2);
         }
 
@@ -140,7 +134,7 @@ namespace ShoppingApp.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,Quantity,DefaultImageURL")] Product2 product2)
         {
             if (!AuthorizeManager.InAuthorizedMember(User.Identity.Name)) return NotFound();
-
+            
             if (id != product2.Id)
             {
                 return NotFound();
@@ -150,14 +144,15 @@ namespace ShoppingApp.Controllers
             {
                 try
                 {
+                    Product2 product = _context.Product2.Where(m => m.Id == id).FirstOrDefault();
+
                     // 令沒有管理權限的 Seller 只能編輯自己上架的產品
                     if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
                     {
-                        if (product2.SellerId != User.FindFirstValue(ClaimTypes.NameIdentifier)) return NotFound();
+                        if (product.SellerId != User.FindFirstValue(ClaimTypes.NameIdentifier)) return NotFound();
                     }
 
                     // 重寫編輯代碼(因為只需要更新部分欄位)
-                    Product2 product = _context.Product2.Where(m => m.Id == id).FirstOrDefault();
                     product.Name = product2.Name;
                     product.Description = product2.Description;
                     product.Price = product2.Price;
