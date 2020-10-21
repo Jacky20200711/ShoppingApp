@@ -16,7 +16,7 @@ namespace ShoppingApp.Models
 {
     public static class CSVManager
     {
-        private static Logger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         // 讀取的時候忽略ID屬性
         private class ProductMap : ClassMap<Product>
@@ -42,16 +42,6 @@ namespace ShoppingApp.Models
         private class CommentMap : ClassMap<Comment>
         {
             public CommentMap()
-            {
-                AutoMap(CultureInfo.InvariantCulture);
-                Map(m => m.Id).Ignore();
-            }
-        }
-
-        // 讀取的時候忽略ID屬性
-        private class Product2Map : ClassMap<Product2>
-        {
-            public Product2Map()
             {
                 AutoMap(CultureInfo.InvariantCulture);
                 Map(m => m.Id).Ignore();
@@ -252,18 +242,18 @@ namespace ShoppingApp.Models
 
             try
             {
-                // 讀取訂單(必須讀取 Id 因為會連動到訂單明細)
+                // 讀取訂單(訂單的Id會連動到訂單明細，所以也必須讀入)
                 using var reader = new StreamReader(FilePath1, Encoding.UTF8);
                 var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
                 var DataList = csvReader.GetRecords<OrderForm>().ToList();
 
-                // 讀取明細(忽略明細Id)
+                // 讀取明細
                 using var reader2 = new StreamReader(FilePath2, Encoding.UTF8);
                 var csvReader2 = new CsvReader(reader2, CultureInfo.InvariantCulture);
                 csvReader2.Configuration.RegisterClassMap<OrderDetailMap>();
                 var DataList2 = csvReader2.GetRecords<OrderDetail>().ToList();
 
-                // 使用 SQL 令 OrderForm 暫時可以指定 Id
+                // OrderForm 的 Id 會連動到 OrderDetail，所以必須匯入Id
                 using var transaction = _context.Database.BeginTransaction();
                 _context.OrderForm.AddRange(DataList);
                 _context.OrderDetail.AddRange(DataList2);
@@ -314,10 +304,15 @@ namespace ShoppingApp.Models
                 {
                     using var reader = new StreamReader(FilePath, Encoding.UTF8);
                     var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
-                    csvReader.Configuration.RegisterClassMap<Product2Map>();
                     var DataList = csvReader.GetRecords<Product2>().ToList();
+
+                    // Product2 的 Id 會連動到 Product，所以必須匯入Id
+                    using var transaction = _context.Database.BeginTransaction();
                     _context.Product2.AddRange(DataList);
+                    _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Product2 ON");
                     _context.SaveChanges();
+                    _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Product2 OFF");
+                    transaction.Commit();
                 }
             }
         }

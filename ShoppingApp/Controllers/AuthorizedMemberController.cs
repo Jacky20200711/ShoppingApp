@@ -15,6 +15,7 @@ namespace ShoppingApp.Controllers
         // 每個分頁最多顯示10筆
         private readonly int pageSize = 10;
 
+        // 注入會用到的工具
         private readonly ApplicationDbContext _context;
 
         public AuthorizedMemberController(ApplicationDbContext context)
@@ -22,7 +23,6 @@ namespace ShoppingApp.Controllers
             _context = context;
         }
 
-        // 只有超級管理員可以查看特權用戶的列表
         public async Task<IActionResult> Index(int page = 1)
         {
             if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
@@ -30,7 +30,6 @@ namespace ShoppingApp.Controllers
             return View(await _context.AuthorizedMember.ToPagedListAsync(page, pageSize));
         }
 
-        // 只有超級管理員可以查看特權用戶的權限
         public async Task<IActionResult> Details(int? id)
         {
             if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
@@ -50,7 +49,6 @@ namespace ShoppingApp.Controllers
             return View(authorizedMember);
         }
 
-        // 只有超級管理員可以新增其他管理員
         public IActionResult Create()
         {
             if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
@@ -58,7 +56,6 @@ namespace ShoppingApp.Controllers
             return View();
         }
 
-        // 只有超級管理員可以新增其他管理員
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Email,InAdminGroup,InSellerGroup")] AuthorizedMember authorizedMember)
@@ -92,14 +89,13 @@ namespace ShoppingApp.Controllers
             return View(authorizedMember);
         }
 
-        // 只有超級管理員可以編輯其他特權用戶
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Email,InAdminGroup,InSellerGroup")] AuthorizedMember authorizedMember)
         {
             if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
 
-            // 令超級管理員無法編輯自己
+            // 令超級管理員無法被編輯
             if (authorizedMember.Email == AuthorizeManager.SuperAdmin) return NotFound();
 
             if (id != authorizedMember.Id)
@@ -131,7 +127,6 @@ namespace ShoppingApp.Controllers
             return View(authorizedMember);
         }
 
-        // 只有超級管理員可以刪除其他特權用戶
         public async Task<IActionResult> Delete(int? id)
         {
             if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
@@ -148,7 +143,7 @@ namespace ShoppingApp.Controllers
                 return NotFound();
             }
 
-            // 令超級管理員無法刪除自己
+            // 令超級管理員無法被刪除
             if (authorizedMember.Email == AuthorizeManager.SuperAdmin) return NotFound();
 
             AuthorizeManager.UpdateAuthority("DeleteAll", _context, authorizedMember.Email, null, null);

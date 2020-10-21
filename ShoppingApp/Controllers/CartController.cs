@@ -6,7 +6,6 @@ namespace ShoppingApp.Controllers
 {
     public class CartController : Controller
     {
-        // 使用 DI 注入會用到的工具
         private readonly ApplicationDbContext _context;
 
         public CartController(ApplicationDbContext context)

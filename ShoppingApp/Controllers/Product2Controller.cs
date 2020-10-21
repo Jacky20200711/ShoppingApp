@@ -17,6 +17,7 @@ namespace ShoppingApp.Controllers
     [Authorize]
     public class Product2Controller : Controller
     {
+        // 注入會用到的工具
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private static IMemoryCache _memoryCache;

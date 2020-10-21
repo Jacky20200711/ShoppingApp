@@ -18,11 +18,11 @@ namespace ShoppingApp.Controllers
 {
     public class ProductController : Controller
     {
-        // 購物分頁最多顯示9筆，管理頁面最多顯示10筆
-        private readonly int pageSize = 9;
+        // 每個購物分頁最多顯示9筆，每個管理分頁最多顯示10筆
+        private readonly int pageSize = 9;  
         private readonly int pageSize2 = 10;
 
-        // 使用 DI 注入會用到的工具
+        // 注入會用到的工具
         private readonly ApplicationDbContext _context;
         private static IMemoryCache _memoryCache;
         private readonly ILogger _logger;
