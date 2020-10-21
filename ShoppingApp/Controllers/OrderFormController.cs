@@ -66,14 +66,17 @@ namespace ShoppingApp.Controllers
                 return NotFound();
             }
 
+            var orderForm = await _context.OrderForm
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (orderForm == null)
+            {
+                return NotFound();
+            }
+
             // 如果不是管理員，則只能查看自己的訂單明細
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
             {
-                string UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                OrderForm orderForm = await _context.OrderForm.Where(m => m.Id == id).FirstOrDefaultAsync();
-
-                if (orderForm.SenderId != UserId) return NotFound(); 
+                if (orderForm.SenderId != User.FindFirstValue(ClaimTypes.NameIdentifier)) return NotFound(); 
             }
 
             return View(await _context.OrderDetail.Where(o => o.OrderId == id).ToListAsync());
