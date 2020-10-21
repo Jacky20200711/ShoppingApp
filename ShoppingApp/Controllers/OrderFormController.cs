@@ -80,7 +80,6 @@ namespace ShoppingApp.Controllers
         {
             return View();
         }
-
        
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -128,6 +127,8 @@ namespace ShoppingApp.Controllers
                     orderForm.SenderEmail = User.Identity.Name;
                     orderForm.TotalAmount = currentCart.TotalAmount;
                     _context.Add(orderForm);
+
+                    // 先儲存才能產生訂單的Id(訂單明細會用到)
                     await _context.SaveChangesAsync();
 
                     // 儲存訂單明細
@@ -147,7 +148,6 @@ namespace ShoppingApp.Controllers
                     _context.OrderDetail.AddRange(orderDetails);
                     await _context.SaveChangesAsync();
 
-                    // 提交Transaction
                     transaction.Commit();
                 }
                 catch (Exception e)
@@ -179,7 +179,7 @@ namespace ShoppingApp.Controllers
 
                 HttpContext.Session.SetInt32(EncryptedKey, orderForm.Id);
 
-                // 傳送訂單ID、此筆交易的KEY、購物車給 WebApi
+                // 傳送訂單ID、未加密的KEY、購物車給 WebApi
                 _logger.LogInformation($"[{orderForm.SenderEmail}]建立了第{orderForm.Id}號訂單");
                 return Redirect($"{MyApiDomain}/Home/SendToOpay/?OrderKey={UnencryptedKey}&JsonString={JsonConvert.SerializeObject(currentCart)}");
             }
@@ -296,13 +296,12 @@ namespace ShoppingApp.Controllers
                 OrderId = (int)GetOrderId;
                 HttpContext.Session.Remove(OrderKey);
 
-                // 修改訂單狀態
+                // 更新訂單狀態
                 _context.OrderForm.FirstOrDefault(o => o.Id == OrderId).CheckOut = "YES";
-                _context.SaveChanges();
-                _logger.LogInformation($"[{User.Identity.Name}]對第{OrderId}號訂單付款成功!");
 
                 // 更新庫存和銷量
                 Cart CurrentCart = CartOperator.GetCurrentCart();
+
                 foreach (var cartItem in CurrentCart)
                 {
                     Product product = _context.Product.Where(m => m.Id == cartItem.Id).FirstOrDefault();
@@ -318,6 +317,7 @@ namespace ShoppingApp.Controllers
                         product2.SellVolume += cartItem.Quantity;
                     }
                 }
+
                 await _context.SaveChangesAsync();
 
                 // 移除購物頁面的快取，避免顯示舊的庫存
@@ -331,7 +331,8 @@ namespace ShoppingApp.Controllers
                 // 清空購物車
                 CartOperator.ClearCart();
 
-                TempData["PayResult"] = $"付款成功!~請點選[我的訂單]來查看付款結果。";
+                _logger.LogInformation($"[{User.Identity.Name}]對第{OrderId}號訂單付款成功!");
+                TempData["PayResult"] = $"付款成功!~請點選上方的[我的訂單]來查看付款結果。";
                 return View("PayResult");
             }
         }
