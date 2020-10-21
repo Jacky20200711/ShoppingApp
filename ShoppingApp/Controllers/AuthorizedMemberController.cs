@@ -12,7 +12,7 @@ namespace ShoppingApp.Controllers
     [Authorize]
     public class AuthorizedMemberController : Controller
     {
-        //每個分頁最多顯示10筆
+        // 每個分頁最多顯示10筆
         private readonly int pageSize = 10;
 
         private readonly ApplicationDbContext _context;

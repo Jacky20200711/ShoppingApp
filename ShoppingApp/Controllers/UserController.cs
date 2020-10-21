@@ -18,7 +18,7 @@ namespace ShoppingApp.Controllers
 {
     public class UserController : Controller
     {
-        //每個分頁最多顯示10筆
+        // 每個分頁最多顯示10筆
         private readonly int pageSize = 10;
 
         // 使用 DI 注入會用到的工具

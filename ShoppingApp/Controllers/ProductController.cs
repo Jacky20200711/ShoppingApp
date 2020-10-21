@@ -18,8 +18,9 @@ namespace ShoppingApp.Controllers
 {
     public class ProductController : Controller
     {
-        //每個分頁最多顯示9筆
+        // 購物分頁最多顯示9筆，管理頁面最多顯示10筆
         private readonly int pageSize = 9;
+        private readonly int pageSize2 = 10;
 
         // 使用 DI 注入會用到的工具
         private readonly ApplicationDbContext _context;
@@ -43,9 +44,9 @@ namespace ShoppingApp.Controllers
             // 以當前 Session 的排序類型做排序 
             return (HttpContext.Session.GetString("SortType")) switch
             {
-                "Date" => View(await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, 10)),
-                "Sell" => View(await _context.Product.OrderByDescending(p => p.SellVolume).ToPagedListAsync(page, 10)),
-                _ => View(await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, 10)),
+                "Date" => View(await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, pageSize2)),
+                "Sell" => View(await _context.Product.OrderByDescending(p => p.SellVolume).ToPagedListAsync(page, pageSize2)),
+                _ => View(await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, pageSize2)),
             };
         }
 
@@ -53,14 +54,14 @@ namespace ShoppingApp.Controllers
         {
             HttpContext.Session.SetString("SortType", "Date");
 
-            return View("Index", await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, 10));
+            return View("Index", await _context.Product.OrderByDescending(p => p.PublishDate).ToPagedListAsync(page, pageSize2));
         }
 
         public async Task<IActionResult> SortBySell(int page = 1)
         {
             HttpContext.Session.SetString("SortType", "Sell");
 
-            return View("Index", await _context.Product.OrderByDescending(p => p.SellVolume).ToPagedListAsync(page, 10));
+            return View("Index", await _context.Product.OrderByDescending(p => p.SellVolume).ToPagedListAsync(page, pageSize2));
         }
 
         public IActionResult GetProfit()
