@@ -26,7 +26,7 @@
                            class="btn btn-primary" role="button">
                             加入購物車
                         </a>
-                        <a href="@Url.Action("Details", new { id = product.Id })" class="btn btn-primary" role="button">查看留言</a>
+                        <a href="@Url.Action("Details", new { id = product.Id , returnPage = Model.PageNumber })" class="btn btn-primary" role="button">查看留言</a>
                     </p>
                 </div>
             </div>

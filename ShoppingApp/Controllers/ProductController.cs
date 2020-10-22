@@ -88,8 +88,15 @@ namespace ShoppingApp.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> Details(int? id, int page = 1)
+        public async Task<IActionResult> Details(int? id, int page = 1, int returnPage = 0)
         {
+            // 紀錄之前所在的購物分頁，為了讓 User 可以回到之前的購物分頁
+            // 只有當 User 點選了查看留言，才會令 returnPage 不會為零
+            if (returnPage != 0)
+            {
+                HttpContext.Session.SetInt32("returnPage", returnPage);
+            }
+
             if (id == null)
             {
                 return NotFound();
