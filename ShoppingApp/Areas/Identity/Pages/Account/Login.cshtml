@@ -30,7 +30,7 @@
         <section>
             <form id="account" method="post">
                 <hr />
-                <div class="text-danger">@ViewData["LoginFail"]</div><br>
+                <div class="text-danger">@TempData["LoginFail"]</div><br>
                 <div class="form-group">
                     <label asp-for="Input.Email">請輸入您的郵件&nbsp;&nbsp;
                         <a href="javascript:void(0)" onclick="AddGmail();">接Gmail</a>&nbsp;&nbsp;

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 
 namespace ShoppingApp.Areas.Identity.Pages.Account
 {
@@ -80,7 +81,17 @@ namespace ShoppingApp.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    return LocalRedirect(returnUrl);
+                    if(HttpContext.Session.GetString("UserModifyEmail") != null)
+                    {
+                        HttpContext.Session.Remove("UserModifyEmail");
+
+                        // 令 User 在修改郵件並重新登入後，跳轉到首頁
+                        return LocalRedirect("~/Product/ShowProducts");
+                    }
+                    else
+                    {
+                        return LocalRedirect(returnUrl);
+                    }
                 }
                 if (result.RequiresTwoFactor)
                 {
@@ -88,18 +99,18 @@ namespace ShoppingApp.Areas.Identity.Pages.Account
                 }
                 if (result.IsLockedOut)
                 {
-                    ViewData["LoginFail"] = "失敗次數過多，此帳號暫時無法使用!";
+                    TempData["LoginFail"] = "失敗次數過多，此帳號暫時無法使用!";
                     return Page();
                 }
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    ViewData["LoginFail"] = "登入失敗，請檢查輸入的內容!";
+                    TempData["LoginFail"] = "登入失敗，請檢查輸入的內容!";
                     return Page();
                 }
             }
 
-            ViewData["LoginFail"] = "登入失敗，請檢查輸入的內容!";
+            TempData["LoginFail"] = "登入失敗，請檢查輸入的內容!";
             return Page();
         }
     }

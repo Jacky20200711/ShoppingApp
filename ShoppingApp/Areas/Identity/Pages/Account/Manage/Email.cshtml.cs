@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-using System.Text.Encodings.Web;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
 using ShoppingApp.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ShoppingApp.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
 {
@@ -25,7 +20,7 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
         private readonly ILogger _logger;
         private readonly ApplicationDbContext _context;
 
-        // 使用 DI 注入資料庫
+        // 注入會用到的工具
         public EmailModel(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
@@ -112,15 +107,20 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
                         AuthorizeManager.UpdateAuthority("ModifyEmail", _context, user.Email, Input.NewEmail);
                     }
 
+                    // 變更郵件
                     user.UserName = Input.NewEmail;
                     user.Email = Input.NewEmail;
                     await _userManager.UpdateAsync(user);
+
+                    // 令使用者登出
                     _logger.LogInformation($"[{email}]的郵件已經變更為[{Input.NewEmail}]");
-                    StatusMessage = $"您的郵件已經變更成[{Input.NewEmail}]，請重新登入以利繼續操作!!!";
+                    TempData["LoginFail"] = $"郵件變更成功，請重新登入!";
+                    await _signInManager.SignOutAsync();
+                    HttpContext.Session.SetString("UserModifyEmail", "1");
                 }
                 else
                 {
-                    StatusMessage = "郵件變更失敗，此郵件已被註冊!";
+                    StatusMessage = "變更失敗，此郵件已被註冊!";
                 }
 
                 return RedirectToPage();

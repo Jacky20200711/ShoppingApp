@@ -20,15 +20,11 @@
     <tbody>
         @foreach (var item in Model)
         {
-            //不要顯示超級管理員
-            if(item.Email != AuthorizeManager.SuperAdmin)
-            {
-                <tr>
+            <tr>
                 <td>@Html.DisplayFor(model => item.Email)</td>
                 <td>@Html.ActionLink("Edit", "Edit", new { id = item.Id })</td>
                 <td>@Html.ActionLink("Delete", "Delete", new { id = item.Id })</td>
             </tr>
-            }
         }
     </tbody>
 </table>

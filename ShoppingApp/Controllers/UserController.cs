@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -40,7 +41,8 @@ namespace ShoppingApp.Controllers
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
-            return View(await _context.Users.ToPagedListAsync(page, pageSize));
+            // 隱藏超級管理員
+            return View(await _context.Users.Where(m => m.Email != AuthorizeManager.SuperAdmin).ToPagedListAsync(page, pageSize));
         }
 
         public IActionResult Create()
@@ -88,8 +90,16 @@ namespace ShoppingApp.Controllers
                 return NotFound();
             }
 
+            // 查看該使用者是否為賣方，如果是...則刪除其產品
+            if (AuthorizeManager.InSellerGroup(user.Email))
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                _context.RemoveRange(_context.Product2.Where(m => m.SellerId == userId));
+            }
+
             // 查看該使用者是否為特權用戶，如果是...則從特權資料表和 HashTable 中移除
-            if(AuthorizeManager.InAuthorizedMember(user.Email))
+            if (AuthorizeManager.InAuthorizedMember(user.Email))
             {
                 AuthorizeManager.UpdateAuthority("DeleteAll", _context, user.Email, null, null);
             }
@@ -143,6 +153,7 @@ namespace ShoppingApp.Controllers
             // 若沒先 RemovePassword 則 LOG 會出現內建的 Warning
             await _userManager.RemovePasswordAsync(user);
             await _userManager.AddPasswordAsync(user, identityUser.PasswordHash);
+
             _logger.LogInformation($"[{User.Identity.Name}]修改了[{user.Email}]的資料");
             return RedirectToAction("Index");
         }
@@ -245,7 +256,7 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
 
-            // 清空權限 & 會員 & 上架的資料表 
+            // 清空權限 & 會員 & 上架清單
             _context.RemoveRange(_context.AuthorizedMember.Where(m => m.Email != AuthorizeManager.SuperAdmin));
             _context.RemoveRange(_context.Users.Where(m => m.Email != AuthorizeManager.SuperAdmin));
             _context.RemoveRange(_context.Product2);
