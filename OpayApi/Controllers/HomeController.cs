@@ -67,12 +67,10 @@ namespace OpayApi.Controllers
             }
             catch (Exception ex)
             {
-                // 例外錯誤處理。 
                 enErrors.Add(ex.Message);
             }
             finally
             {
-                // 顯示錯誤訊息。 
                 if (enErrors.Count() > 0)
                 {
                     szHtml = string.Join("\\r\\n", enErrors);
@@ -94,17 +92,17 @@ namespace OpayApi.Controllers
                 oPayment.HashIV = ConfigurationManager.AppSettings["HashIV"];
                 enErrors.AddRange(oPayment.CheckOutFeedback(ref htFeedback));
 
-                // 將 KEY 加密
-                byte[] keyBytes = Encoding.UTF8.GetBytes(OrderKey + string.Join("", OrderKey.Reverse()));
-                string EncryptedKey = Convert.ToBase64String(keyBytes);
-                using (var md5 = MD5.Create())
-                {
-                    var result = md5.ComputeHash(Encoding.ASCII.GetBytes(EncryptedKey));
-                    EncryptedKey = BitConverter.ToString(result);
-                }
-
                 if (enErrors.Count() == 0)
                 {
+                    // 將 KEY 加密
+                    byte[] keyBytes = Encoding.UTF8.GetBytes(OrderKey + string.Join("", OrderKey.Reverse()));
+                    string EncryptedKey = Convert.ToBase64String(keyBytes);
+                    using (var md5 = MD5.Create())
+                    {
+                        var result = md5.ComputeHash(Encoding.ASCII.GetBytes(EncryptedKey));
+                        EncryptedKey = BitConverter.ToString(result);
+                    }
+
                     return Redirect($"{MyAppDomain}/OrderForm/CheckPayResult/?OrderKey={EncryptedKey}&PaySuccess=true");
                 }
                 else
