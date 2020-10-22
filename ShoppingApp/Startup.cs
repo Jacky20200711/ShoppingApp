@@ -49,8 +49,8 @@ namespace ShoppingApp
                 options.SignIn.RequireConfirmedAccount = false;
                 options.User.RequireUniqueEmail = true;
 
-                // 登入次數限制
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(60);
+                // 登入次數限制(若連續錯誤5次則上鎖30分鐘)
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
                 options.Lockout.MaxFailedAccessAttempts = 5;
             });
 

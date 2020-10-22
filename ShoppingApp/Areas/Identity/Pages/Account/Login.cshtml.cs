@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
@@ -46,11 +43,10 @@ namespace ShoppingApp.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required(ErrorMessage = "此欄位不能為空")]
-            [StringLength(100, ErrorMessage = "長度必須為6~100", MinimumLength = 6)]
+            [StringLength(30, ErrorMessage = "長度必須為6~30", MinimumLength = 6)]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
-            //[Display(Name = "記住我?")]
             public bool RememberMe { get; set; }
         }
 
@@ -73,16 +69,17 @@ namespace ShoppingApp.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/");
+            returnUrl ??= Url.Content("~/");
 
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+                var result = await _signInManager.PasswordSignInAsync(
+                    Input.Email, Input.Password, 
+                    Input.RememberMe, 
+                    lockoutOnFailure: true);
+
                 if (result.Succeeded)
                 {
-                    //_logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -91,7 +88,6 @@ namespace ShoppingApp.Areas.Identity.Pages.Account
                 }
                 if (result.IsLockedOut)
                 {
-                    _logger.LogWarning($"[{Input.Email}]的帳戶已被暫時鎖住");
                     ViewData["LoginFail"] = "失敗次數過多，此帳號暫時無法使用!";
                     return Page();
                 }
@@ -103,7 +99,6 @@ namespace ShoppingApp.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             ViewData["LoginFail"] = "登入失敗，請檢查輸入的內容!";
             return Page();
         }

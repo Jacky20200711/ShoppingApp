@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -50,7 +49,7 @@ namespace ShoppingApp.Areas.Identity.Pages.Account
             public string Email { get; set; }
 
             [Required(ErrorMessage = "此欄位不能為空")]
-            [StringLength(100, ErrorMessage = "長度必須為6~100", MinimumLength = 6)]
+            [StringLength(30, ErrorMessage = "長度必須為6~30", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "密碼")]
             public string Password { get; set; }
@@ -106,7 +105,6 @@ namespace ShoppingApp.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             ViewData["RegistFail"] = "註冊失敗，此郵件已被註冊!";
             return Page();
         }

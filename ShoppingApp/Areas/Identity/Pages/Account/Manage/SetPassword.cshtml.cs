@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +28,7 @@ namespace ShoppingApp.Areas.Identity.Pages.Account.Manage
         public class InputModel
         {
             [Required(ErrorMessage = "此欄位不能為空")]
-            [StringLength(100, ErrorMessage = "長度必須為6~100", MinimumLength = 6)]
+            [StringLength(30, ErrorMessage = "長度必須為6~30", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "新密碼")]
             public string NewPassword { get; set; }
