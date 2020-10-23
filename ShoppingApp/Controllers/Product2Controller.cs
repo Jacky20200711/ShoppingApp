@@ -145,7 +145,7 @@ namespace ShoppingApp.Controllers
             {
                 try
                 {
-                    Product2 product = _context.Product2.Where(m => m.Id == id).FirstOrDefault();
+                    Product2 product = _context.Product2.FirstOrDefault(m => m.Id == id);
 
                     // 令沒有管理權限的 Seller 只能編輯自己上架的產品
                     if (!AuthorizeManager.InAdminGroup(User.Identity.Name))

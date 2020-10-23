@@ -7,10 +7,8 @@ namespace ShoppingApp.Models
 {
     public static class CartOperator
     {
-        // 注入 HttpContextAccessor ，讓這個類別可以利用 HttpContext 來存取 Session
+        // 注入 HttpContextAccessor ，讓這個類別可以存取 Session
         private static IHttpContextAccessor _contextAccessor;
-
-        public static HttpContext Current => _contextAccessor.HttpContext;
 
         internal static void Configure(IHttpContextAccessor contextAccessor)
         {
@@ -19,30 +17,29 @@ namespace ShoppingApp.Models
 
         public static Cart GetCurrentCart()
         {
+            // 若 Session 中沒有購物車則創建一個
             if (_contextAccessor.HttpContext.Session.GetString("Cart") == null)
             {
                 _contextAccessor.HttpContext.Session.SetString("Cart", JsonConvert.SerializeObject(new Cart()));
             }
 
+            // 返回 Session 中的購物車
             return JsonConvert.DeserializeObject<Cart>(_contextAccessor.HttpContext.Session.GetString("Cart"));
         }
 
         public static void AddProduct(int id, ApplicationDbContext db)
         {
-            // 取得 Session 中的購物車
             var GuestCart = GetCurrentCart();
+            var findItem = GuestCart.cartItems.FirstOrDefault(s => s.Id == id);
 
             // 判斷購物車內是否有此 Id 的商品
-            var findItem = GuestCart.cartItems.Where(s => s.Id == id).FirstOrDefault();
-
             if (GuestCart.Contains(findItem))
             {
                 findItem.Quantity += 1;
             }
             else
             {
-                // 若此項ID不存在於購物車內，則從資料庫撈取產品並加入購物車
-                Product product = db.Product.Where(s => s.Id == id).FirstOrDefault();
+                Product product = db.Product.FirstOrDefault(s => s.Id == id);
 
                 GuestCart.Add(new CartItem()
                 {
@@ -62,8 +59,7 @@ namespace ShoppingApp.Models
         public static void RemoveProduct(int id)
         {
             var GuestCart = GetCurrentCart();
-
-            var findItem = GuestCart.cartItems.Where(s => s.Id == id).FirstOrDefault();
+            var findItem = GuestCart.cartItems.FirstOrDefault(s => s.Id == id);
             GuestCart.Remove(findItem);
 
             // 更新 Session 中的購物車
@@ -73,7 +69,6 @@ namespace ShoppingApp.Models
         public static void ClearCart()
         {
             var GuestCart = GetCurrentCart();
-
             GuestCart.Clear();
 
             // 更新 Session 中的購物車

@@ -181,16 +181,10 @@ namespace ShoppingApp.Controllers
             if(user != null)
             {
                 // 從設定檔取得寄信的相關資訊
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json");
-
-                var config = builder.Build();
-
-                string SmtpEmail = config["AppSetting:SmtpEmail"];
-                string SmtpPassword = config["AppSetting:SmtpPassword"];
-                string SmtpHost = config["AppSetting:SmtpHost"];
-                string MyAppDomain = config["AppSetting:MyAppDomain"];
+                string SmtpEmail = ConfigManager.GetValueByKey("SmtpEmail");
+                string SmtpPassword = ConfigManager.GetValueByKey("SmtpPassword");
+                string SmtpHost = ConfigManager.GetValueByKey("SmtpHost");
+                string MyAppDomain = ConfigManager.GetValueByKey("MyAppDomain");
 
                 // 取得隨機字串並存入記憶體
                 string emailVerifyKey = Path.GetRandomFileName();

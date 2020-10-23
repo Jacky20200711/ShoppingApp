@@ -108,7 +108,7 @@ namespace ShoppingApp.Controllers
                 // 檢查庫存
                 foreach (var p in currentCart)
                 {
-                    Product product = await _context.Product.Where(m => m.Id == p.Id).FirstOrDefaultAsync();
+                    Product product = await _context.Product.FirstOrDefaultAsync(m => m.Id == p.Id);
 
                     if (product.Quantity < p.Quantity)
                     {
@@ -162,19 +162,13 @@ namespace ShoppingApp.Controllers
                     return View("~/Views/Shared/DataBaseBusy.cshtml");
                 }
 
-                // 存取 WebApi 的網域
-                var builder = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile("appsettings.json");
-
-                var config = builder.Build();
-
-                string MyApiDomain = config["AppSetting:MyApiDomain"];
+                // 從設定檔取得 WebApi 的網域
+                string MyApiDomain = ConfigManager.GetValueByKey("MyApiDomain");
 
                 // 產生此筆交易的KEY
                 string UnencryptedKey = Path.GetRandomFileName() + Path.GetRandomFileName();
 
-                // 將 KEY 加密
+                // 將 KEY 加密 & 存入Session，之後要用來驗證
                 byte[] keyBytes = Encoding.UTF8.GetBytes(UnencryptedKey + string.Join("", UnencryptedKey.Reverse()));
                 string EncryptedKey = Convert.ToBase64String(keyBytes);
                 using (var md5 = MD5.Create())
@@ -191,7 +185,6 @@ namespace ShoppingApp.Controllers
             }
             else
             {
-                // 遇到不合法的訂單，直接導回當前頁面
                 return View();
             }
         }
@@ -307,7 +300,7 @@ namespace ShoppingApp.Controllers
 
                 foreach (var cartItem in CurrentCart)
                 {
-                    Product product = _context.Product.Where(m => m.Id == cartItem.Id).FirstOrDefault();
+                    Product product = _context.Product.FirstOrDefault(m => m.Id == cartItem.Id);
 
                     product.Quantity -= cartItem.Quantity;
                     product.SellVolume += cartItem.Quantity;
@@ -315,7 +308,7 @@ namespace ShoppingApp.Controllers
                     // 連動更新 Product2 的庫存和銷量
                     if (product.FromProduct2)
                     {
-                        Product2 product2 = _context.Product2.Where(m => m.Id == product.Product2Id).FirstOrDefault();
+                        Product2 product2 = _context.Product2.FirstOrDefault(m => m.Id == product.Product2Id);
                         product2.Quantity -= cartItem.Quantity;
                         product2.SellVolume += cartItem.Quantity;
                     }

@@ -197,7 +197,7 @@ namespace ShoppingApp.Controllers
             {
                 try
                 {
-                    Product prod = _context.Product.Where(m => m.Id == id).FirstOrDefault();
+                    Product prod = _context.Product.FirstOrDefault(m => m.Id == id);
                     prod.Name = product.Name;
                     prod.Description = product.Description;
                     prod.Price = product.Price;
@@ -297,11 +297,7 @@ namespace ShoppingApp.Controllers
             // 從設定檔取得產品的網址
             List<string> ImageUrlList = new List<string>();
 
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
-
-            var config = builder.Build().AsEnumerable();
+            var config = ConfigManager.GetAllPair();
 
             foreach (KeyValuePair<string, string> pair in config)
             {

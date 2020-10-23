@@ -2,7 +2,6 @@
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using NLog;
 using ShoppingApp.Data;
 using System;
@@ -58,22 +57,10 @@ namespace ShoppingApp.Models
             }
         }
 
-        public static string GetConfigValue(string Key)
-        {
-            // 從設定檔取得對應的設定值
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json");
-
-            var config = builder.Build();
-
-            return config[$"AppSetting:{Key}"];
-        }
-
         public static string GetFilePath(string TableName)
         {
             // 從設定檔取得匯出路徑
-            string ExportPath = GetConfigValue("ExportPath"); 
+            string ExportPath = ConfigManager.GetValueByKey("ExportPath");
 
             // 取得當前時間
             DateTime cTime = DateTime.Now;
@@ -92,10 +79,7 @@ namespace ShoppingApp.Models
         public static void ExportProduct(ApplicationDbContext _context)
         {
             List<Product> DataList = _context.Product.OrderByDescending(m => m.PublishDate).ToList();
-
-            string FilePath = GetFilePath("Product");
-
-            using var writer = new StreamWriter(FilePath, false, Encoding.UTF8);
+            using var writer = new StreamWriter(GetFilePath("Product"), false, Encoding.UTF8);
             using var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture);
             csvWriter.WriteRecords(DataList);
         }
@@ -103,10 +87,7 @@ namespace ShoppingApp.Models
         public static void ExportUser(ApplicationDbContext _context)
         {
             List<IdentityUser> DataList = _context.Users.Where(m => m.Email != AuthorizeManager.SuperAdmin).ToList();
-
-            string FilePath = GetFilePath("User");
-
-            using var writer = new StreamWriter(FilePath, false, Encoding.UTF8);
+            using var writer = new StreamWriter(GetFilePath("User"), false, Encoding.UTF8);
             using var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture);
             csvWriter.WriteRecords(DataList);
         }
@@ -115,19 +96,13 @@ namespace ShoppingApp.Models
         {
             // 匯出訂單
             List<OrderForm> OrderList = _context.OrderForm.OrderByDescending(m => m.CreateTime).ToList();
-
-            string FilePath = GetFilePath("OrderForm");
-
-            using var writer1 = new StreamWriter(FilePath, false, Encoding.UTF8);
+            using var writer1 = new StreamWriter(GetFilePath("OrderForm"), false, Encoding.UTF8);
             using var csvWriter1 = new CsvWriter(writer1, CultureInfo.InvariantCulture);
             csvWriter1.WriteRecords(OrderList);
 
             // 連動匯出訂單明細
             List<OrderDetail> OrderDetailList = _context.OrderDetail.OrderByDescending(m => m.OrderId).ToList();
-
-            FilePath = GetFilePath("OrderDetail");
-
-            using var writer2 = new StreamWriter(FilePath, false, Encoding.UTF8);
+            using var writer2 = new StreamWriter(GetFilePath("OrderDetail"), false, Encoding.UTF8);
             using var csvWriter2 = new CsvWriter(writer2, CultureInfo.InvariantCulture);
             csvWriter2.WriteRecords(OrderDetailList);
         }
@@ -135,10 +110,7 @@ namespace ShoppingApp.Models
         public static void ExportComment(ApplicationDbContext _context)
         {
             List<Comment> DataList = _context.Comment.OrderByDescending(m => m.CreateTime).ToList();
-
-            string FilePath = GetFilePath("Comment");
-
-            using var writer = new StreamWriter(FilePath, false, Encoding.UTF8);
+            using var writer = new StreamWriter(GetFilePath("Comment"), false, Encoding.UTF8);
             using var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture);
             csvWriter.WriteRecords(DataList);
         }
@@ -146,10 +118,7 @@ namespace ShoppingApp.Models
         public static void ExportProduct2(ApplicationDbContext _context)
         {
             List<Product2> DataList = _context.Product2.OrderBy(m => m.SellerEmail).ToList();
-
-            string FilePath = GetFilePath("SellerProduct");
-
-            using var writer = new StreamWriter(FilePath, false, Encoding.UTF8);
+            using var writer = new StreamWriter(GetFilePath("SellerProduct"), false, Encoding.UTF8);
             using var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture);
             csvWriter.WriteRecords(DataList);
         }
@@ -157,10 +126,7 @@ namespace ShoppingApp.Models
         public static void ExportAuthorizedMember(ApplicationDbContext _context)
         {
             List<AuthorizedMember> DataList = _context.AuthorizedMember.ToList();
-
-            string FilePath = GetFilePath("AuthorizedMember");
-
-            using var writer = new StreamWriter(FilePath, false, Encoding.UTF8);
+            using var writer = new StreamWriter(GetFilePath("AuthorizedMember"), false, Encoding.UTF8);
             using var csvWriter = new CsvWriter(writer, CultureInfo.InvariantCulture);
             csvWriter.WriteRecords(DataList);
         }
@@ -178,7 +144,7 @@ namespace ShoppingApp.Models
         public static void ImportProduct(ApplicationDbContext _context)
         {
             // 從設定檔取得匯入檔的路徑
-            string ImportPath = GetConfigValue("ImportPath");
+            string ImportPath = ConfigManager.GetValueByKey("ImportPath");
 
             // 找到目標檔案並匯入
             foreach (string FilePath in Directory.GetFileSystemEntries(ImportPath, "*.csv"))
@@ -200,7 +166,7 @@ namespace ShoppingApp.Models
         public static void ImportUser(ApplicationDbContext _context)
         {
             // 從設定檔取得匯入檔的路徑
-            string ImportPath = GetConfigValue("ImportPath");
+            string ImportPath = ConfigManager.GetValueByKey("ImportPath");
 
             // 找到目標檔案並匯入
             foreach (string FilePath in Directory.GetFileSystemEntries(ImportPath, "*.csv"))
@@ -221,7 +187,7 @@ namespace ShoppingApp.Models
         public static void ImportOrder(ApplicationDbContext _context)
         {
             // 從設定檔取得匯入檔的路徑
-            string ImportPath = GetConfigValue("ImportPath");
+            string ImportPath = ConfigManager.GetValueByKey("ImportPath");
             string FilePath1="", FilePath2="";
 
             // 找到訂單和明細的檔案
@@ -271,7 +237,7 @@ namespace ShoppingApp.Models
         public static void ImportComment(ApplicationDbContext _context)
         {
             // 從設定檔取得匯入檔的路徑
-            string ImportPath = GetConfigValue("ImportPath");
+            string ImportPath = ConfigManager.GetValueByKey("ImportPath");
 
             // 找到目標檔案並匯入
             foreach (string FilePath in Directory.GetFileSystemEntries(ImportPath, "*.csv"))
@@ -293,7 +259,7 @@ namespace ShoppingApp.Models
         public static void ImportProduct2(ApplicationDbContext _context)
         {
             // 從設定檔取得匯入檔的路徑
-            string ImportPath = GetConfigValue("ImportPath");
+            string ImportPath = ConfigManager.GetValueByKey("ImportPath");
 
             // 找到目標檔案並匯入
             foreach (string FilePath in Directory.GetFileSystemEntries(ImportPath, "*.csv"))
@@ -320,7 +286,7 @@ namespace ShoppingApp.Models
         public static void ImportAuthorizedMember(ApplicationDbContext _context)
         {
             // 從設定檔取得匯入檔的路徑
-            string ImportPath = GetConfigValue("ImportPath");
+            string ImportPath = ConfigManager.GetValueByKey("ImportPath");
 
             // 找到目標檔案並匯入
             foreach (string FilePath in Directory.GetFileSystemEntries(ImportPath, "*.csv"))

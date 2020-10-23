@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShoppingApp", "ShoppingApp\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpayApi", "OpayApi\OpayApi.csproj", "{0F3931E2-F11E-4DCC-9F7A-9EBB5B8BEA80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShoppingAppTests", "ShoppingAppTests\ShoppingAppTests.csproj", "{5C9DB678-53EC-43FF-94EC-A58EDD7E58D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0F3931E2-F11E-4DCC-9F7A-9EBB5B8BEA80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F3931E2-F11E-4DCC-9F7A-9EBB5B8BEA80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F3931E2-F11E-4DCC-9F7A-9EBB5B8BEA80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C9DB678-53EC-43FF-94EC-A58EDD7E58D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C9DB678-53EC-43FF-94EC-A58EDD7E58D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C9DB678-53EC-43FF-94EC-A58EDD7E58D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C9DB678-53EC-43FF-94EC-A58EDD7E58D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
