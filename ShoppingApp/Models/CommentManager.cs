@@ -9,14 +9,7 @@ namespace ShoppingApp.Models
 
         public static void IncrementCount(string IP)
         {
-            if (CommentCount.ContainsKey(IP))
-            {
-                CommentCount[IP]++;
-            }
-            else
-            {
-                CommentCount[IP] = 1;
-            }
+            CommentCount[IP] = CommentCount.ContainsKey(IP) ? CommentCount[IP] + 1 : 1;
         }
 
         public static int GetCommentCountByIP(string IP)

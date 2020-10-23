@@ -9,13 +9,13 @@ namespace ShoppingApp.Models
     {
         public List<CartItem> cartItems;
 
-        //建構子
+        // 建構子
         public Cart()
         {
             cartItems = new List<CartItem>();
         }
 
-        //取得購物車內商品總數
+        // 取得購物車內商品總數
         public int Count
         {
             get
@@ -24,7 +24,7 @@ namespace ShoppingApp.Models
             }
         }
 
-        //取得購物車內的商品總價
+        // 取得購物車內的商品總價
         public int TotalAmount
         {
             get

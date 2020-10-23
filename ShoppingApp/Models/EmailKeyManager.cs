@@ -12,14 +12,7 @@ namespace ShoppingApp.Models
 
         public static void IncrementCount(string IP)
         {
-            if(SendCount.ContainsKey(IP))
-            {
-                SendCount[IP]++;
-            }
-            else
-            {
-                SendCount[IP] = 1;
-            }
+            SendCount[IP] = SendCount.ContainsKey(IP) ? SendCount[IP] + 1 : 1;
         }
 
         public static int GetSendCountByIP(string IP)
