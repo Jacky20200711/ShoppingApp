@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -181,10 +182,18 @@ namespace ShoppingApp.Controllers
             if(user != null)
             {
                 // 從設定檔取得寄信的相關資訊
-                string SmtpEmail = ConfigManager.GetValueByKey("SmtpEmail");
-                string SmtpPassword = ConfigManager.GetValueByKey("SmtpPassword");
-                string SmtpHost = ConfigManager.GetValueByKey("SmtpHost");
-                string MyAppDomain = ConfigManager.GetValueByKey("MyAppDomain");
+                Dictionary<string, string> ConfigDict = ConfigManager.GetValueByKey(new List<string> 
+                {
+                    "SmtpEmail",
+                    "SmtpPassword",
+                    "SmtpHost",
+                    "MyAppDomain"
+                });
+
+                string SmtpEmail = ConfigDict["SmtpEmail"];
+                string SmtpPassword = ConfigDict["SmtpPassword"];
+                string SmtpHost = ConfigDict["SmtpHost"];
+                string MyAppDomain = ConfigDict["MyAppDomain"];
 
                 // 取得隨機字串並存入記憶體
                 string emailVerifyKey = Path.GetRandomFileName();
@@ -213,8 +222,9 @@ namespace ShoppingApp.Controllers
                 smtp.Credentials = new NetworkCredential($"{SmtpEmail}", $"{SmtpPassword}");
                 smtp.EnableSsl = true;
                 smtp.Send(message);
+                _logger.LogInformation($"系統寄送了新密碼的驗證信給[{userEmail}]");
             }
-            _logger.LogInformation($"系統寄送了新密碼的驗證信給[{userEmail}]");
+            
             TempData["ForgotPasswordConfirmation"] = "請查看您的 Email 以取得新密碼!";
             return View("~/Areas/Identity/Pages/Account/ForgotPasswordConfirmation.cshtml");
         }

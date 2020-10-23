@@ -21,18 +21,34 @@ namespace ShoppingApp.Models.Tests
                 ConfigManager.GetValueByKey("ImportPath")
             };
 
-            // 測試是否拿到有效的值
-            List<bool> ValidChecker = new List<bool>();
+            // 測試取得的值是否皆有效
             foreach (string value in ConfigValues)
             {
-                if (!string.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value))
                 {
-                    ValidChecker.Add(true);
+                    Assert.Fail();
                 }
             }
 
-            // 測試拿到有效值的次數，是否等於餵入的KEY數量
-            Assert.AreEqual(ValidChecker.Count, ConfigValues.Count);
+            // 餵入一些KEY(先手動到設定檔確認這些KEY存在)
+            Dictionary<string, string> ConfigDict = ConfigManager.GetValueByKey(new List<string>
+            {
+                "MyAppDomain",
+                "MyApiDomain",
+                "SmtpEmail",
+                "SmtpPassword",
+                "ExportPath",
+                "ImportPath",
+            });
+
+            // 測試取得的值是否皆有效
+            foreach (var pair in ConfigDict)
+            {
+                if (string.IsNullOrEmpty(pair.Value))
+                {
+                    Assert.Fail();
+                }
+            }
         }
 
         [TestMethod()]
