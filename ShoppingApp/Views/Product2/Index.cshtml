@@ -34,28 +34,28 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
+            <th style="white-space: nowrap;">
                 圖片
             </th>
-            <th>
+            <th style="white-space: nowrap;">
                 擁有者
             </th>
-            <th>
+            <th style="white-space: nowrap;">
                 名稱
             </th>
-            <th>
+            <th style="white-space: nowrap;">
                 描述
             </th>
-            <th>
+            <th style="white-space: nowrap;">
                 價格
             </th>
-            <th>
+            <th style="white-space: nowrap;">
                 銷量
             </th>
-            <th>
+            <th style="white-space: nowrap;">
                 庫存
             </th>
-            <th>
+            <th style="white-space: nowrap;">
                 上架日期
             </th>
             <th></th>
@@ -73,28 +73,30 @@
                 <td>
                     <img class="ProductImage" src="@Html.DisplayFor(modelItem => item.DefaultImageURL)" width="30" height="30" />
                 </td>
-                <td>
+                <td style="white-space: nowrap;">
                     @Html.DisplayFor(modelItem => item.SellerEmail)
                 </td>
-                <td>
+                <td style="white-space: nowrap;">
                     @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Description)
+                    <div style="width:100%;white-space:normal;word-wrap:break-word;word-break:break-all;">
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </div>
                 </td>
-                <td>
+                <td style="white-space: nowrap;">
                     @Html.DisplayFor(modelItem => item.Price)
                 </td>
-                <td>
+                <td style="white-space: nowrap;">
                     @Html.DisplayFor(modelItem => item.SellVolume)
                 </td>
-                <td>
+                <td style="white-space: nowrap;">
                     @Html.DisplayFor(modelItem => item.Quantity)
                 </td>
-                <td>
+                <td style="white-space: nowrap;">
                     @Html.DisplayFor(modelItem => item.PublishDate)
                 </td>
-                <td>
+                <td style="white-space: nowrap;">
                     <a asp-action="Edit" asp-route-id="@item.Id">編輯</a> |
                     <a asp-action="Delete" asp-route-id="@item.Id">刪除</a>
                 </td>

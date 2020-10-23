@@ -322,7 +322,7 @@ namespace ShoppingApp.Controllers
                     new Product
                     {
                         Name = "萌妹壁紙" + (i + 1).ToString("D2"),
-                        Description = "可愛的萌妹子壁紙",
+                        Description = "可愛的萌妹壁紙",
                         Price = random.Next(100, 200),
                         PublishDate = DateTime.Now.AddSeconds(i),
                         Quantity = random.Next(30, 50),

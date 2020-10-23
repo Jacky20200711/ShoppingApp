@@ -13,7 +13,8 @@
     <thead>
         <tr>
             <th>@Html.DisplayName("Email")</th>
-            <th></th>
+            <th>@Html.DisplayName("Id")</th>
+            <th>@Html.DisplayName("AccessFailedCount")</th>
             <th></th>
         </tr>
     </thead>
@@ -22,8 +23,12 @@
         {
             <tr>
                 <td>@Html.DisplayFor(model => item.Email)</td>
-                <td>@Html.ActionLink("Edit", "Edit", new { id = item.Id })</td>
-                <td>@Html.ActionLink("Delete", "Delete", new { id = item.Id })</td>
+                <td>@Html.DisplayFor(model => item.Id)</td>
+                <td>@Html.DisplayFor(model => item.AccessFailedCount)</td>
+                <td style="white-space: nowrap;">
+                    @Html.ActionLink("編輯 |", "Edit", new { id = item.Id })
+                    @Html.ActionLink("刪除", "Delete", new { id = item.Id })
+                </td>
             </tr>
         }
     </tbody>

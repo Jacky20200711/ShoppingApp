@@ -12,7 +12,7 @@
     <a asp-controller="CSV" asp-action="ImportComment">Import</a>
 </p>
 
-<table class="table">
+<table class="table" style="table-layout:fixed;">
     <thead>
         <tr>
             <th>
@@ -41,15 +41,16 @@
                     @Html.DisplayFor(modelItem => item.UserName)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Content)
+                    <div style="width:100%;white-space:normal;word-wrap:break-word;word-break:break-all;">
+                        @Html.DisplayFor(modelItem => item.Content)
+                    </div>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.CreateTime)
                 </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <td style="white-space: nowrap;">
+                    <a asp-action="Edit" asp-route-id="@item.Id">編輯</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">刪除</a>
                 </td>
             </tr>
         }

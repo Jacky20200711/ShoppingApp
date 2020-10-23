@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -62,12 +63,14 @@ namespace ShoppingApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Content,UserName,CreateTime,ProductId")] Comment comment)
+        public async Task<IActionResult> Create([Bind("Id,Content,ProductId")] Comment comment)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             if (ModelState.IsValid)
             {
+                comment.UserName = User.Identity.Name;
+                comment.CreateTime = DateTime.Now;
                 _context.Add(comment);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

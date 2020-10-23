@@ -107,8 +107,12 @@ namespace ShoppingApp.Models
                             SellerGroup.Remove(authorizedMember.Email);
 
                             // 連動刪除上架的產品
-                            _context.RemoveRange(_context.Product2.Where(m => m.SellerEmail == authorizedMember.Email));
-                            _context.SaveChanges();
+                            var product2List =_context.Product2.Where(m => m.SellerEmail == authorizedMember.Email);
+                            if (product2List != null)
+                            {
+                                _context.RemoveRange(product2List);
+                                _context.SaveChanges();
+                            }
                         }
 
                         return;

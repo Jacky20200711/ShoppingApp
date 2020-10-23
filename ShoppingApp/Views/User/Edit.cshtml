@@ -1,15 +1,18 @@
 ﻿@model Microsoft.AspNetCore.Identity.IdentityUser
+
+<h1>編輯會員</h1>
+<hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="@Model.Email" class="control-label"></label>
+                <label asp-for="@Model.Email" class="control-label">郵件</label>
                 <input asp-for="@Model.Email" class="form-control" />
                 <span asp-validation-for="@Model.Email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="@Model.PasswordHash" class="control-label"></label>
+                <label asp-for="@Model.PasswordHash" class="control-label">密碼</label>
                 <input asp-for="@Model.PasswordHash" class="form-control" />
                 <span asp-validation-for="@Model.PasswordHash" class="text-danger"></span>
             </div>
@@ -20,5 +23,5 @@
     </div>
 </div>
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">返回列表</a>
 </div>

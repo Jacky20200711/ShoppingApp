@@ -62,11 +62,19 @@ namespace ShoppingApp.Controllers
         {
             if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
 
+            // 檢查這個郵件是否為已註冊的會員
+            var user = _context.Users.FirstOrDefault(m => m.Email == authorizedMember.Email);
+            if (user == null)
+            {
+                TempData["Exception"] = "此欄位必須是已註冊的會員";
+                return View(authorizedMember);
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(authorizedMember);
                 await _context.SaveChangesAsync();
-                AuthorizeManager.UpdateAuthority("UpdateHashTableByAuthorizedMember", null, null, null, authorizedMember);
+                AuthorizeManager.UpdateAuthority("UpdateHashTableByAuthorizedMember", _context, null, null, authorizedMember);
                 return RedirectToAction(nameof(Index));
             }
             return View(authorizedMember);

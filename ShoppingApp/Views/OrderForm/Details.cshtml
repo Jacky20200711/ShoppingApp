@@ -4,7 +4,7 @@
     ViewData["Title"] = "查看訂單明細";
 }
 
-<h4>訂單明細</h4>
+<h1>訂單明細</h1>
 <table class="table">
     <thead>
         <tr>
@@ -21,8 +21,13 @@
         </tr>
     </thead>
     <tbody>
+        @{
+            int TotalAmount = 0;
+        }
         @foreach (var OrderItem in Model)
         {
+            TotalAmount += OrderItem.Price * OrderItem.Quantity;
+
             <tr>
                 <td>
                     @OrderItem.Name
@@ -33,10 +38,19 @@
                 <td>
                     @OrderItem.Quantity
                 </td>
+                <td></td>
             </tr>
         }
+        <tr>
+            <td></td>
+            <td></td>
+            <td>
+                訂單總金額 : @TotalAmount
+            </td>
+            <td></td>
+        </tr>
     </tbody>
 </table>
 <div>
-    <a href="javascript:" onclick="self.location=document.referrer;">回上一頁</a>
+    <a asp-action="Index">返回列表</a>
 </div>

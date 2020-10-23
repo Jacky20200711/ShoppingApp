@@ -4,7 +4,7 @@
     ViewData["Title"] = "權限管理";
 }
 
-<h1>特權列表</h1>
+<h1>特權用戶列表</h1>
 
 <p>
     <a asp-action="Create">Create New</a>&nbsp;&nbsp;&nbsp;
@@ -41,10 +41,9 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.InSellerGroup)
                     </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <td style="white-space: nowrap;">
+                        <a asp-action="Edit" asp-route-id="@item.Id">編輯</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">刪除</a>
                     </td>
                 </tr>
             }
