@@ -11,8 +11,8 @@ namespace ShoppingApp.Models
         public static string SuperAdmin = "fewer135@gmail.com";
 
         // 將特權用戶的資訊存入到記憶體(HashTable)，模擬 Cache 的概念
-        private static readonly HashSet<string> AdminGroup = new HashSet<string> { SuperAdmin };
-        private static readonly HashSet<string> SellerGroup = new HashSet<string> { SuperAdmin };
+        private static readonly HashSet<string> AdminGroup = new HashSet<string>();
+        private static readonly HashSet<string> SellerGroup = new HashSet<string>();
 
         public static bool InAdminGroup(string email)
         {
@@ -114,7 +114,6 @@ namespace ShoppingApp.Models
                                 _context.SaveChanges();
                             }
                         }
-
                         return;
                     }
             }

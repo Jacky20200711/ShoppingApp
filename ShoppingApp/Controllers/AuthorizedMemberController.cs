@@ -164,5 +164,28 @@ namespace ShoppingApp.Controllers
 
             return _context.AuthorizedMember.Any(e => e.Id == id);
         }
+
+        public async Task<IActionResult> DeleteAll()
+        {
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            // 刪除所有特權用戶 & 賣方產品
+            _context.RemoveRange(_context.AuthorizedMember);
+            _context.RemoveRange(_context.Product2);
+
+            // 重新添加超級管理員 & 儲存變更
+            _context.AuthorizedMember.Add(new AuthorizedMember 
+            { 
+                Email = AuthorizeManager.SuperAdmin,
+                InAdminGroup = true,
+                InSellerGroup = true
+            });
+            await _context.SaveChangesAsync();
+
+            // 刷新權限的HashTable
+            AuthorizeManager.RefreshHashTable(_context);
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
