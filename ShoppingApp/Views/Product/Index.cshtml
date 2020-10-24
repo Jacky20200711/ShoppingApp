@@ -16,7 +16,7 @@
 <h1>產品列表</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>&nbsp;&nbsp;&nbsp;
+    @Html.ActionLink("Create New", "Create", "Product", new { returnPage = Model.PageNumber })&nbsp;&nbsp;&nbsp;
     <a asp-action="DeleteAll">Delete All</a>&nbsp;&nbsp;&nbsp;
     <a asp-action="ResetProducts">Reset</a>&nbsp;&nbsp;&nbsp;
     <a asp-action="ClearCache">ClearCache</a>&nbsp;&nbsp;&nbsp;
@@ -85,8 +85,8 @@
                     @Html.DisplayFor(modelItem => item.PublishDate)
                 </td>
                 <td style="white-space: nowrap;">
-                    <a asp-action="Edit" asp-route-id="@item.Id">編輯</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">刪除</a>
+                    @Html.ActionLink("編輯 |", "Edit", "Product", new { id = @item.Id, returnPage = Model.PageNumber })
+                    @Html.ActionLink("刪除", "Delete", "Product", new { id = @item.Id, returnPage = Model.PageNumber })
                 </td>
             </tr>
         }

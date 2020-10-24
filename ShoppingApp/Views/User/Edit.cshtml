@@ -1,4 +1,6 @@
 ﻿@model Microsoft.AspNetCore.Identity.IdentityUser
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 <h1>編輯會員</h1>
 <hr />
@@ -23,5 +25,10 @@
     </div>
 </div>
 <div>
-    <a asp-action="Index">返回列表</a>
+    @*返回之前的分頁並刷新(刷新的目的是避免表單資料消失)*@
+    @{
+        int? TryGetPage = HttpContextAccessor.HttpContext.Session.GetInt32("returnPage");
+        int page = TryGetPage != null ? (int)TryGetPage : 1;
+    }
+    @Html.ActionLink("返回列表", "Index", "User", new { page = @page })
 </div>

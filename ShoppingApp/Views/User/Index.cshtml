@@ -5,7 +5,7 @@
 }
 <h1>會員列表</h1>
 <p>
-    <a asp-action="Create">Create New</a>&nbsp;&nbsp;&nbsp;
+    @Html.ActionLink("Create New", "Create", new { returnPage = Model.PageNumber })&nbsp;&nbsp;&nbsp;
     <a asp-action="DeleteAll">Delete All</a>&nbsp;&nbsp;&nbsp;
     <a asp-controller="CSV" asp-action="ImportUser">Import</a>
 </p>
@@ -26,8 +26,8 @@
                 <td>@Html.DisplayFor(model => item.Id)</td>
                 <td>@Html.DisplayFor(model => item.AccessFailedCount)</td>
                 <td style="white-space: nowrap;">
-                    @Html.ActionLink("編輯 |", "Edit", new { id = item.Id })
-                    @Html.ActionLink("刪除", "Delete", new { id = item.Id })
+                    @Html.ActionLink("編輯 |", "Edit", new { id = item.Id, returnPage = Model.PageNumber })
+                    @Html.ActionLink("刪除", "Delete", new { id = item.Id, returnPage = Model.PageNumber })
                 </td>
             </tr>
         }

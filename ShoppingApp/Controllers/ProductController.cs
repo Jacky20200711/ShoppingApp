@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -140,9 +139,14 @@ namespace ShoppingApp.Controllers
             return View(await productAndComments.ToPagedListAsync(page, 10));
         }
 
-        public IActionResult Create()
+        public IActionResult Create(int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
+            if (returnPage != 0)
+            {
+                HttpContext.Session.SetInt32("returnPage", returnPage);
+            }
 
             return View();
         }
@@ -160,14 +164,24 @@ namespace ShoppingApp.Controllers
                 product.SellVolume = 0;
                 _context.Add(product);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                // 返回之前的分頁
+                int? TryGetPage = HttpContext.Session.GetInt32("returnPage");
+                int page = TryGetPage != null ? (int)TryGetPage : 1;
+                return RedirectToAction("Index", new { page });
             }
             return View(product);
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
+            // 紀錄之前所在的分頁
+            if (returnPage != 0)
+            {
+                HttpContext.Session.SetInt32("returnPage", returnPage);
+            }
 
             if (id == null)
             {
@@ -204,24 +218,22 @@ namespace ShoppingApp.Controllers
                     prod.Quantity = product.Quantity;
                     prod.DefaultImageURL = product.DefaultImageURL;
                     await _context.SaveChangesAsync();
+
+                    // 返回之前的分頁
+                    int? TryGetPage = HttpContext.Session.GetInt32("returnPage");
+                    int page = TryGetPage != null ? (int)TryGetPage : 1;
+                    return RedirectToAction("Index", new { page });
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException e)
                 {
-                    if (!ProductExists(product.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _logger.LogError(e.ToString());
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(product);
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
@@ -229,7 +241,10 @@ namespace ShoppingApp.Controllers
             _context.Product.Remove(product);
             await _context.SaveChangesAsync();
             _logger.LogWarning($"[{User.Identity.Name}]刪除了產品[{product.Name}]");
-            return RedirectToAction(nameof(Index));
+
+            // 返回之前的分頁
+            int page = returnPage != 0 ? returnPage : 1;
+            return RedirectToAction("Index", new { page });
         }
 
         public async Task<IActionResult> DeleteAll()

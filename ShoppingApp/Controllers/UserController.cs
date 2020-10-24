@@ -46,9 +46,14 @@ namespace ShoppingApp.Controllers
             return View(await _context.Users.Where(m => m.Email != AuthorizeManager.SuperAdmin).ToPagedListAsync(page, pageSize));
         }
 
-        public IActionResult Create()
+        public IActionResult Create(int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
+            if (returnPage != 0)
+            {
+                HttpContext.Session.SetInt32("returnPage", returnPage);
+            }
 
             return View();
         }
@@ -76,12 +81,20 @@ namespace ShoppingApp.Controllers
 
             _logger.LogInformation($"[{User.Identity.Name}]新增了用戶[{user.Email}]");
 
-            return RedirectToAction("Index");
+            // 返回之前的分頁
+            int? TryGetPage = HttpContext.Session.GetInt32("returnPage");
+            int page = TryGetPage != null ? (int)TryGetPage : 1;
+            return RedirectToAction("Index", new { page });
         }
 
-        public ActionResult Delete(string id)
+        public ActionResult Delete(string id, int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
+            if (returnPage != 0)
+            {
+                HttpContext.Session.SetInt32("returnPage", returnPage);
+            }
 
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
 
@@ -109,12 +122,21 @@ namespace ShoppingApp.Controllers
             _context.Users.Remove(user);
             _context.SaveChanges();
             _logger.LogWarning($"[{User.Identity.Name}]刪除了用戶[{user.Email}]");
-            return RedirectToAction("Index");
+
+            // 返回之前的分頁
+            int? TryGetPage = HttpContext.Session.GetInt32("returnPage");
+            int page = TryGetPage != null ? (int)TryGetPage : 1;
+            return RedirectToAction("Index", new { page });
         }
 
-        public ActionResult Edit(string id)
+        public ActionResult Edit(string id, int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
+            if (returnPage != 0)
+            {
+                HttpContext.Session.SetInt32("returnPage", returnPage);
+            }
 
             var user = _context.Users.FirstOrDefault(u => u.Id == id);
 
@@ -154,9 +176,12 @@ namespace ShoppingApp.Controllers
             // 若沒先 RemovePassword 則 LOG 會出現內建的 Warning
             await _userManager.RemovePasswordAsync(user);
             await _userManager.AddPasswordAsync(user, identityUser.PasswordHash);
-
             _logger.LogInformation($"[{User.Identity.Name}]修改了[{user.Email}]的資料");
-            return RedirectToAction("Index");
+
+            // 返回之前的分頁
+            int? TryGetPage = HttpContext.Session.GetInt32("returnPage");
+            int page = TryGetPage != null ? (int)TryGetPage : 1;
+            return RedirectToAction("Index", new { page });
         }
 
         [HttpPost]
