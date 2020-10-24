@@ -45,7 +45,7 @@ namespace ShoppingApp.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required(ErrorMessage = "此欄位不能為空")]
-            [EmailAddress(ErrorMessage = "郵件格式錯誤")]
+            [EmailAddress(ErrorMessage = "請務必確認郵件格式")]
             [Display(Name = "郵件")]
             public string Email { get; set; }
 

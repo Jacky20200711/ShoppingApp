@@ -86,4 +86,9 @@
     </tbody>
 </table>
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
-@Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page }),
+    new X.PagedList.Mvc.Core.Common.PagedListRenderOptions
+    {
+        LinkToPreviousPageFormat = "上一頁",
+        LinkToNextPageFormat = "下一頁"
+    })

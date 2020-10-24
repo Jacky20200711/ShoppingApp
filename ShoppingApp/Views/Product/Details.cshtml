@@ -16,38 +16,28 @@
 <div>
     <div><img style="@ImgWidth height: 360px; " src="@Html.DisplayFor(model => model.FirstOrDefault().TheProduct.DefaultImageURL)" /></div>
     <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            產品名稱
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FirstOrDefault().TheProduct.Name)
-        </dd>
-        <dt class="col-sm-2">
-            產品描述
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FirstOrDefault().TheProduct.Description)
-        </dd>
-        <dt class="col-sm-2">
-            產品價格
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FirstOrDefault().TheProduct.Price)
-        </dd>
-        <dt class="col-sm-2">
-            上架日期
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FirstOrDefault().TheProduct.PublishDate)
-        </dd>
-        <dt class="col-sm-2">
-            產品庫存
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.FirstOrDefault().TheProduct.Quantity)
-        </dd>
-    </dl>
+    <div>
+        <div>
+            <strong>上架日期</strong>&nbsp;&nbsp;
+            <span>@Html.DisplayFor(model => model.FirstOrDefault().TheProduct.PublishDate)</span>
+        </div>
+        <div>
+            <strong>產品名稱</strong>&nbsp;&nbsp;
+            <span>@Html.DisplayFor(model => model.FirstOrDefault().TheProduct.Name)</span>
+        </div>
+        <div>
+            <strong>產品價格</strong>&nbsp;&nbsp;
+            <span>$@Html.DisplayFor(model => model.FirstOrDefault().TheProduct.Price)</span>
+        </div>
+        <div>
+            <strong>產品庫存</strong>&nbsp;&nbsp;
+            <span>@Html.DisplayFor(model => model.FirstOrDefault().TheProduct.Quantity)</span>
+        </div>
+        <div style="width:100%;white-space:normal;word-wrap:break-word;word-break:break-all;">
+            <strong>產品描述</strong>&nbsp;&nbsp;
+            <span>@Html.DisplayFor(model => model.FirstOrDefault().TheProduct.Description)</span>
+        </div>
+    </div>
 </div>
 
 <br>
@@ -103,7 +93,12 @@
 
 @*在Url.Action新增一個參數，用來返回產品的ID*@
 Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
-@Html.PagedListPager(Model, page => Url.Action("Details", new { id = Model.FirstOrDefault().TheProduct.Id, page }))
+@Html.PagedListPager(Model, page => Url.Action("Details", new { id = Model.FirstOrDefault().TheProduct.Id, page }),
+    new X.PagedList.Mvc.Core.Common.PagedListRenderOptions
+    {
+        LinkToPreviousPageFormat = "上一頁",
+        LinkToNextPageFormat = "下一頁"
+    })
 
 <script>
     //將捲軸自動滾到底以方便查看留言
