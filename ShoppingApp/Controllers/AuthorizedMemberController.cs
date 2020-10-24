@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ShoppingApp.Data;
 using ShoppingApp.Models;
 using X.PagedList;
@@ -17,10 +18,12 @@ namespace ShoppingApp.Controllers
 
         // 注入會用到的工具
         private readonly ApplicationDbContext _context;
+        private readonly ILogger _logger;
 
-        public AuthorizedMemberController(ApplicationDbContext context)
+        public AuthorizedMemberController(ApplicationDbContext context, ILogger<AuthorizedMemberController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index(int page = 1)
@@ -118,19 +121,13 @@ namespace ShoppingApp.Controllers
                     _context.Update(authorizedMember);
                     await _context.SaveChangesAsync();
                     AuthorizeManager.UpdateAuthority("UpdateHashTableByAuthorizedMember", _context, null, null, authorizedMember);
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException e)
                 {
-                    if (!AuthorizedMemberExists(authorizedMember.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _logger.LogError(e.ToString());
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(authorizedMember);
         }

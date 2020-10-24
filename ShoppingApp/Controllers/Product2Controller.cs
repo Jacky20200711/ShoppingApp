@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
 using ShoppingApp.Data;
 using ShoppingApp.Models;
 
@@ -21,14 +22,17 @@ namespace ShoppingApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<IdentityUser> _userManager;
         private static IMemoryCache _memoryCache;
+        private readonly ILogger _logger;
 
         public Product2Controller(ApplicationDbContext context, 
             UserManager<IdentityUser> userManager,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            ILogger<Product2Controller> logger)
         {
             _context = context;
             _userManager = userManager;
             _memoryCache = memoryCache;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
@@ -159,21 +163,14 @@ namespace ShoppingApp.Controllers
                     product.Price = product2.Price;
                     product.Quantity = product2.Quantity;
                     product.DefaultImageURL = product2.DefaultImageURL;
-
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException e)
                 {
-                    if (!Product2Exists(product2.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _logger.LogError(e.ToString());
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(product2);
         }

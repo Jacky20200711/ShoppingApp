@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,7 @@ namespace ShoppingApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger _logger;
 
-        public CommentController(ApplicationDbContext context, ILogger<OrderFormController> logger)
+        public CommentController(ApplicationDbContext context, ILogger<CommentController> logger)
         {
             _context = context;
             _logger = logger;
@@ -54,9 +55,14 @@ namespace ShoppingApp.Controllers
             return View(comment);
         }
 
-        public IActionResult Create()
+        public IActionResult Create(int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
+            if (returnPage != 0)
+            {
+                HttpContext.Session.SetInt32("returnPage", returnPage);
+            }
 
             return View();
         }
@@ -73,14 +79,23 @@ namespace ShoppingApp.Controllers
                 comment.CreateTime = DateTime.Now;
                 _context.Add(comment);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                // 返回之前的分頁
+                int? TryGetPage = HttpContext.Session.GetInt32("returnPage");
+                int page = TryGetPage != null ? (int)TryGetPage : 1;
+                return RedirectToAction("Index", new { page });
             }
             return View(comment);
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
+            if (returnPage != 0)
+            {
+                HttpContext.Session.SetInt32("returnPage", returnPage);
+            }
 
             if (id == null)
             {
@@ -112,32 +127,39 @@ namespace ShoppingApp.Controllers
                 {
                     _context.Update(comment);
                     await _context.SaveChangesAsync();
+
+                    // 返回之前的分頁
+                    int? TryGetPage = HttpContext.Session.GetInt32("returnPage");
+                    int page = TryGetPage != null ? (int)TryGetPage : 1;
+                    return RedirectToAction("Index", new { page });
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException e)
                 {
-                    if (!CommentExists(comment.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _logger.LogError(e.ToString());
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(comment);
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
+            if (returnPage != 0)
+            {
+                HttpContext.Session.SetInt32("returnPage", returnPage);
+            }
 
             var comment = await _context.Comment.FindAsync(id);
             _context.Comment.Remove(comment);
             await _context.SaveChangesAsync();
             _logger.LogWarning($"[{User.Identity.Name}]刪除了一筆[{comment.UserName}]的留言");
-            return RedirectToAction(nameof(Index));
+
+            // 返回之前的分頁
+            int? TryGetPage = HttpContext.Session.GetInt32("returnPage");
+            int page = TryGetPage != null ? (int)TryGetPage : 1;
+            return RedirectToAction("Index", new { page });
         }
 
         public async Task<IActionResult> DeleteAll()

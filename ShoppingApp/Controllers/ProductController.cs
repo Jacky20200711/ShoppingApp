@@ -29,7 +29,7 @@ namespace ShoppingApp.Controllers
         public ProductController(
             ApplicationDbContext context, 
             IMemoryCache memoryCache, 
-            ILogger<OrderFormController> logger)
+            ILogger<ProductController> logger)
         {
             _context = context;
             _memoryCache = memoryCache;

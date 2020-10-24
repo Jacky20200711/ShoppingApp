@@ -30,7 +30,7 @@ namespace ShoppingApp.Controllers
 
         public UserController(
                 ApplicationDbContext usertext, 
-                ILogger<OrderFormController> logger, 
+                ILogger<UserController> logger, 
                 UserManager<IdentityUser> userManager)
         {
             _context = usertext;

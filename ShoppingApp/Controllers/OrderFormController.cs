@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ShoppingApp.Data;
@@ -59,11 +58,16 @@ namespace ShoppingApp.Controllers
             }
         }
 
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id, int returnPage = 0)
         {
             if (id == null)
             {
                 return NotFound();
+            }
+
+            if (returnPage != 0)
+            {
+                HttpContext.Session.SetInt32("returnPage", returnPage);
             }
 
             var orderForm = await _context.OrderForm
@@ -82,8 +86,13 @@ namespace ShoppingApp.Controllers
             return View(await _context.OrderDetail.Where(o => o.OrderId == id).ToListAsync());
         }
 
-        public IActionResult Create()
+        public IActionResult Create(int returnPage = 0)
         {
+            if (returnPage != 0)
+            {
+                HttpContext.Session.SetInt32("returnPage", returnPage);
+            }
+
             return View();
         }
        
@@ -189,9 +198,14 @@ namespace ShoppingApp.Controllers
             }
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id, int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
+            if (returnPage != 0)
+            {
+                HttpContext.Session.SetInt32("returnPage", returnPage);
+            }
 
             if (id == null)
             {
@@ -203,6 +217,7 @@ namespace ShoppingApp.Controllers
             {
                 return NotFound();
             }
+
             return View(orderForm);
         }
 
@@ -223,26 +238,29 @@ namespace ShoppingApp.Controllers
                 {
                     _context.Update(orderForm);
                     await _context.SaveChangesAsync();
+
+                    // 返回之前的分頁
+                    int? TryGetPage = HttpContext.Session.GetInt32("returnPage");
+                    int page = TryGetPage != null ? (int)TryGetPage : 1;
+                    return RedirectToAction("Index", new { page });
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException e)
                 {
-                    if (!OrderFormExists(orderForm.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _logger.LogError(e.ToString());
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(orderForm);
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id, int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+
+            if (returnPage != 0)
+            {
+                HttpContext.Session.SetInt32("returnPage", returnPage);
+            }
 
             using var transaction = _context.Database.BeginTransaction();
 
@@ -259,7 +277,11 @@ namespace ShoppingApp.Controllers
             transaction.Commit();
 
             _logger.LogWarning($"[{User.Identity.Name}]刪除了第{order.Id}號訂單，下單者為[{order.SenderEmail}]");
-            return RedirectToAction(nameof(Index));
+
+            // 返回之前的分頁
+            int? TryGetPage = HttpContext.Session.GetInt32("returnPage");
+            int page = TryGetPage != null ? (int)TryGetPage : 1;
+            return RedirectToAction("Index", new { page });
         }
 
         private bool OrderFormExists(int id)

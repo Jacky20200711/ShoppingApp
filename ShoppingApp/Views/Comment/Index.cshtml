@@ -7,12 +7,12 @@
 <h1>留言列表</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>&nbsp;&nbsp;&nbsp;
+    @Html.ActionLink("Create New", "Create", "Comment", new { returnPage = Model.PageNumber })&nbsp;&nbsp;&nbsp;
     <a asp-action="DeleteAll">Delete All</a>&nbsp;&nbsp;&nbsp;
     <a asp-controller="CSV" asp-action="ImportComment">Import</a>
 </p>
 
-<table class="table" style="table-layout:fixed;">
+<table class="table">
     <thead>
         <tr>
             <th>
@@ -49,8 +49,8 @@
                     @Html.DisplayFor(modelItem => item.CreateTime)
                 </td>
                 <td style="white-space: nowrap;">
-                    <a asp-action="Edit" asp-route-id="@item.Id">編輯</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">刪除</a>
+                    @Html.ActionLink("編輯 |", "Edit", new { id = item.Id, returnPage = Model.PageNumber })
+                    @Html.ActionLink("刪除", "Delete", new { id = item.Id, returnPage = Model.PageNumber })
                 </td>
             </tr>
         }
