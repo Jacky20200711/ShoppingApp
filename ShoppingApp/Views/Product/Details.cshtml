@@ -4,8 +4,6 @@
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @inject Wangkanai.Detection.Services.IDetectionService DetectionService
 @{
-    ViewData["Title"] = "產品資訊與留言";
-
     bool isMobile = @DetectionService.Device.Type == Wangkanai.Detection.Models.Device.Mobile;
 
     string ImgWidth = isMobile ? "max-width:100%;" : "width:336px;";

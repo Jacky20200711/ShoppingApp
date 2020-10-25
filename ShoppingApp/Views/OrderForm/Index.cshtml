@@ -1,10 +1,6 @@
 ﻿@using X.PagedList.Mvc.Core
 @model X.PagedList.IPagedList<ShoppingApp.Models.OrderForm>
 
-@{
-    ViewData["Title"] = "訂單管理";
-}
-
 <h1>訂單列表</h1>
 
 @if (AuthorizeManager.InAdminGroup(User.Identity.Name))

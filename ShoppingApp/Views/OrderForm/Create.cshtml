@@ -1,8 +1,6 @@
 ﻿@model ShoppingApp.Models.OrderForm
 
 @{
-    ViewData["Title"] = "建立訂單";
-
     var currentCart = ShoppingApp.Models.CartManager.GetCurrentCart();
 
     @section Scripts {
@@ -13,6 +11,7 @@
 <style>
     .ProductImage:hover {
         transform: scale(3);
+        cursor:pointer;
     }
 </style>
 
@@ -62,7 +61,7 @@
                     @cartItem.Quantity
                 </td>
                 <td>
-                    <img src="@cartItem.DefaultImageURL" class="ProductImage" style="width:30px; height:30px; cursor:pointer;" />
+                    <img src="@cartItem.DefaultImageURL" class="ProductImage" style="width:30px; height:30px;" />
                 </td>
                 <td>
                     <form method="post" asp-controller="Cart" asp-action="RefreshAfterRemove">

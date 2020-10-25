@@ -1,14 +1,14 @@
 ﻿@using X.PagedList.Mvc.Core
 @model X.PagedList.IPagedList<Microsoft.AspNetCore.Identity.IdentityUser>
-@{
-    ViewBag.Title = "會員管理";
-}
+
 <h1>會員列表</h1>
+
 <p>
     @Html.ActionLink("Create New", "Create", new { returnPage = Model.PageNumber })&nbsp;&nbsp;&nbsp;
     <a asp-action="DeleteAll">Delete All</a>&nbsp;&nbsp;&nbsp;
     <a asp-controller="CSV" asp-action="ImportUser">Import</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>

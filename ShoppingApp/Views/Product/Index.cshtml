@@ -3,13 +3,10 @@
 @model X.PagedList.IPagedList<ShoppingApp.Models.Product>
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
-@{
-    ViewData["Title"] = "產品管理";
-}
-
 <style>
     .ProductImage:hover {
         transform: scale(3);
+        cursor: pointer;
     }
 </style>
 

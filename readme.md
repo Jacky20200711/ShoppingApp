@@ -13,7 +13,7 @@
 09.使用 X.PagedList.Mvc.Core 來做分頁  
 10.使用 CsvHelper 來匯出或匯入資料庫  
 11.使用 Wangkanai 來判斷用戶的裝置類型  
-12.使用 UnitTest 來驗證一些簡單的功能  
+12.使用 UnitTest 來測試部分 Function 的功能  
   
 # 開發環境  
 win10(64bit) + Visual Studio 2019 + .NET Core 3.1 MVC + IIS 10 + MSTestv2  
