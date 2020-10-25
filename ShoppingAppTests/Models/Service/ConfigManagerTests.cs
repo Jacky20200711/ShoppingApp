@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Collections.Generic;
 
 namespace ShoppingApp.Models.Tests
@@ -77,6 +76,12 @@ namespace ShoppingApp.Models.Tests
 
             // 測試比對成功的次數，是否等於餵入的KEY數量
             Assert.AreEqual(ValidChecker.Count, ConfigKeys.Count);
+        }
+
+        [TestMethod()]
+        public void GetValueByKeyTest1()
+        {
+
         }
     }
 }

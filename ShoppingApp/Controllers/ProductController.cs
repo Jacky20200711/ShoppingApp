@@ -23,7 +23,7 @@ namespace ShoppingApp.Controllers
 
         // 注入會用到的工具
         private readonly ApplicationDbContext _context;
-        private static IMemoryCache _memoryCache;
+        private readonly IMemoryCache _memoryCache;
         private readonly ILogger _logger;
 
         public ProductController(

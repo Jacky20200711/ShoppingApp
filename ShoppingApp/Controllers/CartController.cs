@@ -27,7 +27,7 @@ namespace ShoppingApp.Controllers
             return PartialView("_CartPartial");
         }
 
-        // 這個 Action 用來讓 User 可以在填寫訂單的頁面，移除不想要的產品並刷新頁面
+        // 這個 Action 用來讓 User 可以在填寫訂單的頁面中，移除不想要的產品並刷新頁面
         public IActionResult RefreshAfterRemove(int id)
         {
             CartManager.RemoveProduct(id);

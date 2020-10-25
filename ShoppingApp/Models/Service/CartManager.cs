@@ -27,7 +27,7 @@ namespace ShoppingApp.Models
             return JsonConvert.DeserializeObject<Cart>(_contextAccessor.HttpContext.Session.GetString("Cart"));
         }
 
-        public static void AddProduct(int id, ApplicationDbContext db)
+        public static void AddProduct(int id, ApplicationDbContext _context)
         {
             var GuestCart = GetCurrentCart();
             var findItem = GuestCart.cartItems.FirstOrDefault(s => s.Id == id);
@@ -39,7 +39,7 @@ namespace ShoppingApp.Models
             }
             else
             {
-                Product product = db.Product.FirstOrDefault(s => s.Id == id);
+                Product product = _context.Product.FirstOrDefault(s => s.Id == id);
 
                 GuestCart.Add(new CartItem()
                 {

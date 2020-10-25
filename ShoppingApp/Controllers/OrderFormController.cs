@@ -30,7 +30,7 @@ namespace ShoppingApp.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ILogger _logger;
         private readonly UserManager<IdentityUser> _userManager;
-        private static IMemoryCache _memoryCache;
+        private readonly IMemoryCache _memoryCache;
 
         public OrderFormController(
                 ApplicationDbContext context, 
