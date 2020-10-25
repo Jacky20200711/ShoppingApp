@@ -103,7 +103,7 @@ namespace ShoppingApp
                 endpoints.MapRazorPages();
             });
 
-            CartOperator.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
+            CartManager.Configure(app.ApplicationServices.GetRequiredService<IHttpContextAccessor>());
         }
     }
 }

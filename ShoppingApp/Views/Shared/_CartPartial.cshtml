@@ -1,6 +1,6 @@
 ﻿@inject Wangkanai.Detection.Services.IDetectionService DetectionService
 @{
-    var currentCart = ShoppingApp.Models.CartOperator.GetCurrentCart();
+    var currentCart = ShoppingApp.Models.CartManager.GetCurrentCart();
     bool isMobile = @DetectionService.Device.Type == Wangkanai.Detection.Models.Device.Mobile;
     string Span_MarginLeft = isMobile ? "25px" : "10px";
 }

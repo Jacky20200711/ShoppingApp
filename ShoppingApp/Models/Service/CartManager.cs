@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace ShoppingApp.Models
 {
-    public static class CartOperator
+    public static class CartManager
     {
         // 注入 HttpContextAccessor ，讓這個類別可以存取 Session
         private static IHttpContextAccessor _contextAccessor;

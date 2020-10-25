@@ -15,14 +15,14 @@ namespace ShoppingApp.Controllers
 
         public IActionResult AddToCart(int id)
         {
-            CartOperator.AddProduct(id, _context);
+            CartManager.AddProduct(id, _context);
 
             return PartialView("_CartPartial");
         }
 
         public IActionResult RemoveFromCart(int id)
         {
-            CartOperator.RemoveProduct(id);
+            CartManager.RemoveProduct(id);
 
             return PartialView("_CartPartial");
         }
@@ -30,14 +30,14 @@ namespace ShoppingApp.Controllers
         // 這個 Action 用來讓 User 可以在填寫訂單的頁面，移除不想要的產品並刷新頁面
         public IActionResult RefreshAfterRemove(int id)
         {
-            CartOperator.RemoveProduct(id);
+            CartManager.RemoveProduct(id);
 
             return RedirectToRoute(new { controller = "OrderForm", action = "Create" });
         }
 
         public IActionResult ClearCart()
         {
-            CartOperator.ClearCart();
+            CartManager.ClearCart();
 
             return PartialView("_CartPartial");
         }

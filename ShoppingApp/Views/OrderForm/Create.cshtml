@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "建立訂單";
 
-    var currentCart = ShoppingApp.Models.CartOperator.GetCurrentCart();
+    var currentCart = ShoppingApp.Models.CartManager.GetCurrentCart();
 
     @section Scripts {
         @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -100,7 +100,7 @@ namespace ShoppingApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,SenderId,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
         {
-            var currentCart = CartOperator.GetCurrentCart();
+            var currentCart = CartManager.GetCurrentCart();
 
             if (ModelState.IsValid)
             {
@@ -318,7 +318,7 @@ namespace ShoppingApp.Controllers
                 _context.OrderForm.FirstOrDefault(o => o.Id == OrderId).CheckOut = "YES";
 
                 // 更新庫存和銷量
-                Cart CurrentCart = CartOperator.GetCurrentCart();
+                Cart CurrentCart = CartManager.GetCurrentCart();
 
                 foreach (var cartItem in CurrentCart)
                 {
@@ -347,7 +347,7 @@ namespace ShoppingApp.Controllers
                 }
 
                 // 清空購物車
-                CartOperator.ClearCart();
+                CartManager.ClearCart();
 
                 _logger.LogInformation($"[{User.Identity.Name}]對第{OrderId}號訂單付款成功!");
                 TempData["PayResult"] = $"付款成功!~請點選上方的[我的訂單]來查看付款結果。";
