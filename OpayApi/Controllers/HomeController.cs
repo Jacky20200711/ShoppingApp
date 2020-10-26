@@ -5,13 +5,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Remoting;
 using System.Security.Cryptography;
 using System.Text;
-using System.Web;
-using System.Web.Http.Results;
 using System.Web.Mvc;
 
 namespace OpayApi.Controllers
@@ -20,6 +16,14 @@ namespace OpayApi.Controllers
     {
         public ActionResult SendToOpay(string OrderKey="", string JsonString="")
         {
+            // 白名單過濾，只允許來自 Server 的 IP
+            string ClientIP = HttpContext.Request.UserHostAddress;
+            string ServerIP = ConfigurationManager.AppSettings["ServerIP"];
+            if(ClientIP != ServerIP)
+            {
+                return new HttpNotFoundResult();
+            }
+
             // 將 JsonString 轉回購物車
             Cart currentCart = JsonConvert.DeserializeObject<Cart>(JsonString);
 
@@ -81,10 +85,17 @@ namespace OpayApi.Controllers
 
         public ActionResult GetPayResult(AllInOne oPayment, string OrderKey="")
         {
-            string MyAppDomain = ConfigurationManager.AppSettings["MyAppDomain"];
+            // 白名單過濾，只允許來自 Server 的 IP
+            string ClientIP = HttpContext.Request.UserHostAddress;
+            string ServerIP = ConfigurationManager.AppSettings["ServerIP"];
+            if (ClientIP != ServerIP)
+            {
+                return new HttpNotFoundResult();
+            }
 
             try
             {
+                string MyAppDomain = ConfigurationManager.AppSettings["MyAppDomain"];
                 List<string> enErrors = new List<string>();
                 Hashtable htFeedback = null;
 
