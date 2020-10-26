@@ -39,7 +39,6 @@ namespace ShoppingApp.Controllers
         public async Task<IActionResult> Index(int page = 1)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
-            page = page < 1 ? 1 : page;
 
             // 以當前 Session 的排序類型做排序 
             return (HttpContext.Session.GetString("SortType")) switch
@@ -53,7 +52,6 @@ namespace ShoppingApp.Controllers
         public async Task<IActionResult> SortByDate(int page = 1)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
-            page = page < 1 ? 1 : page;
 
             HttpContext.Session.SetString("SortType", "Date");
 
@@ -63,7 +61,6 @@ namespace ShoppingApp.Controllers
         public async Task<IActionResult> SortBySell(int page = 1)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
-            page = page < 1 ? 1 : page;
 
             HttpContext.Session.SetString("SortType", "Sell");
 
@@ -92,9 +89,6 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Details(int? id, int page = 1, int returnPage = 0)
         {
-            page = page < 1 ? 1 : page;
-            returnPage = returnPage < 0 ? 0 : returnPage;
-
             // 紀錄之前所在的購物分頁，為了讓 User 可以回到之前的購物分頁
             // 只有當 User 點選了查看留言，才會令 returnPage 不會為零
             if (returnPage != 0)
@@ -148,7 +142,6 @@ namespace ShoppingApp.Controllers
         public IActionResult Create(int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
-            returnPage = returnPage < 0 ? 0 : returnPage;
 
             if (returnPage != 0)
             {
@@ -183,7 +176,6 @@ namespace ShoppingApp.Controllers
         public async Task<IActionResult> Edit(int? id, int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
-            returnPage = returnPage < 0 ? 0 : returnPage;
 
             // 紀錄之前所在的分頁
             if (returnPage != 0)
@@ -244,7 +236,6 @@ namespace ShoppingApp.Controllers
         public async Task<IActionResult> Delete(int? id, int returnPage = 0)
         {
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
-            returnPage = returnPage < 0 ? 0 : returnPage;
 
             var product = await _context.Product.FindAsync(id);
             _context.Product.Remove(product);
@@ -276,9 +267,9 @@ namespace ShoppingApp.Controllers
         [HttpPost]
         public async Task<IActionResult> AddComment(int id, string comment)
         {
-            // 檢查這個IP的留言次數
             string ClientIP = HttpContext.Connection.RemoteIpAddress.ToString();
 
+            // 檢查這個IP的留言次數
             if (CommentManager.GetCommentCountByIP(ClientIP) > 4)
             {
                 TempData["ProductDetail"] = "您的留言次數已達上限，請聯絡網站的管理員!";
@@ -361,8 +352,6 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> ShowProducts(int page = 1)
         {
-            page = page < 1 ? 1 : page;
-
             // 從 Cache 取出這一頁的產品資訊
             if (_memoryCache.Get($"ProductPage{page}") != null)
             {

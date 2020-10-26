@@ -26,21 +26,18 @@ namespace ShoppingApp.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index(int? page)
+        public async Task<IActionResult> Index(int page = 1)
         {
-            if (User.Identity.Name != AuthorizeManager.SuperAdmin || page == null)
-            {
-                return NotFound();
-            }
-
-            page = page < 1 ? 1 : page;
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
 
             return View(await _context.AuthorizedMember.ToPagedListAsync(page, pageSize));
         }
 
         public async Task<IActionResult> Details(int? id)
         {
-            if (User.Identity.Name != AuthorizeManager.SuperAdmin || id == null)
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            if (id == null)
             {
                 return NotFound();
             }
@@ -88,13 +85,15 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> Edit(int? id)
         {
-            if (User.Identity.Name != AuthorizeManager.SuperAdmin || id == null)
+            if (User.Identity.Name != AuthorizeManager.SuperAdmin) return NotFound();
+
+            if (id == null)
             {
                 return NotFound();
             }
 
             var authorizedMember = await _context.AuthorizedMember.FindAsync(id);
-            if (authorizedMember == null)
+            if (authorizedMember == null || authorizedMember.Email == AuthorizeManager.SuperAdmin)
             {
                 return NotFound();
             }

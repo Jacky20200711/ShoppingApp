@@ -28,14 +28,9 @@ namespace ShoppingApp.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index(int? page)
+        public async Task<IActionResult> Index(int page = 1)
         {
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name) || page == null)
-            {
-                return NotFound();
-            }
-
-            page = page < 1 ? 1 : page;
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             // 按照留言的建立日期排序(新->舊)
             return View(await _context.Comment.OrderByDescending(c => c.CreateTime).ToPagedListAsync(page, pageSize));
@@ -60,18 +55,13 @@ namespace ShoppingApp.Controllers
             return View(comment);
         }
 
-        public IActionResult Create(int? returnPage)
+        public IActionResult Create(int returnPage = 0)
         {
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name) || returnPage == null)
-            {
-                return NotFound();
-            }
-
-            returnPage = returnPage < 0 ? 0 : returnPage;
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             if (returnPage != 0)
             {
-                HttpContext.Session.SetInt32("returnPage", (int)returnPage);
+                HttpContext.Session.SetInt32("returnPage", returnPage);
             }
 
             return View();
@@ -98,18 +88,13 @@ namespace ShoppingApp.Controllers
             return View(comment);
         }
 
-        public async Task<IActionResult> Edit(int? id, int? returnPage)
+        public async Task<IActionResult> Edit(int? id, int returnPage = 0)
         {
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name) || returnPage == null)
-            {
-                return NotFound();
-            }
-
-            returnPage = returnPage < 0 ? 0 : returnPage;
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             if (returnPage != 0)
             {
-                HttpContext.Session.SetInt32("returnPage", (int)returnPage);
+                HttpContext.Session.SetInt32("returnPage", returnPage);
             }
 
             if (id == null)
@@ -157,18 +142,13 @@ namespace ShoppingApp.Controllers
             return View(comment);
         }
 
-        public async Task<IActionResult> Delete(int? id, int? returnPage)
+        public async Task<IActionResult> Delete(int? id, int returnPage = 0)
         {
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name) || returnPage == null)
-            {
-                return NotFound();
-            }
-
-            returnPage = returnPage < 0 ? 0 : returnPage;
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
             if (returnPage != 0)
             {
-                HttpContext.Session.SetInt32("returnPage", (int)returnPage);
+                HttpContext.Session.SetInt32("returnPage", returnPage);
             }
 
             var comment = await _context.Comment.FindAsync(id);
