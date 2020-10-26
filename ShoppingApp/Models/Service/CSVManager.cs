@@ -62,17 +62,8 @@ namespace ShoppingApp.Models
             // 從設定檔取得匯出路徑
             string ExportPath = ConfigManager.GetValueByKey("ExportPath");
 
-            // 取得當前時間
-            DateTime cTime = DateTime.Now;
-            string Year = cTime.Year.ToString();
-            string Month = cTime.Month.ToString("D2");
-            string Day = cTime.Day.ToString("D2");
-            string Hour = cTime.Hour.ToString("D2");
-            string Minute = cTime.Minute.ToString("D2");
-            string Second = cTime.Second.ToString("D2");
-
-            // 串成完整的檔案路徑
-            string[] PathSplit = { ExportPath, TableName, "_", Year, Month, Day, Hour, Minute, Second, ".csv"};
+            // 添加當前時間，並串成完整的匯出路徑
+            string[] PathSplit = { ExportPath, TableName, "_", DateTime.Now.ToString("yyyyMMddHHmmss"), ".csv"};
             return string.Join("", PathSplit);
         }
 

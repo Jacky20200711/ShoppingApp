@@ -19,9 +19,14 @@ namespace ShoppingApp.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(int? page)
         {
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+            if (!AuthorizeManager.InAdminGroup(User.Identity.Name) || page == null)
+            {
+                return NotFound();
+            }
+
+            page = page < 1 ? 1 : page;
 
             return View(await _context.OrderDetail.OrderByDescending(p => p.OrderId).ToPagedListAsync(page, 10));
         }
