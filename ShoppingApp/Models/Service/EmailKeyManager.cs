@@ -20,22 +20,22 @@ namespace ShoppingApp.Models
             return SendCount.ContainsKey(IP) ? SendCount[IP] : 0;
         }
 
-        public static void AddVerifyKey(string key, string email)
+        public static void AddKey(string key, string email)
         {
             EmailKeys[key] = email;
         }
 
-        public static bool IsValidVerifyKey(string key)
+        public static bool IsValidKey(string key)
         {
             return EmailKeys.ContainsKey(key);
         }
 
-        public static void RemoveVerifyKey(string key)
+        public static void RemoveKey(string key)
         {
             EmailKeys.Remove(key);
         }
 
-        public static string GetEmailByVerifyKey(string key)
+        public static string GetEmailByKey(string key)
         {
             return EmailKeys[key];
         }

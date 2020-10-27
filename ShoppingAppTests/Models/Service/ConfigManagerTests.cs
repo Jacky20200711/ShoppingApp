@@ -9,7 +9,7 @@ namespace ShoppingApp.Models.Tests
         [TestMethod()]
         public void GetValueByKeyTest()
         {
-            // 餵入一些KEY(先手動到設定檔確認這些KEY存在)
+            // 傳入單個KEY(先手動到設定檔確認這些KEY存在)
             List<string> ConfigValues = new List<string>
             {
                 ConfigManager.GetValueByKey("MyAppDomain"),
@@ -29,7 +29,7 @@ namespace ShoppingApp.Models.Tests
                 }
             }
 
-            // 餵入一些KEY(先手動到設定檔確認這些KEY存在)
+            // 傳入多個KEY(先手動到設定檔確認這些KEY存在)
             Dictionary<string, string> ConfigDict = ConfigManager.GetValueByKey(new List<string>
             {
                 "MyAppDomain",
@@ -76,12 +76,6 @@ namespace ShoppingApp.Models.Tests
 
             // 測試比對成功的次數，是否等於餵入的KEY數量
             Assert.AreEqual(ValidChecker.Count, ConfigKeys.Count);
-        }
-
-        [TestMethod()]
-        public void GetValueByKeyTest1()
-        {
-
         }
     }
 }

@@ -221,7 +221,7 @@ namespace ShoppingApp.Controllers
 
                 // 取得隨機字串並存入記憶體
                 string emailVerifyKey = Path.GetRandomFileName();
-                EmailKeyManager.AddVerifyKey(emailVerifyKey, user.Email);
+                EmailKeyManager.AddKey(emailVerifyKey, user.Email);
 
                 // 寄信給該郵件
                 MailMessage message = new MailMessage
@@ -255,9 +255,9 @@ namespace ShoppingApp.Controllers
 
         public async Task<IActionResult> VerifyEmailKey(string key="")
         {
-            if (EmailKeyManager.IsValidVerifyKey(key))
+            if (EmailKeyManager.IsValidKey(key))
             {
-                string email = EmailKeyManager.GetEmailByVerifyKey(key);
+                string email = EmailKeyManager.GetEmailByKey(key);
                 var user = _context.Users.FirstOrDefault(u => u.Email == email);
 
                 // 取得隨機字串
@@ -268,7 +268,7 @@ namespace ShoppingApp.Controllers
                 await _userManager.AddPasswordAsync(user, newPassword);
 
                 // 令這個 Key 只能使用一次
-                EmailKeyManager.RemoveVerifyKey(key);
+                EmailKeyManager.RemoveKey(key);
 
                 _logger.LogInformation($"系統將[{user.Email}]的密碼修改為[{newPassword}]");
                 TempData["ForgotPasswordConfirmation"] = $"您的密碼已經被重設為{newPassword}，請盡速登入並修改密碼!";

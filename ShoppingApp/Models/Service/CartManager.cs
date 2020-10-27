@@ -41,6 +41,8 @@ namespace ShoppingApp.Models
             {
                 Product product = _context.Product.FirstOrDefault(s => s.Id == id);
 
+                if(product == null) return;
+
                 GuestCart.Add(new CartItem()
                 {
                     Id = product.Id,
@@ -60,6 +62,9 @@ namespace ShoppingApp.Models
         {
             var GuestCart = GetCurrentCart();
             var findItem = GuestCart.cartItems.FirstOrDefault(s => s.Id == id);
+
+            if (findItem == null) return;
+
             GuestCart.Remove(findItem);
 
             // 更新 Session 中的購物車
@@ -69,6 +74,7 @@ namespace ShoppingApp.Models
         public static void ClearCart()
         {
             var GuestCart = GetCurrentCart();
+
             GuestCart.Clear();
 
             // 更新 Session 中的購物車
