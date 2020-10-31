@@ -3,20 +3,20 @@
   
 # 使用技術  
 01.使用 MVC 架構  
-02.使用 AJAX 和 Session 來搭建購物車   
-03.使用 ASP.NET Identity 來搭建會員系統  
-04.使用 Entity Framework Code First 來存取資料  
+02.使用 AJAX 和 Session 搭建購物車   
+03.使用 ASP.NET Identity 搭建會員系統  
+04.使用 Entity Framework Code First 存取資料  
 05.使用 Google API 讓 User 可以用 Google 帳戶登入  
-06.使用 WebApi 來串接歐付寶進行付款  
-07.使用 NLog 來協助除錯  
-08.使用 Cache 和 HashTable 來儲存部分資料  
-09.使用 X.PagedList.Mvc.Core 來做分頁  
-10.使用 CsvHelper 來匯出或匯入資料庫  
-11.使用 Wangkanai 來判斷用戶的裝置類型  
-12.使用 UnitTest 來測試部分 Function 的功能  
+06.使用 WebApi 串接歐付寶進行付款  
+07.使用 NLog 協助除錯  
+08.使用 Cache 和 HashTable 儲存部分資料  
+09.使用 X.PagedList.Mvc.Core 做分頁  
+10.使用 CsvHelper 匯出或匯入資料  
+11.使用 Wangkanai 判斷用戶的裝置類型  
+12.使用 UnitTest 測試部分 Function 的功能  
   
 # 開發環境  
-win10(64bit) + Visual Studio 2019 + .NET Core 3.1 MVC + IIS 10 + MSTestv2  
+Win10(64bit) + Visual Studio 2019 + .NET Core 3.1 MVC + IIS 10 + MSTestv2  
 &emsp;
 &emsp;
 # 首頁    
