@@ -98,7 +98,7 @@ namespace ShoppingApp.Controllers
        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,SenderId,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
+        public async Task<IActionResult> Create([Bind("Id,ReceiverName,ReceiverPhone,ReceiverAddress")] OrderForm orderForm)
         {
             var currentCart = CartManager.GetCurrentCart();
 
@@ -198,59 +198,63 @@ namespace ShoppingApp.Controllers
             }
         }
 
-        public async Task<IActionResult> Edit(int? id, int returnPage = 0)
+        public IActionResult Edit(int? id, int returnPage = 0)
         {
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+            // 停用訂單編輯
+            return NotFound();
 
-            if (returnPage != 0)
-            {
-                HttpContext.Session.SetInt32("returnPage", returnPage);
-            }
+            //if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
 
-            if (id == null)
-            {
-                return NotFound();
-            }
+            //if (returnPage != 0)
+            //{
+            //    HttpContext.Session.SetInt32("returnPage", returnPage);
+            //}
 
-            var orderForm = await _context.OrderForm.FindAsync(id);
-            if (orderForm == null)
-            {
-                return NotFound();
-            }
+            //if (id == null)
+            //{
+            //    return NotFound();
+            //}
 
-            return View(orderForm);
+            //var orderForm = await _context.OrderForm.FindAsync(id);
+            //if (orderForm == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //return View(orderForm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,SenderId,ReceiverName,ReceiverPhone,ReceiverAddress,SenderEmail,CreateTime,TotalAmount,CheckOut")] OrderForm orderForm)
+        public IActionResult Edit(int id, [Bind("Id,ReceiverName,ReceiverPhone,ReceiverAddress")] OrderForm orderForm)
         {
-            if (!AuthorizeManager.InAdminGroup(User.Identity.Name)) return NotFound();
+            // 停用訂單編輯
+            return NotFound();
 
-            if (id != orderForm.Id)
-            {
-                return NotFound();
-            }
+            //if (id != orderForm.Id)
+            //{
+            //    return NotFound();
+            //}
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(orderForm);
-                    await _context.SaveChangesAsync();
+            //if (ModelState.IsValid)
+            //{
+            //    try
+            //    {
+            //        _context.Update(orderForm);
+            //        await _context.SaveChangesAsync();
 
-                    // 返回之前的分頁
-                    int? TryGetPage = HttpContext.Session.GetInt32("returnPage");
-                    int page = TryGetPage != null ? (int)TryGetPage : 1;
-                    return RedirectToAction("Index", new { page });
-                }
-                catch (DbUpdateConcurrencyException e)
-                {
-                    _logger.LogError(e.ToString());
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-            return View(orderForm);
+            //        // 返回之前的分頁
+            //        int? TryGetPage = HttpContext.Session.GetInt32("returnPage");
+            //        int page = TryGetPage != null ? (int)TryGetPage : 1;
+            //        return RedirectToAction("Index", new { page });
+            //    }
+            //    catch (DbUpdateConcurrencyException e)
+            //    {
+            //        _logger.LogError(e.ToString());
+            //        return RedirectToAction(nameof(Index));
+            //    }
+            //}
+            //return View(orderForm);
         }
 
         public async Task<IActionResult> Delete(int? id, int returnPage = 0)
