@@ -74,7 +74,6 @@
                     }
                     else
                     {
-                        <a asp-action="Details" asp-route-id="@item.Id">查看明細</a>
                         @Html.ActionLink("查看明細", "Details", new { id = item.Id, returnPage = Model.PageNumber })
                     }
                 </td>
