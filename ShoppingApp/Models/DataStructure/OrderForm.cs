@@ -7,8 +7,6 @@ namespace ShoppingApp.Models
     {
         public int Id { get; set; }
 
-        public string SenderId { get; set; }
-
         [Required(ErrorMessage = "此欄位不能為空")]
         [Display(Name = "收貨人姓名")]
         [StringLength(30, ErrorMessage = "輸入長度為2~30字", MinimumLength = 2)]

@@ -49,7 +49,7 @@ namespace ShoppingApp.Controllers
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
             {
                 // 返回該 UserId 所下的訂單，並按照日期排序(新->舊)
-                return View(await _context.OrderForm.Where(o => o.SenderId == User.FindFirstValue(ClaimTypes.NameIdentifier)).OrderByDescending(o => o.CreateTime).ToPagedListAsync(page, pageSize));
+                return View(await _context.OrderForm.Where(o => o.SenderEmail == User.Identity.Name).OrderByDescending(o => o.CreateTime).ToPagedListAsync(page, pageSize));
             }
             else
             {
@@ -80,7 +80,7 @@ namespace ShoppingApp.Controllers
             // 如果不是管理員，則只能查看自己的訂單明細
             if (!AuthorizeManager.InAdminGroup(User.Identity.Name))
             {
-                if (orderForm.SenderId != User.FindFirstValue(ClaimTypes.NameIdentifier)) return NotFound(); 
+                if (orderForm.SenderEmail != User.Identity.Name) return NotFound(); 
             }
 
             return View(await _context.OrderDetail.Where(o => o.OrderId == id).ToListAsync());
@@ -136,7 +136,6 @@ namespace ShoppingApp.Controllers
                     using var transaction = _context.Database.BeginTransaction();
 
                     // 儲存訂單
-                    orderForm.SenderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                     orderForm.CheckOut = "NO";
                     orderForm.CreateTime = DateTime.Now;
                     orderForm.SenderEmail = User.Identity.Name;
