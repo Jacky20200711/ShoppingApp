@@ -16,14 +16,6 @@ namespace OpayApi.Controllers
     {
         public ActionResult SendToOpay(string OrderKey="", string JsonString="")
         {
-            // 白名單過濾，只允許來自 Server 的 IP
-            string ClientIP = HttpContext.Request.UserHostAddress;
-            string ServerIP = ConfigurationManager.AppSettings["ServerIP"];
-            if(ClientIP != ServerIP)
-            {
-                return new HttpNotFoundResult();
-            }
-
             // 將 JsonString 轉回購物車
             Cart currentCart = JsonConvert.DeserializeObject<Cart>(JsonString);
 
