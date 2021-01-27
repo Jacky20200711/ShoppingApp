@@ -350,8 +350,18 @@ namespace ShoppingApp.Controllers
             return RedirectToAction("ShowProducts");
         }
 
+        public static bool RefreshHashTable = false;
+
         public async Task<IActionResult> ShowProducts(int page = 1)
         {
+            // 網站首次運行時，先將特權用戶寫入快取
+            // 之後判斷權限都是和快取的內容做比對
+            if (!RefreshHashTable)
+            {
+                AuthorizeManager.RefreshHashTable(_context);
+                RefreshHashTable = true;
+            }
+
             // 從 Cache 取出這一頁的產品資訊
             if (_memoryCache.Get($"ProductPage{page}") != null)
             {
