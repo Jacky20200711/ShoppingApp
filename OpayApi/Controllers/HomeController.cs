@@ -77,14 +77,6 @@ namespace OpayApi.Controllers
 
         public ActionResult GetPayResult(AllInOne oPayment, string OrderKey="")
         {
-            // 白名單過濾，只允許來自 Server 的 IP
-            string ClientIP = HttpContext.Request.UserHostAddress;
-            string ServerIP = ConfigurationManager.AppSettings["ServerIP"];
-            if (ClientIP != ServerIP)
-            {
-                return new HttpNotFoundResult();
-            }
-
             try
             {
                 string MyAppDomain = ConfigurationManager.AppSettings["MyAppDomain"];
