@@ -83,10 +83,8 @@ namespace ShoppingApp
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, ApplicationDbContext _context)
+        public void Configure(IApplicationBuilder app)
         {
-            AuthorizeManager.RefreshHashTable(_context);
             app.UseDetection();
             app.UseDeveloperExceptionPage();
             app.UseDatabaseErrorPage();
