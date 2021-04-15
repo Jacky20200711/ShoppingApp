@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -242,14 +243,22 @@ namespace ShoppingApp.Controllers
                     Host = $"{SmtpHost}",
                 };
 
-                smtp.UseDefaultCredentials = false;
-                smtp.Credentials = new NetworkCredential($"{SmtpEmail}", $"{SmtpPassword}");
-                smtp.EnableSsl = true;
-                smtp.Send(message);
-                _logger.LogInformation($"系統寄送了新密碼的驗證信給[{userEmail}]");
+                try
+                {
+                    smtp.UseDefaultCredentials = false;
+                    smtp.Credentials = new NetworkCredential($"{SmtpEmail}", $"{SmtpPassword}");
+                    smtp.EnableSsl = true;
+                    smtp.Send(message);
+                    _logger.LogInformation($"系統寄送了新密碼的驗證信給[{userEmail}]");
+                    TempData["ForgotPasswordConfirmation"] = "請查看您的 Email 以取得新密碼!";
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogInformation($"系統寄送驗證信時發生錯誤 : {ex}");
+                    TempData["ForgotPasswordConfirmation"] = "系統寄送驗證信時發生錯誤，請稍後再試QQ";
+                }
             }
             
-            TempData["ForgotPasswordConfirmation"] = "請查看您的 Email 以取得新密碼!";
             return View("~/Areas/Identity/Pages/Account/ForgotPasswordConfirmation.cshtml");
         }
 
