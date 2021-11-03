@@ -92,7 +92,13 @@ namespace ShoppingApp
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseSession();
+            app.UseSession(new SessionOptions()
+            {
+                Cookie = new CookieBuilder()
+                {
+                    Name = ".AspNetCore.Session.ShoppingApp"
+                }
+            });
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
